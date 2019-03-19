@@ -17,4 +17,10 @@
         <item>Mis gymkhanas</item>
         <item>Ajustes</item>
     </array>
+
+    <array name="gymk_types">
+        <item>Puntos ordenados</item>
+        <item>Puntos no ordenados</item>
+        <item>Libre</item>
+    </array>
 </resources>
