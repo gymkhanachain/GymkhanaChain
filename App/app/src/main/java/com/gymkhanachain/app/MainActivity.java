@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle("Drawer");
+                //getSupportActionBar().setTitle("Drawer");
             }
         };
 
