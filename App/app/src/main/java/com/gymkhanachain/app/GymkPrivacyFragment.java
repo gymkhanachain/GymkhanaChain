@@ -7,6 +7,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 
 /**
@@ -43,6 +48,7 @@ public class GymkPrivacyFragment extends Fragment {
      */
     // TODO: Rename and change types and number of parameters
     public static GymkPrivacyFragment newInstance(String param1, String param2) {
+        //Cargamos si los botones estan seleccionados o no
         GymkPrivacyFragment fragment = new GymkPrivacyFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -58,13 +64,94 @@ public class GymkPrivacyFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_gymk_privacy, container, false);
+        View privView =  inflater.inflate(R.layout.fragment_gymk_privacy, container, false);
+
+        CheckBox checkBox1 = ( CheckBox ) privView.findViewById(R.id.checkBox);
+        checkBox1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if ( isChecked )
+                {
+                    Context context = getActivity().getApplicationContext();
+                    CharSequence text = "Marcado!";
+                    int duration = Toast.LENGTH_SHORT;
+
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                }
+                else {
+                    Context context = getActivity().getApplicationContext();
+                    CharSequence text = "Desmarcado!";
+                    int duration = Toast.LENGTH_SHORT;
+
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                }
+
+            }
+        });
+
+        CheckBox checkBox2 = ( CheckBox ) privView.findViewById(R.id.checkBox2);
+        checkBox2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if ( isChecked )
+                {
+                    Context context = getActivity().getApplicationContext();
+                    CharSequence text = "Marcado!";
+                    int duration = Toast.LENGTH_SHORT;
+
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                }
+                else {
+                    Context context = getActivity().getApplicationContext();
+                    CharSequence text = "Desmarcado!";
+                    int duration = Toast.LENGTH_SHORT;
+
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                }
+
+            }
+        });
+
+        Spinner spinner = (Spinner) privView.findViewById(R.id.spinner);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                Object item = parentView.getItemAtPosition(position);
+                if (item != null) {
+                    Toast.makeText(getContext(), item.toString(),
+                            Toast.LENGTH_SHORT).show();
+                }
+                Toast.makeText(getContext(), "Selected",
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+
+            }
+
+        });
+
+        return privView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
