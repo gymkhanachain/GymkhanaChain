@@ -105,8 +105,8 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
     // Implementación de las interfaces de los fragmentos
     // TODO Hay que definir las interfaces de cada fragmento, en función de las interacciones con MainActivity
     @Override
-    public void onMapFragmentInteraction(Uri uri) {
-
+    public void onMapFragmentInteraction() {
+        // TODO Cambiar al fragment de Aida
     }
 
     @Override
