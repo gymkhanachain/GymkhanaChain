@@ -59,9 +59,10 @@ public class CreateGymkActivity extends AppCompatActivity implements GymkDetails
     }
 
     @Override
-    public void onMapFragmentInteraction(Uri uri) {
+    public void onMapFragmentInteraction() {
 
     }
+
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
