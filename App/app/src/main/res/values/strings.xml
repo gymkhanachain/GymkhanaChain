@@ -11,6 +11,14 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="drawer_open">Abrir</string>
     <string name="drawer_close">Cerrar</string>
+    <string name="bt_activate">Activar</string>
+    <string name="bt_delete">Borrar</string>
+    <string name="imview_gymk_description">Imagen de gymkhana</string>
+    <string name="et_gymk_name">Nombre gymkhana</string>
+    <string name="et_gymk_desc">Descripción gymkhana</string>
+    <string name="tv_gymk_type">Tipo de gymkhana</string>
+    <string name="sw_accessibility">Accesibilidad</string>
+    <string name="imb_edit_gymk_img">Editar imagen de gymkhana</string>
 
     <array name="drawer_items">
         <item>Inicio</item>
