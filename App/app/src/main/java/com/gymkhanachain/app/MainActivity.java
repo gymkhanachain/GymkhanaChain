@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
                                 .commit();
                     } else
                         fragmentManager.beginTransaction()
-                                .replace(R.id.placeholder_main, new MapFragment(), MAP_FRAGMENT_TAG)
+                                .replace(R.id.placeholder_main, MapFragment.newInstance(), MAP_FRAGMENT_TAG)
                                 .commit();
                     break;
                 case "Mis gymkhanas": // Listar gymkhanas
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
                                 .commit();
                     } else
                         fragmentManager.beginTransaction()
-                            .replace(R.id.placeholder_main, new ListGymkFragment(), LIST_GYMK_FRAGMENT_TAG)
+                            .replace(R.id.placeholder_main, ListGymkFragment.newInstance(), LIST_GYMK_FRAGMENT_TAG)
                             .commit();
                     break;
                 case "Ajustes":
