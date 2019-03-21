@@ -14,6 +14,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
@@ -25,7 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * Use the {@link MapFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private MapView mMapView;
     private OnMapFragmentInteractionListener mListener;
@@ -42,7 +43,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     // TODO: Rename and change types and number of parameters
     public static MapFragment newInstance() {
-        MapFragment fragment = new MapFragment();
+        final MapFragment fragment = new MapFragment();
         return fragment;
     }
 
@@ -55,8 +56,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_map, container, false);
-        mMapView = (MapView) view.findViewById(R.id.mapView);
+        final View view = inflater.inflate(R.layout.fragment_map, container, false);
+        mMapView = view.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
         return view;
@@ -106,9 +107,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         // Add a marker in Corunna and move the camera
-        LatLng corunna = new LatLng(43.365, -8.410);
+        final LatLng corunna = new LatLng(43.365, -8.410);
         googleMap.addMarker(new MarkerOptions().position(corunna).title("A Coruña"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(corunna, 15));
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(corunna, 12), 4000, null);
+        googleMap.setOnMarkerClickListener(this);
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        if (!marker.isInfoWindowShown()) {
+            marker.showInfoWindow();
+            mListener.onMapFragmentInteraction();
+        } else {
+            marker.hideInfoWindow();
+        }
+
+        return false;
     }
 
     /**
@@ -122,7 +137,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnMapFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onMapFragmentInteraction(Uri uri);
+        void onMapFragmentInteraction();
     }
 }
