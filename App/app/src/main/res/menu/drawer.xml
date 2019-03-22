@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_start"
+            android:icon="@drawable/ic_baseline_add_24px"
+            android:title="@string/nav_start" />
+        <item
+            android:id="@+id/nav_my_gymk"
+            android:icon="@drawable/ic_baseline_add_24px"
+            android:title="@string/nav_my_gymk" />
+    </group>
+
+    <item android:title="">
+        <menu>
+            <item
+                android:id="@+id/nav_profile"
+                android:icon="@drawable/ic_baseline_settings_20px"
+                android:title="Perfil" />
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_baseline_settings_20px"
+                android:title="@string/nav_settings" />
+        </menu>
+    </item>
+
+</menu>

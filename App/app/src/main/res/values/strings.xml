@@ -19,6 +19,9 @@
     <string name="tv_gymk_type">Tipo de gymkhana</string>
     <string name="sw_accessibility">Accesibilidad</string>
     <string name="imb_edit_gymk_img">Editar imagen de gymkhana</string>
+    <string name="nav_my_gymk">Mis gymkhanas</string>
+    <string name="nav_start">Inicio</string>
+    <string name="nav_settings">Ajustes</string>
 
     <array name="drawer_items">
         <item>Inicio</item>
