@@ -11,10 +11,15 @@ import android.widget.Toast;
 
 public class NearGymkAdapter extends RecyclerView.Adapter<NearGymkAdapter.NearGymkItem> {
     private String[] mDataset;
+    private NearGymkItem.OnNearGymkItemListener mListener;
 
     public static class NearGymkItem extends RecyclerView.ViewHolder {
         public View mView;
         public Context mContext;
+
+        public interface OnNearGymkItemListener {
+            void onNearGymkItemClick();
+        }
 
         public NearGymkItem(final View view, final Context context) {
             super(view);
@@ -23,8 +28,9 @@ public class NearGymkAdapter extends RecyclerView.Adapter<NearGymkAdapter.NearGy
         }
     }
 
-    public NearGymkAdapter(String[] myDataset) {
+    public NearGymkAdapter(String[] myDataset, NearGymkItem.OnNearGymkItemListener myListener) {
         mDataset = myDataset;
+        mListener = myListener;
     }
 
     @Override
@@ -41,8 +47,7 @@ public class NearGymkAdapter extends RecyclerView.Adapter<NearGymkAdapter.NearGy
         viewHolder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Toast toast = Toast.makeText(viewHolder.mContext, mDataset[position], Toast.LENGTH_SHORT);
-                toast.show();
+                mListener.onNearGymkItemClick();
             }
         });
         final ImageView imageView = viewHolder.mView.findViewById(R.id.near_gymk_image);

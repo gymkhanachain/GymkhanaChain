@@ -30,7 +30,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * Use the {@link MapFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, NearGymkAdapter.NearGymkItem.OnNearGymkItemListener {
 
     private MapView mMapView;
     private RecyclerView mRecyclerView;
@@ -105,7 +105,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         // Specify an adapter (see also next example)
         String[] nearGymkhanas = {"A Coruña - Turismo", "Na procura do tesouro", "Orzán y su bahía", "A Coruña Oculta"};
-        final NearGymkAdapter adapter = new NearGymkAdapter(nearGymkhanas);
+        final NearGymkAdapter adapter = new NearGymkAdapter(nearGymkhanas, this);
         mRecyclerView.setAdapter(adapter);
 
         return view;
@@ -173,6 +173,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         }
 
         return false;
+    }
+
+    public void onNearGymkItemClick() {
+        mListener.onMapFragmentInteraction();
     }
 
     /**
