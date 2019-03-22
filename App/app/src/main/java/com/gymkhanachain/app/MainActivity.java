@@ -19,11 +19,12 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MapFragment.OnMapFragmentInteractionListener, ListGymkFragment.OnListGymkFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements MapFragment.OnMapFragmentInteractionListener, ListGymkFragment.OnListGymkFragmentInteractionListener, GymkInfoFragment.OnGymkInfoFragmentInteractionListener {
 
     // Tags para identificar los distintos fragmentos de la Actividad
     private static final String MAP_FRAGMENT_TAG = "MapFragment";
     private static final String LIST_GYMK_FRAGMENT_TAG = "ListGymkFragment";
+    private static final String INFO_GYMK_FRAGMENT_TAG = "GymkInfoFragment";
 
     // Elementos del NavigationDrawer
     private DrawerLayout mDrawerLayout;
@@ -106,13 +107,28 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
     // TODO Hay que definir las interfaces de cada fragmento, en función de las interacciones con MainActivity
     @Override
     public void onMapFragmentInteraction() {
-        // TODO Cambiar al fragment de Aida
+        Fragment fragment = fragmentManager.findFragmentByTag(INFO_GYMK_FRAGMENT_TAG);
+
+        if (fragment != null && fragment.getTag().equals(INFO_GYMK_FRAGMENT_TAG)) {
+            fragmentManager.beginTransaction()
+                .replace(R.id.frameLayout, fragment)
+                .commit();
+        } else {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.placeholder_main, GymkInfoFragment.newInstance(), INFO_GYMK_FRAGMENT_TAG)
+                    .commit();
+        }
     }
 
     @Override
     public void onCreateGymkInteraction() {
         Intent intent = new Intent(this, CreateGymkActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onGymkInfoFragmentInteraction(Uri uri) {
+
     }
 
     // Listener para el NavigationDrawer, aquí hacemos la transición entre los distintos fragmentos

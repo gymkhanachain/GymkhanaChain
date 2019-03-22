@@ -206,7 +206,7 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/imageButtonGymkInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="52dp"
@@ -281,7 +281,7 @@
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageButton"
+            app:layout_constraintEnd_toStartOf="@+id/imageButtonGymkInfo"
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toStartOf="@+id/guideline9"
             app:layout_constraintTop_toBottomOf="@+id/GymkanaCountText"
