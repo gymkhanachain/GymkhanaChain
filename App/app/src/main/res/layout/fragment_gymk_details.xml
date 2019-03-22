@@ -12,25 +12,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="27dp">
+        tools:layout_editor_absoluteY="16dp">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/linearLayout"
             android:layout_width="411dp"
-            android:layout_height="572dp"
+            android:layout_height="match_parent"
             tools:layout_conversion_absoluteHeight="234dp"
             tools:layout_conversion_absoluteWidth="411dp"
             tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="0dp">
+            tools:layout_editor_absoluteY="0dp"
+            android:focusableInTouchMode="true">
 
 
             <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="287dp"
-                android:layout_height="158dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:contentDescription="TODO"
+                android:id="@+id/imageView_gymk"
+                android:layout_width="match_parent"
+                android:layout_height="199dp"
+                android:contentDescription="@string/imview_gymk_description"
                 android:src="@drawable/beach"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -38,101 +37,107 @@
                 tools:layout_conversion_absoluteWidth="301dp" />
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/button_start_gymk"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:layout_marginTop="48dp"
-                android:layout_marginEnd="16dp"
-                android:text="Activar"
+                android:layout_marginEnd="24dp"
+                android:text="@string/bt_activate"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imageView"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:layout_conversion_absoluteHeight="48dp"
                 tools:layout_conversion_absoluteWidth="88dp" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/button_delete_gymk"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:layout_marginTop="12dp"
-                android:layout_marginEnd="16dp"
-                android:text="Borrar"
+                android:layout_marginEnd="24dp"
+                android:text="@string/bt_delete"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imageView"
-                app:layout_constraintTop_toBottomOf="@+id/button"
+                app:layout_constraintTop_toBottomOf="@+id/button_start_gymk"
                 tools:layout_conversion_absoluteHeight="48dp"
                 tools:layout_conversion_absoluteWidth="88dp" />
 
 
-            <TextView
-                android:id="@+id/textView"
+            <EditText
+                android:id="@+id/edittext_gymk_name"
+                android:inputType="text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@null"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="16dp"
-                android:text="Nombre gymkhana"
+                android:hint="@string/et_gymk_name"
+                style="@style/ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox"
                 android:textSize="18pt"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView"
-                app:layout_constraintVertical_bias="0.073"
+                app:layout_constraintTop_toBottomOf="@+id/imageView_gymk"
+                app:layout_constraintVertical_bias="1.0"
                 tools:layout_conversion_absoluteHeight="57dp"
                 tools:layout_conversion_absoluteWidth="411dp" />
 
-            <TextView
-                android:id="@+id/textView2"
+            <EditText
+                android:id="@+id/edittext_gymk_desc"
+                android:inputType="text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@null"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="Descripción gymkhana"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.105"
+                android:hint="@string/et_gymk_desc"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView"
+                app:layout_constraintTop_toBottomOf="@+id/edittext_gymk_name"
                 tools:layout_conversion_absoluteHeight="19dp"
                 tools:layout_conversion_absoluteWidth="411dp" />
 
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/textview_gymk_type"
                 android:layout_width="wrap_content"
                 android:layout_height="20dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="24dp"
-                android:text="Tipo de gymkhana"
+                android:text="@string/tv_gymk_type"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                app:layout_constraintTop_toBottomOf="@+id/edittext_gymk_desc"
                 tools:layout_conversion_absoluteHeight="19dp"
                 tools:layout_conversion_absoluteWidth="117dp" />
 
             <Spinner
                 android:layout_width="191dp"
                 android:layout_height="26dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="8dp"
                 android:entries="@array/gymk_types"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView3"
+                app:layout_constraintTop_toBottomOf="@+id/textview_gymk_type"
                 tools:layout_conversion_absoluteHeight="24dp"
-                tools:layout_conversion_absoluteWidth="48dp"></Spinner>
+                tools:layout_conversion_absoluteWidth="48dp" />
 
 
             <Switch
-                android:id="@+id/switch1"
+                android:id="@+id/switch_access"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="112dp"
                 android:layout_marginTop="24dp"
-                android:layout_marginEnd="16dp"
-                android:text="Accesibilidad"
+                android:layout_marginEnd="24dp"
+                android:text="@string/sw_accessibility"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView3"
-                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                app:layout_constraintTop_toBottomOf="@+id/edittext_gymk_desc"
                 tools:layout_conversion_absoluteHeight="27dp"
                 tools:layout_conversion_absoluteWidth="123dp" />
+
+            <ImageButton
+                android:id="@+id/imageButton_edit_gymk_img"
+                android:contentDescription="@string/imb_edit_gymk_img"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/ic_baseline_edit_24px"
+                android:background="@null"
+                app:layout_constraintBottom_toTopOf="@+id/edittext_gymk_name"
+                app:layout_constraintStart_toStartOf="parent" />
 
 
         </android.support.constraint.ConstraintLayout>
