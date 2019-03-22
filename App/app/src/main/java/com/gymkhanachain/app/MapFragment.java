@@ -68,6 +68,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
 
+        FloatingActionButton fabSearch = view.findViewById(R.id.fab_search);
+        fabSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast newToast = Toast.makeText(getContext(), "Búsqueda", Toast.LENGTH_SHORT);
+                newToast.show();
+            }
+        });
+
         FloatingActionButton fabAccesibility = view.findViewById(R.id.fab_accesibility);
         fabAccesibility.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,7 +104,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
         // Specify an adapter (see also next example)
-        String[] nearGymkhanas = {"A Coruña"};
+        String[] nearGymkhanas = {"A Coruña - Turismo", "Na procura do tesouro", "Orzán y su bahía", "A Coruña Oculta"};
         final NearGymkAdapter adapter = new NearGymkAdapter(nearGymkhanas);
         mRecyclerView.setAdapter(adapter);
 
