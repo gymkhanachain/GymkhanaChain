@@ -19,7 +19,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MapFragment.OnMapFragmentInteractionListener, ListGymkFragment.OnListGymkFragmentInteractionListener, GymkInfoFragment.OnGymkInfoFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements MapFragment.OnMapFragmentInteractionListener, ListGymkFragment.OnListGymkFragmentInteractionListener, GymkInfoFragment.OnGymkInfoFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
 
     // Tags para identificar los distintos fragmentos de la Actividad
     private static final String MAP_FRAGMENT_TAG = "MapFragment";
@@ -161,6 +161,9 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
                     fragmentManager.beginTransaction()
                             .replace(R.id.placeholder_main, ListGymkFragment.newInstance(), LIST_GYMK_FRAGMENT_TAG)
                             .commit();
+                break;
+            case "Perfil":
+                startActivity(new Intent(this, UserProfileActivity.class));
                 break;
             case "Ajustes":
                 // TODO Aquí lanzamos SettingsActivity

@@ -19,7 +19,7 @@
             <item
                 android:id="@+id/nav_profile"
                 android:icon="@drawable/ic_baseline_settings_20px"
-                android:title="Perfil" />
+                android:title="@string/nav_profile" />
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_baseline_settings_20px"

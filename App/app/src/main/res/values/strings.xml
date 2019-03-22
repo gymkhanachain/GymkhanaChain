@@ -20,6 +20,10 @@
     <string name="sw_accessibility">Accesibilidad</string>
     <string name="imb_edit_gymk_img">Editar imagen de gymkhana</string>
     <string name="title_activity_user_profile">Perfil de usuario</string>
+    <string name="nav_start">Inicio</string>
+    <string name="nav_my_gymk">Mis gymkhanas</string>
+    <string name="nav_profile">Perfil</string>
+    <string name="nav_settings">Ajustes</string>
 
     <array name="drawer_items">
         <item>Inicio</item>
