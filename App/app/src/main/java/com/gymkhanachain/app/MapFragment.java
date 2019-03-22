@@ -3,10 +3,14 @@ package com.gymkhanachain.app;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -29,6 +33,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private MapView mMapView;
+    private RecyclerView mRecyclerView;
     private OnMapFragmentInteractionListener mListener;
 
     public MapFragment() {
@@ -48,24 +53,59 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_map, container, false);
+
+        // Gets the map
         mMapView = view.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
+
+        FloatingActionButton fabAccesibility = view.findViewById(R.id.fab_accesibility);
+        fabAccesibility.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast newToast = Toast.makeText(getContext(), "Accesibilidad", Toast.LENGTH_SHORT);
+                newToast.show();
+            }
+        });
+
+        FloatingActionButton fabMyLocation = view.findViewById(R.id.fab_my_location);
+        fabMyLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast newToast = Toast.makeText(getContext(), "Localizado", Toast.LENGTH_SHORT);
+                newToast.show();
+            }
+        });
+
+        // Gets the recycle view
+        mRecyclerView = view.findViewById(R.id.near_gymkhanas);
+        // Use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        mRecyclerView.setHasFixedSize(true);
+
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+
+        // Specify an adapter (see also next example)
+        String[] nearGymkhanas = {"A Coruña"};
+        final NearGymkAdapter adapter = new NearGymkAdapter(nearGymkhanas);
+        mRecyclerView.setAdapter(adapter);
+
         return view;
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(final Context context) {
         super.onAttach(context);
+
         if (context instanceof OnMapFragmentInteractionListener) {
             mListener = (OnMapFragmentInteractionListener) context;
         } else {
@@ -105,7 +145,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {
         // Add a marker in Corunna and move the camera
         final LatLng corunna = new LatLng(43.365, -8.410);
         googleMap.addMarker(new MarkerOptions().position(corunna).title("A Coruña"));
@@ -115,7 +155,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     }
 
     @Override
-    public boolean onMarkerClick(Marker marker) {
+    public boolean onMarkerClick(final Marker marker) {
         if (!marker.isInfoWindowShown()) {
             marker.showInfoWindow();
             mListener.onMapFragmentInteraction();
