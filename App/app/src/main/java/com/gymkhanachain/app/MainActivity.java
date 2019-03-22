@@ -161,6 +161,11 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
                 case "Ajustes":
                     // TODO Aquí lanzamos SettingsActivity
                     break;
+                //TODO:ilopez: Poner esto en la cabecera del drawer con fotico,
+                case "Perfil":
+                    Intent intent = new Intent(MainActivity.this, UserProfile.class);
+                    startActivity(intent);
+                    break;
             }
 
             mDrawerList.setItemChecked(position, true);

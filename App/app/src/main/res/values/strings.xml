@@ -19,11 +19,14 @@
     <string name="tv_gymk_type">Tipo de gymkhana</string>
     <string name="sw_accessibility">Accesibilidad</string>
     <string name="imb_edit_gymk_img">Editar imagen de gymkhana</string>
+    <string name="title_activity_user_profile">Perfil de usuario</string>
 
     <array name="drawer_items">
         <item>Inicio</item>
         <item>Mis gymkhanas</item>
         <item>Ajustes</item>
+        <item>Perfil</item>
+
     </array>
 
     <array name="gymk_types">
