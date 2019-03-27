@@ -1,4 +1,4 @@
-package com.gymkhanachain.app;
+package com.gymkhanachain.app.ui.creategymkana.activity;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +9,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+
+import com.gymkhanachain.app.ui.creategymkana.fragments.GymkDetailsFragment;
+import com.gymkhanachain.app.ui.creategymkana.fragments.GymkPointsFragment;
+import com.gymkhanachain.app.ui.creategymkana.fragments.GymkPrivacyFragment;
+import com.gymkhanachain.app.ui.commons.fragments.MapFragment;
+import com.gymkhanachain.app.R;
 
 import java.util.ArrayList;
 import java.util.List;

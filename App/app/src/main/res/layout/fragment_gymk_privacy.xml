@@ -5,7 +5,7 @@
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GymkPrivacyFragment">
+    tools:context=".ui.creategymkana.fragments.GymkPrivacyFragment">
 
     <TextView
         android:layout_width="133dp"

@@ -1,4 +1,4 @@
-package com.gymkhanachain.app;
+package com.gymkhanachain.app.ui.mainscreen.activity;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -15,6 +15,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
+import com.gymkhanachain.app.ui.commons.fragments.MapFragment;
+import com.gymkhanachain.app.R;
+import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
+import com.gymkhanachain.app.ui.creategymkana.activity.CreateGymkActivity;
+import com.gymkhanachain.app.ui.mainscreen.fragments.GymkInfoFragment;
+import com.gymkhanachain.app.ui.mainscreen.fragments.ListGymkFragment;
 
 import java.util.ArrayList;
 import java.util.List;

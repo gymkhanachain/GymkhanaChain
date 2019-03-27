@@ -1,4 +1,4 @@
-package com.gymkhanachain.app;
+package com.gymkhanachain.app.ui.creategymkana.fragments;
 
 import android.content.Context;
 import android.net.Uri;
@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import com.gymkhanachain.app.R;
 
 
 /**
