@@ -43,7 +43,7 @@ public class NearGymkAdapter extends RecyclerView.Adapter<NearGymkAdapter.NearGy
 
     @Override
     public void onBindViewHolder(final NearGymkItem viewHolder, final int position) {
-        final TextView textView = viewHolder.mView.findViewById(R.id.near_gymk_name);
+        final TextView textView = viewHolder.mView.findViewById(R.id.nearGymkName);
         textView.setText(mDataset[position]);
         viewHolder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,7 +51,7 @@ public class NearGymkAdapter extends RecyclerView.Adapter<NearGymkAdapter.NearGy
                 mListener.onNearGymkItemClick();
             }
         });
-        final ImageView imageView = viewHolder.mView.findViewById(R.id.near_gymk_image);
+        final ImageView imageView = viewHolder.mView.findViewById(R.id.nearGymkImage);
         imageView.setImageResource(R.drawable.beach);
     }
 

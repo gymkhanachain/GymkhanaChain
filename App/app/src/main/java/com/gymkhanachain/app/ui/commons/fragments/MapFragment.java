@@ -21,6 +21,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.gymkhanachain.app.ui.mainscreen.adapters.NearGymkAdapter;
 import com.gymkhanachain.app.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,11 +34,26 @@ import com.gymkhanachain.app.R;
  * Use the {@link MapFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, NearGymkAdapter.NearGymkItem.OnNearGymkItemListener {
+public class MapFragment extends Fragment implements NearGymkAdapter.
+        NearGymkItem.OnNearGymkItemListener {
 
-    private MapView mMapView;
-    private RecyclerView mRecyclerView;
-    private OnMapFragmentInteractionListener mListener;
+    @BindView(R.id.mapView)
+    MapView mapView;
+
+    @BindView(R.id.nearGymkhanas)
+    RecyclerView nearGymkanas;
+
+    @BindView(R.id.fabSearch)
+    FloatingActionButton fabSearch;
+
+    @BindView(R.id.fabMyLocation)
+    FloatingActionButton fabMyLocation;
+
+    @BindView(R.id.fabAccesibility)
+    FloatingActionButton fabAccesibility;
+
+    private OnMapFragmentInteractionListener listener;
+    private Unbinder unbinder;
 
     public MapFragment() {
         // Required empty public constructor
@@ -48,7 +67,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
      */
     // TODO: Rename and change types and number of parameters
     public static MapFragment newInstance() {
-        final MapFragment fragment = new MapFragment();
+        MapFragment fragment = new MapFragment();
         return fragment;
     }
 
@@ -61,23 +80,44 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View view = inflater.inflate(R.layout.fragment_map, container, false);
+        View view = inflater.inflate(R.layout.fragment_map, container, false);
+        unbinder = ButterKnife.bind(this, view);
 
-        // Gets the map
-        mMapView = view.findViewById(R.id.mapView);
-        mMapView.onCreate(savedInstanceState);
-        mMapView.getMapAsync(this);
-
-        FloatingActionButton fabSearch = view.findViewById(R.id.fab_search);
-        fabSearch.setOnClickListener(new View.OnClickListener() {
+        // Sets the map
+        mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
-            public void onClick(View v) {
-                Toast newToast = Toast.makeText(getContext(), "Búsqueda", Toast.LENGTH_SHORT);
-                newToast.show();
+            public void onMapReady(GoogleMap googleMap) {
+                // Add a marker in Corunna and move the camera
+                LatLng corunna = new LatLng(43.365, -8.410);
+                googleMap.addMarker(new MarkerOptions().position(corunna).title("A Coruña"));
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(corunna, 12), 4000, null);
+                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        if (!marker.isInfoWindowShown()) {
+                            marker.showInfoWindow();
+                            listener.onMapFragmentInteraction();
+                        } else {
+                            marker.hideInfoWindow();
+                        }
+
+                        return false;
+                    }
+                });
+                googleMap.getUiSettings().setMapToolbarEnabled(false);
             }
         });
 
-        FloatingActionButton fabAccesibility = view.findViewById(R.id.fab_accesibility);
+        // Sets all fabs
+        fabSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast toast = Toast.makeText(getContext(), "Búsqueda", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+
         fabAccesibility.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,7 +126,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             }
         });
 
-        FloatingActionButton fabMyLocation = view.findViewById(R.id.fab_my_location);
         fabMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,18 +134,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             }
         });
 
-        // Gets the recycle view
-        mRecyclerView = view.findViewById(R.id.near_gymkhanas);
         // Use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
-        mRecyclerView.setHasFixedSize(true);
+        nearGymkanas.setHasFixedSize(true);
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        nearGymkanas.setLayoutManager(new LinearLayoutManager(getContext(),
+                LinearLayoutManager.HORIZONTAL, false));
 
         // Specify an adapter (see also next example)
-        String[] nearGymkhanas = {"A Coruña - Turismo", "Na procura do tesouro", "Orzán y su bahía", "A Coruña Oculta"};
+        String[] nearGymkhanas = {"A Coruña - Turismo", "Na procura do tesouro", "Orzán y su bahía",
+                "A Coruña Oculta"};
         final NearGymkAdapter adapter = new NearGymkAdapter(nearGymkhanas, this);
-        mRecyclerView.setAdapter(adapter);
+        nearGymkanas.setAdapter(adapter);
 
         return view;
     }
@@ -116,7 +155,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         super.onAttach(context);
 
         if (context instanceof OnMapFragmentInteractionListener) {
-            mListener = (OnMapFragmentInteractionListener) context;
+            listener = (OnMapFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnMapFragmentInteractionListener");
@@ -126,57 +165,40 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        listener = null;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mMapView.onResume();
+        mapView.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mMapView.onPause();
+        mapView.onPause();
     }
 
     @Override
     public void onDestroy() {
-        mMapView.onDestroy();
         super.onDestroy();
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mMapView.onLowMemory();
+        mapView.onLowMemory();
     }
 
     @Override
-    public void onMapReady(final GoogleMap googleMap) {
-        // Add a marker in Corunna and move the camera
-        final LatLng corunna = new LatLng(43.365, -8.410);
-        googleMap.addMarker(new MarkerOptions().position(corunna).title("A Coruña"));
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(corunna, 12), 4000, null);
-        googleMap.setOnMarkerClickListener(this);
-        googleMap.getUiSettings().setMapToolbarEnabled(false);
-    }
-
-    @Override
-    public boolean onMarkerClick(final Marker marker) {
-        if (!marker.isInfoWindowShown()) {
-            marker.showInfoWindow();
-            mListener.onMapFragmentInteraction();
-        } else {
-            marker.hideInfoWindow();
-        }
-
-        return false;
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
     public void onNearGymkItemClick() {
-        mListener.onMapFragmentInteraction();
+        listener.onMapFragmentInteraction();
     }
 
     /**
