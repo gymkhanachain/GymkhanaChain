@@ -20,11 +20,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".CreateGymkActivity"
+            android:name=".ui.creategymkana.activity.CreateGymkActivity"
             android:label="@string/title_activity_create_gymk"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"></activity>
-        <activity android:name=".MainActivity"
+        <activity android:name=".ui.mainscreen.activity.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".UserProfileActivity"
+            android:name=".ui.userprofile.activity.UserProfileActivity"
             android:label="@string/title_activity_user_profile"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <meta-data
