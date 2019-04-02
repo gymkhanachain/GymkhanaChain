@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,21 +18,26 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.ui.mainscreen.activity.MainActivity;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static android.app.Activity.RESULT_OK;
 
 
 /**
@@ -48,9 +55,9 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
     Button buttonActivate;
     Button buttonDelete;
 
-    static final int REQUEST_TAKE_PHOTO = 1;
     String mCurrentPhotoPath;
     private static final int PERMISSION_REQUEST_CAMERA_CODE = 200;
+    private static final int PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE = 201;
 
     public GymkDetailsFragment() {
         // Required empty public constructor
@@ -164,35 +171,8 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
     }
 
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST_CAMERA_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(getActivity().getApplicationContext(), "Permission Granted", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getActivity().getApplicationContext(), "Permission Denied", Toast.LENGTH_SHORT).show();
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
-                                != PackageManager.PERMISSION_GRANTED) {
-                            showMessageOKCancel("You need to allow access permissions",
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                requestCameraPermission();
-                                            }
-                                        }
-                                    });
-                        }
-                    }
-                }
-        }
-
-    }
-
-    private boolean checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
+    private boolean checkPermission(String p) {
+        if (ContextCompat.checkSelfPermission(getActivity(), p)
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted
             return false;
@@ -200,32 +180,46 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
         return true;
     }
 
-    private void requestCameraPermission() {
-        Toast.makeText(getContext(), "Se va a pedir permiso", Toast.LENGTH_SHORT).show();
+    private void requestPermission(String p, int code) {
         ActivityCompat.requestPermissions(getActivity(),
-                new String[]{Manifest.permission.CAMERA},
-                PERMISSION_REQUEST_CAMERA_CODE);
+                new String[]{p},code);
     }
 
     private void dispatchTakePictureIntent() {
-        if(checkCameraPermission()) {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            // Ensure that there's a camera activity to handle the intent
-            if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                File photoFile = null;
-                try { // Create the File where the photo should go
-                    photoFile = createImageFile();
-                } catch (IOException ex) { // Error occurred while creating the File
+
+        if(!getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+            Toast.makeText(getActivity(), "This device does not have a camera.", Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
+
+        if(!checkPermission(Manifest.permission.CAMERA)) {
+            requestPermission(Manifest.permission.CAMERA, PERMISSION_REQUEST_CAMERA_CODE);
+        }
+
+        if(!checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE);
+        }
+
+        Intent takePictureIntent = new Intent("android.media.action.IMAGE_CAPTURE");
+        //Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            File photoFile = null;
+            try { // Create the File where the photo should go
+                photoFile = createImageFile();
+            } catch (IOException ex) { // Error occurred while creating the File
+                Toast.makeText(getContext(), "Ha fallado: " + ex.getMessage().toString() , Toast.LENGTH_SHORT).show();
+            }
+            if (photoFile != null) { // Check if the File was successfully created
+                try {
+                    Uri photoURI = FileProvider.getUriForFile(getActivity(), "com.gymkhanachain.app.ui.providers.GenericFileProvider", createImageFile());
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, PERMISSION_REQUEST_CAMERA_CODE);
+                } catch (IOException e) {
 
                 }
-                if (photoFile != null) { // Check if the File was successfully created
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                            Uri.fromFile(photoFile));
-                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-                }
             }
-        } else {
-            requestCameraPermission();
         }
     }
 
@@ -246,20 +240,33 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
         return image;
     }
 
-    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(getActivity())
-                .setMessage(message)
-                .setPositiveButton("OK", okListener)
-                .setNegativeButton("Cancel", null)
-                .create()
-                .show();
-    }
-
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
-        this.getActivity().sendBroadcast(mediaScanIntent);
+        getActivity().sendBroadcast(mediaScanIntent);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != getActivity().RESULT_CANCELED) {
+            super.onActivityResult(requestCode, resultCode, data);
+            if (requestCode == PERMISSION_REQUEST_CAMERA_CODE && resultCode == RESULT_OK) {
+                galleryAddPic();
+                Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
+                // Glide.with(this).load(imageFilePath).into(mImageView);
+                /*Uri uri = data.getData();
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }*/
+                View inflatedView = getActivity().findViewById(android.R.id.content);
+                ((ImageView) inflatedView.findViewById(R.id.imageView_gymk)).setImageBitmap(bitmap);
+            }
+        }
     }
 }
+
