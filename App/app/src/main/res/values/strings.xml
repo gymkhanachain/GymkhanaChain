@@ -38,4 +38,7 @@
         <item>Puntos no ordenados</item>
         <item>Libre</item>
     </array>
+    <string name="location_dialog_title">Localización</string>
+    <string name="location_dialog_content">Esta aplicación necesita conocer tu posición en todo momento. Acepte el permiso para continuar</string>
+    <string name="common_accept" translatable="false">Aceptar</string>
 </resources>

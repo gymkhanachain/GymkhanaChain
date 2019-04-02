@@ -15,7 +15,7 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/nearGymkImage"
+            android:id="@+id/near_gymk_image"
             android:layout_width="0dp"
             android:layout_height="80dp"
             card_view:layout_constraintEnd_toEndOf="parent"
@@ -24,12 +24,12 @@
             tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
         <TextView
-            android:id="@+id/nearGymkName"
+            android:id="@+id/near_gymk_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintStart_toStartOf="parent"
-            card_view:layout_constraintTop_toBottomOf="@+id/nearGymkImage" />
+            card_view:layout_constraintTop_toBottomOf="@+id/near_gymk_image" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>

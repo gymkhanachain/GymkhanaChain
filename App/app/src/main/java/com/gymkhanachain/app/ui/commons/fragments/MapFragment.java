@@ -1,9 +1,16 @@
 package com.gymkhanachain.app.ui.commons.fragments;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,8 +25,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.gymkhanachain.app.ui.mainscreen.adapters.NearGymkAdapter;
+import com.gymkhanachain.app.ui.commons.adapters.NearGymkAdapter;
 import com.gymkhanachain.app.R;
+import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,26 +42,28 @@ import butterknife.Unbinder;
  * Use the {@link MapFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapFragment extends Fragment implements NearGymkAdapter.
-        NearGymkItem.OnNearGymkItemListener {
+public class MapFragment extends Fragment implements LocationListener, NearGymkAdapter.NearGymkItem.OnNearGymkItemListener {
 
-    @BindView(R.id.mapView)
+    @BindView(R.id.map_view)
     MapView mapView;
 
-    @BindView(R.id.nearGymkhanas)
+    @BindView(R.id.near_gymkhanas)
     RecyclerView nearGymkanas;
 
-    @BindView(R.id.fabSearch)
+    @BindView(R.id.fab_search)
     FloatingActionButton fabSearch;
 
-    @BindView(R.id.fabMyLocation)
+    @BindView(R.id.fab_my_location)
     FloatingActionButton fabMyLocation;
 
-    @BindView(R.id.fabAccesibility)
+    @BindView(R.id.fab_accesibility)
     FloatingActionButton fabAccesibility;
 
     private OnMapFragmentInteractionListener listener;
     private Unbinder unbinder;
+    private LocationManager locationManager;
+    private Location currentLocation = null;
+    private GoogleMap map;
 
     public MapFragment() {
         // Required empty public constructor
@@ -79,6 +89,14 @@ public class MapFragment extends Fragment implements NearGymkAdapter.
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
+        // Get current location
+        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 250, 10, this);
+            currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         unbinder = ButterKnife.bind(this, view);
@@ -88,11 +106,13 @@ public class MapFragment extends Fragment implements NearGymkAdapter.
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
+                map = googleMap;
+
                 // Add a marker in Corunna and move the camera
                 LatLng corunna = new LatLng(43.365, -8.410);
-                googleMap.addMarker(new MarkerOptions().position(corunna).title("A Coruña"));
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(corunna, 12), 4000, null);
-                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                map.addMarker(new MarkerOptions().position(corunna).title("A Coruña"));
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(corunna, 12));
+                map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
                         if (!marker.isInfoWindowShown()) {
@@ -105,7 +125,14 @@ public class MapFragment extends Fragment implements NearGymkAdapter.
                         return false;
                     }
                 });
-                googleMap.getUiSettings().setMapToolbarEnabled(false);
+
+                if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) ==
+                        PackageManager.PERMISSION_GRANTED) {
+                    map.setMyLocationEnabled(true);
+                }
+
+                map.getUiSettings().setMapToolbarEnabled(false);
+                map.getUiSettings().setMyLocationButtonEnabled(false);
             }
         });
 
@@ -129,6 +156,10 @@ public class MapFragment extends Fragment implements NearGymkAdapter.
         fabMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (currentLocation != null) {
+                    LatLng latLng = new LatLng(getLatitude(), getLongitude());
+                    map.animateCamera(CameraUpdateFactory.newLatLng(latLng), 1000, null);
+                }
                 Toast newToast = Toast.makeText(getContext(), "Localizado", Toast.LENGTH_SHORT);
                 newToast.show();
             }
@@ -199,6 +230,42 @@ public class MapFragment extends Fragment implements NearGymkAdapter.
 
     public void onNearGymkItemClick() {
         listener.onMapFragmentInteraction();
+    }
+
+    public double getLatitude() {
+        if (currentLocation != null) {
+            return currentLocation.getLatitude();
+        }
+
+        return 0.0;
+    }
+
+    public double getLongitude() {
+        if (currentLocation != null) {
+            return currentLocation.getLongitude();
+        }
+
+        return 0.0;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        currentLocation = location;
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 
     /**

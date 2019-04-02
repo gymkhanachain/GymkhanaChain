@@ -1,14 +1,19 @@
 package com.gymkhanachain.app.ui.mainscreen.activity;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
 import com.gymkhanachain.app.ui.commons.fragments.MapFragment;
 import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
@@ -33,6 +39,10 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
     private static final String LIST_GYMK_FRAGMENT_TAG = "ListGymkFragment";
     private static final String INFO_GYMK_FRAGMENT_TAG = "GymkInfoFragment";
 
+    // Tag para identificar los permisos
+    public static final int REQUEST_MY_LOCATION = 0x666;
+
+
     // Elementos del NavigationDrawer
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -45,8 +55,19 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        fragmentManager = getSupportFragmentManager();
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_DENIED) {
+            DialogFragment dialog = new LocationDialog();
+            dialog.show(fragmentManager, "requestLocation");
+        } else {
+            setContent();
+        }
+    }
+
+    private void setContent() {
+        setContentView(R.layout.activity_main);
         mDrawerLayout = findViewById(R.id.drawer_layout);
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
@@ -72,10 +93,9 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        fragments = new ArrayList<>();
 
         // Al iniciar la Aplicación, cargamos el primer fragmento visible: MapFragment
-        fragmentManager = getSupportFragmentManager();
-        fragments = new ArrayList<>();
         MapFragment mapFragment = new MapFragment();
         fragments.add(mapFragment);
 
@@ -87,7 +107,9 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
+        if (mDrawerToggle != null) {
+            mDrawerToggle.syncState();
+        }
     }
 
     @Override
@@ -181,6 +203,24 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
         mDrawerLayout.closeDrawer(findViewById(R.id.nav_view));
 
         return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_MY_LOCATION: {
+                if (grantResults.length > 0 || grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    setContent();
+                    mDrawerToggle.syncState();
+                } else {
+                    Intent intent = new Intent(Intent.ACTION_MAIN);
+                    intent.addCategory(Intent.CATEGORY_HOME);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+                break;
+            }
+        }
     }
 }
 

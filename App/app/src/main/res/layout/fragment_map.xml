@@ -10,7 +10,7 @@
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/nearGymkhanas"
+        app:layout_constraintBottom_toTopOf="@+id/near_gymkhanas"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -20,13 +20,13 @@
             android:layout_height="match_parent">
 
             <com.google.android.gms.maps.MapView
-                android:id="@+id/mapView"
+                android:id="@+id/map_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </LinearLayout>
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fabSearch"
+            android:id="@+id/fab_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|top"
@@ -35,26 +35,26 @@
             android:tint="@color/colorIcons" />
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fabMyLocation"
+            android:id="@+id/fab_my_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_round_my_location"
             android:tint="@color/colorIcons"
-            app:layout_anchor="@id/fabGap"
+            app:layout_anchor="@id/fab_gap"
             app:layout_anchorGravity="top|end" />
 
         <View
-            android:id="@+id/fabGap"
+            android:id="@+id/fab_gap"
             android:layout_width="0dp"
             android:layout_height="@dimen/fab_margin"
             android:layout_gravity="end"
-            app:layout_anchor="@id/fabAccesibility"
+            app:layout_anchor="@id/fab_accesibility"
             app:layout_anchorGravity="top|end" />
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fabAccesibility"
+            android:id="@+id/fab_accesibility"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
@@ -65,7 +65,7 @@
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/nearGymkhanas"
+        android:id="@+id/near_gymkhanas"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
