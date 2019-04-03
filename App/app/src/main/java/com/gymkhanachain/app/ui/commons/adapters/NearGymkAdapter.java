@@ -1,6 +1,5 @@
-package com.gymkhanachain.app.ui.mainscreen.adapters;
+package com.gymkhanachain.app.ui.commons.adapters;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,22 +9,38 @@ import android.widget.TextView;
 
 import com.gymkhanachain.app.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class NearGymkAdapter extends RecyclerView.Adapter<NearGymkAdapter.NearGymkItem> {
     private String[] mDataset;
     private NearGymkItem.OnNearGymkItemListener mListener;
 
     public static class NearGymkItem extends RecyclerView.ViewHolder {
-        public View mView;
-        public Context mContext;
+        @BindView(R.id.near_gymk_image)
+        ImageView nearGymkImage;
+
+        @BindView(R.id.near_gymk_name)
+        TextView nearGymkText;
+
+        View viewItem;
 
         public interface OnNearGymkItemListener {
             void onNearGymkItemClick();
         }
 
-        public NearGymkItem(final View view, final Context context) {
+        public NearGymkItem(View view) {
             super(view);
-            mView = view;
-            mContext = context;
+            viewItem = view;
+            ButterKnife.bind(this, view);
+        }
+
+        public void setText(String text) {
+            nearGymkText.setText(text);
+        }
+
+        public void setImage(Integer resource) {
+            nearGymkImage.setImageResource(resource);
         }
     }
 
@@ -36,23 +51,21 @@ public class NearGymkAdapter extends RecyclerView.Adapter<NearGymkAdapter.NearGy
 
     @Override
     public NearGymkItem onCreateViewHolder(final ViewGroup viewGroup, int viewType) {
-        final View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.near_gymk_item,
-                viewGroup, false);
-        return new NearGymkItem(view, viewGroup.getContext());
+        final View view = LayoutInflater.from(viewGroup.getContext()).
+                inflate(R.layout.near_gymk_item, viewGroup, false);
+        return new NearGymkItem(view);
     }
 
     @Override
     public void onBindViewHolder(final NearGymkItem viewHolder, final int position) {
-        final TextView textView = viewHolder.mView.findViewById(R.id.near_gymk_name);
-        textView.setText(mDataset[position]);
-        viewHolder.mView.setOnClickListener(new View.OnClickListener() {
+        viewHolder.setText(mDataset[position]);
+        viewHolder.viewItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mListener.onNearGymkItemClick();
             }
         });
-        final ImageView imageView = viewHolder.mView.findViewById(R.id.near_gymk_image);
-        imageView.setImageResource(R.drawable.beach);
+        viewHolder.setImage(R.drawable.beach);
     }
 
     @Override
