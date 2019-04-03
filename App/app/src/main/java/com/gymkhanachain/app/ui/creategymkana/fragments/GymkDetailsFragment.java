@@ -248,23 +248,36 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
         getActivity().sendBroadcast(mediaScanIntent);
     }
 
+    private void setPic() {
+        View mImageView = getActivity().findViewById(android.R.id.content);
+        int targetW = mImageView.getWidth(); // Get the dimensions of the View
+        int targetH = mImageView.getHeight();
+
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mCurrentPhotoPath.replace("file:",""), bmOptions);
+
+        int photoW = bmOptions.outWidth; // Get the dimensions of the bitmap
+        int photoH = bmOptions.outHeight;
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+        // Decode the image file into a Bitmap sized to fill the View
+
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath.replace("file:",""),bmOptions);
+        ((ImageView) mImageView.findViewById(R.id.imageView_gymk)).setImageBitmap(bitmap);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != getActivity().RESULT_CANCELED) {
             super.onActivityResult(requestCode, resultCode, data);
             if (requestCode == PERMISSION_REQUEST_CAMERA_CODE && resultCode == RESULT_OK) {
                 galleryAddPic();
-                Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
-                // Glide.with(this).load(imageFilePath).into(mImageView);
-                /*Uri uri = data.getData();
-                Bitmap bitmap = null;
-                try {
-                    bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*/
-                View inflatedView = getActivity().findViewById(android.R.id.content);
-                ((ImageView) inflatedView.findViewById(R.id.imageView_gymk)).setImageBitmap(bitmap);
+                setPic();
             }
         }
     }
