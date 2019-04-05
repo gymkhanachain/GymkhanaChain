@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 
@@ -60,6 +61,7 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
     String mCurrentPhotoPath;
     public static final int PERMISSION_REQUEST_CAMERA_CODE = 200;
     public static final int PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE = 201;
+    public static final int REQUEST_TAKE_PHOTO = 301;
 
     public GymkDetailsFragment() {
         // Required empty public constructor
@@ -187,7 +189,7 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
                     PERMISSION_REQUEST_CAMERA_CODE);
             return;
         } else if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
-                Manifest.permission.RECORD_AUDIO)
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE);
@@ -197,7 +199,7 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult");
+        Log.d(TAG, "onRequestPermissionsResult " + requestCode);
         if (requestCode == PERMISSION_REQUEST_CAMERA_CODE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED)
@@ -238,7 +240,7 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
                 try {
                     Uri photoURI = FileProvider.getUriForFile(getActivity(), "com.gymkhanachain.app.ui.providers.GenericFileProvider", createImageFile());
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                    startActivityForResult(takePictureIntent, PERMISSION_REQUEST_CAMERA_CODE);
+                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
                 } catch (IOException e) {
 
                 }
@@ -296,9 +298,10 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != getActivity().RESULT_CANCELED) {
+        Log.d(TAG, "onActivityResult " + requestCode);
+        if (resultCode != RESULT_CANCELED) {
             super.onActivityResult(requestCode, resultCode, data);
-            if (requestCode == PERMISSION_REQUEST_CAMERA_CODE && resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
                 galleryAddPic();
                 setPic();
             }
