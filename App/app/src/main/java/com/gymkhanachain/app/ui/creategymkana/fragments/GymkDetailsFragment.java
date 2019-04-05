@@ -19,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,13 +52,14 @@ import static android.app.Activity.RESULT_OK;
 public class GymkDetailsFragment extends Fragment implements View.OnClickListener {
 
     private OnFragmentInteractionListener mListener;
+    private final static String TAG = "GymkDetailsFragment";
 
     Button buttonActivate;
     Button buttonDelete;
 
     String mCurrentPhotoPath;
-    private static final int PERMISSION_REQUEST_CAMERA_CODE = 200;
-    private static final int PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE = 201;
+    public static final int PERMISSION_REQUEST_CAMERA_CODE = 200;
+    public static final int PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE = 201;
 
     public GymkDetailsFragment() {
         // Required empty public constructor
@@ -145,8 +147,8 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
                 break;
             case R.id.imageButton_edit_gymk_img:
                 /*Foto o coger de la galería*/
-                dispatchTakePictureIntent();
-
+                Log.d(TAG, "Editar foto");
+                checkPermissions();
                 /*Mostrarla como nueva imagen*/
 
                 /*Mandarla a la base de datos y guardarla allí*/
@@ -170,19 +172,48 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
         void onFragmentInteraction(Uri uri);
     }
 
-
-    private boolean checkPermission(String p) {
-        if (ContextCompat.checkSelfPermission(getActivity(), p)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted
-            return false;
+    private void checkPermissions(){
+        if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            dispatchTakePictureIntent();
         }
-        return true;
+        if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA},
+                    PERMISSION_REQUEST_CAMERA_CODE);
+            return;
+        } else if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE);
+            return;
+        }
     }
 
-    private void requestPermission(String p, int code) {
-        ActivityCompat.requestPermissions(getActivity(),
-                new String[]{p},code);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.d(TAG, "onRequestPermissionsResult");
+        if (requestCode == PERMISSION_REQUEST_CAMERA_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                checkPermissions();
+            else {
+                Toast.makeText(getActivity().getApplicationContext(), "Se necesitan permisos de acceso a la cámara", Toast.LENGTH_LONG).show();
+            }
+        } else if (requestCode == PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                checkPermissions();
+            else {
+                Toast.makeText(getActivity().getApplicationContext(), "Se necesitan permisos de escritura en el sistema de ficheros", Toast.LENGTH_LONG).show();
+            }
+        }
+
     }
 
     private void dispatchTakePictureIntent() {
@@ -191,14 +222,6 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
             Toast.makeText(getActivity(), "This device does not have a camera.", Toast.LENGTH_SHORT)
                     .show();
             return;
-        }
-
-        if(!checkPermission(Manifest.permission.CAMERA)) {
-            requestPermission(Manifest.permission.CAMERA, PERMISSION_REQUEST_CAMERA_CODE);
-        }
-
-        if(!checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE);
         }
 
         Intent takePictureIntent = new Intent("android.media.action.IMAGE_CAPTURE");

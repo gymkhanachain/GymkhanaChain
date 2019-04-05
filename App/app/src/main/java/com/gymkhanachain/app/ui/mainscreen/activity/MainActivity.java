@@ -161,9 +161,8 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment;
 
-        // TODO Los elementos del switch deberían estar codificados en el archivo de strings
-        switch (menuItem.getTitle().toString()) {
-            case "Inicio": // MapFragment
+        switch (menuItem.getItemId()) {
+            case R.id.nav_start: // MapFragment
                 fragment = fragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG);
 
                 if (fragment != null) {
@@ -177,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
                             .replace(R.id.placeholder_main, MapFragment.newInstance(), MAP_FRAGMENT_TAG)
                             .commit();
                 break;
-            case "Mis gymkhanas": // Listar gymkhanas
+            case R.id.nav_my_gymk: // Listar gymkhanas
                 fragment = fragmentManager.findFragmentByTag(LIST_GYMK_FRAGMENT_TAG);
 
                 if (fragment != null) {
@@ -191,10 +190,10 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
                             .replace(R.id.placeholder_main, ListGymkFragment.newInstance(), LIST_GYMK_FRAGMENT_TAG)
                             .commit();
                 break;
-            case "Perfil":
+            case R.id.nav_profile:
                 startActivity(new Intent(this, UserProfileActivity.class));
                 break;
-            case "Ajustes":
+            case R.id.nav_settings:
                 // TODO Aquí lanzamos SettingsActivity
                 Toast.makeText(getApplicationContext(), "Lanzar ajustes", Toast.LENGTH_SHORT).show();
                 break;
