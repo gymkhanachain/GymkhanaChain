@@ -1,5 +1,7 @@
 ### Excluímos fichero de API key de Google Maps ###
 api_key.xml
+### Y también el Keystore
+keystore
 
 # Created by https://www.gitignore.io/api/unity,macos,linux,android,windows
 # Edit at https://www.gitignore.io/?templates=unity,macos,linux,android,windows
