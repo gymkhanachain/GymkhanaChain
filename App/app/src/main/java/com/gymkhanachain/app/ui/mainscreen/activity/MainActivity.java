@@ -1,10 +1,11 @@
 package com.gymkhanachain.app.ui.mainscreen.activity;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,27 +22,39 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.gymkhanachain.app.model.beans.GymkhanaBean;
+import com.gymkhanachain.app.model.commons.GymkhanaCache;
 import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
-import com.gymkhanachain.app.ui.commons.fragments.MapFragment;
+import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
 import com.gymkhanachain.app.R;
+import com.gymkhanachain.app.ui.mainscreen.fragments.NearGymkFragment;
 import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
 import com.gymkhanachain.app.ui.creategymkana.activity.CreateGymkActivity;
 import com.gymkhanachain.app.ui.mainscreen.fragments.GymkInfoFragment;
 import com.gymkhanachain.app.ui.mainscreen.fragments.ListGymkFragment;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MapFragment.OnMapFragmentInteractionListener, ListGymkFragment.OnListGymkFragmentInteractionListener, GymkInfoFragment.OnGymkInfoFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements
+        NearGymkFragment.OnNearGymkFragmentInteractionListener,
+        MapFragment.OnMapFragmentInteractionListener,
+        ListGymkFragment.OnListGymkFragmentInteractionListener,
+        GymkInfoFragment.OnGymkInfoFragmentInteractionListener,
+        NavigationView.OnNavigationItemSelectedListener {
+
+    private static final GymkhanaCache gymkhanas = GymkhanaCache.getInstance();
 
     // Tags para identificar los distintos fragmentos de la Actividad
-    private static final String MAP_FRAGMENT_TAG = "MapFragment";
+    private static final String NEAR_GYMK_FRAGMENT_TAG = "NearGymkFragment";
     private static final String LIST_GYMK_FRAGMENT_TAG = "ListGymkFragment";
     private static final String INFO_GYMK_FRAGMENT_TAG = "GymkInfoFragment";
 
     // Tag para identificar los permisos
-    public static final int REQUEST_MY_LOCATION = 0x666;
-
+    public static final int REQUEST_MY_LOCATION = 0x01;
 
     // Elementos del NavigationDrawer
     private DrawerLayout mDrawerLayout;
@@ -51,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
     List<Fragment> fragments;
     // La gestionamos con este FragmentManager, mediante transacciones
     FragmentManager fragmentManager;
+
+    private List<Integer> gymkhanasId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,12 +110,13 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
 
         fragments = new ArrayList<>();
 
-        // Al iniciar la Aplicación, cargamos el primer fragmento visible: MapFragment
-        MapFragment mapFragment = new MapFragment();
-        fragments.add(mapFragment);
+        // Al iniciar la Aplicación, cargamos el primer fragmento visible: NearGymkFragment
+        loadDummyGymkhanas();
+        NearGymkFragment nearGymkFragment = NearGymkFragment.newInstance(gymkhanasId);
+        fragments.add(nearGymkFragment);
 
         fragmentManager.beginTransaction()
-                .add(R.id.placeholder_main, mapFragment, MAP_FRAGMENT_TAG)
+                .add(R.id.placeholder_main, nearGymkFragment, NEAR_GYMK_FRAGMENT_TAG)
                 .commit();
     }
 
@@ -126,10 +142,32 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
         return super.onOptionsItemSelected(item);
     }
 
+    private void loadDummyGymkhanas() {
+        gymkhanasId = new ArrayList<>();
+
+        Bitmap beach = BitmapFactory.decodeResource(getResources(), R.drawable.beach);
+        // Torre de hércules
+        GymkhanaBean torre = new GymkhanaBean(0, "Torre de Hércules", "El faro romano más antiguo", beach, new LatLng(43.3821723,-8.4061368));
+        gymkhanas.setGymkhana(torre);
+        gymkhanasId.add(0);
+        // A Coruña Oculta
+        GymkhanaBean oculta = new GymkhanaBean(1, "A Coruña Oculta", "Descobre sitios que non están ao alcance de todo o mundo", beach, new LatLng(43.3613122,-8.4117282));
+        gymkhanas.setGymkhana(oculta);
+        gymkhanasId.add(1);
+        // Orzán
+        GymkhanaBean orzan = new GymkhanaBean(2, "Orzán y su bahía", "Las costas del océano atlantico bañan esta localidad", beach, new LatLng(43.3735763,-8.4029852));
+        gymkhanas.setGymkhana(orzan);
+        gymkhanasId.add(2);
+        // Coruña turismo
+        GymkhanaBean turismo = new GymkhanaBean(3, "A Coruña-Turismo", "GAL: GymkhanaBean promocionada pola Oficina de Turismo da Coruña. ESP: GymkhanaBean promocionada por la Oficina de Turismo de A Coruña. ENG: GymkhanaBean provide by the A Coruña Official Tourism", beach, new LatLng(43.370967,-8.3959424));
+        gymkhanas.setGymkhana(turismo);
+        gymkhanasId.add(3);
+    }
+
     // Implementación de las interfaces de los fragmentos
     // TODO Hay que definir las interfaces de cada fragmento, en función de las interacciones con MainActivity
     @Override
-    public void onMapFragmentInteraction() {
+    public void onNearGymkFragmentInteraction() {
         Fragment fragment = fragmentManager.findFragmentByTag(INFO_GYMK_FRAGMENT_TAG);
 
         if (fragment != null && fragment.getTag().equals(INFO_GYMK_FRAGMENT_TAG)) {
@@ -157,24 +195,23 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment;
 
         // TODO Los elementos del switch deberían estar codificados en el archivo de strings
         switch (menuItem.getTitle().toString()) {
-            case "Inicio": // MapFragment
-                fragment = fragmentManager.findFragmentByTag(MAP_FRAGMENT_TAG);
+            case "Inicio": // NearGymkFragment
+                fragment = fragmentManager.findFragmentByTag(NEAR_GYMK_FRAGMENT_TAG);
 
                 if (fragment != null) {
-                    if (fragment.getTag().equals(MAP_FRAGMENT_TAG))
+                    if (fragment.getTag().equals(NEAR_GYMK_FRAGMENT_TAG))
                         break;
                     fragmentManager.beginTransaction()
                             .replace(R.id.frameLayout, fragment)
                             .commit();
                 } else
                     fragmentManager.beginTransaction()
-                            .replace(R.id.placeholder_main, MapFragment.newInstance(), MAP_FRAGMENT_TAG)
+                            .replace(R.id.placeholder_main, NearGymkFragment.newInstance(gymkhanasId), NEAR_GYMK_FRAGMENT_TAG)
                             .commit();
                 break;
             case "Mis gymkhanas": // Listar gymkhanas
@@ -221,6 +258,11 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
                 break;
             }
         }
+    }
+
+    @Override
+    public void onMapFragmentInteraction() {
+        Toast.makeText(this, "Ejemplo", Toast.LENGTH_SHORT);
     }
 }
 

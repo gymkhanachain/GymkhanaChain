@@ -13,12 +13,12 @@
     <string name="drawer_close">Cerrar</string>
     <string name="bt_activate">Activar</string>
     <string name="bt_delete">Borrar</string>
-    <string name="imview_gymk_description">Imagen de gymkhana</string>
-    <string name="et_gymk_name">Nombre gymkhana</string>
-    <string name="et_gymk_desc">Descripción gymkhana</string>
-    <string name="tv_gymk_type">Tipo de gymkhana</string>
+    <string name="imview_gymk_description">Imagen de gymkhanaBean</string>
+    <string name="et_gymk_name">Nombre gymkhanaBean</string>
+    <string name="et_gymk_desc">Descripción gymkhanaBean</string>
+    <string name="tv_gymk_type">Tipo de gymkhanaBean</string>
     <string name="sw_accessibility">Accesibilidad</string>
-    <string name="imb_edit_gymk_img">Editar imagen de gymkhana</string>
+    <string name="imb_edit_gymk_img">Editar imagen de gymkhanaBean</string>
     <string name="title_activity_user_profile">Perfil de usuario</string>
     <string name="nav_start">Inicio</string>
     <string name="nav_my_gymk">Mis gymkhanas</string>

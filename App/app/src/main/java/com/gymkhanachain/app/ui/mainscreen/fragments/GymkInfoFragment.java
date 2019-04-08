@@ -125,13 +125,13 @@ public class GymkInfoFragment extends Fragment implements OnClickListener {
 
         switch (v.getId()) {
             case R.id.buttonSave: // Guardar
-                Toast.makeText(getContext(), "Gymkhana guardada", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "GymkhanaBean guardada", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.buttonReport: // Reportar
-                Toast.makeText(getContext(), "Gymkhana reportada", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "GymkhanaBean reportada", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.buttonActivate: // Activar
-                Toast.makeText(getContext(), "Gymkhana activada", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "GymkhanaBean activada", Toast.LENGTH_SHORT).show();
                 break;
         }
     }

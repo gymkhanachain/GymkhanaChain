@@ -13,7 +13,7 @@ import android.support.v7.widget.Toolbar;
 import com.gymkhanachain.app.ui.creategymkana.fragments.GymkDetailsFragment;
 import com.gymkhanachain.app.ui.creategymkana.fragments.GymkPointsFragment;
 import com.gymkhanachain.app.ui.creategymkana.fragments.GymkPrivacyFragment;
-import com.gymkhanachain.app.ui.commons.fragments.MapFragment;
+import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
 import com.gymkhanachain.app.R;
 
 import java.util.ArrayList;

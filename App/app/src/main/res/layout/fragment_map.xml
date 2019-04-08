@@ -1,80 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".ui.commons.fragments.MapFragment">
+    tools:context=".ui.commons.fragments.mapfragment.MapFragment">
 
-    <android.support.design.widget.CoordinatorLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/near_gymkhanas"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
-            <com.google.android.gms.maps.MapView
-                android:id="@+id/map_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|top"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_search_black"
+        android:tint="@color/colorIcons" />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|top"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_search_black"
-            android:tint="@color/colorIcons" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_my_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_round_my_location"
+        android:tint="@color/colorIcons"
+        app:layout_anchor="@id/fab_gap"
+        app:layout_anchorGravity="top|end" />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_my_location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_round_my_location"
-            android:tint="@color/colorIcons"
-            app:layout_anchor="@id/fab_gap"
-            app:layout_anchorGravity="top|end" />
+    <View
+        android:id="@+id/fab_gap"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/fab_margin"
+        android:layout_gravity="end"
+        app:layout_anchor="@id/fab_accesibility"
+        app:layout_anchorGravity="top|end" />
 
-        <View
-            android:id="@+id/fab_gap"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/fab_margin"
-            android:layout_gravity="end"
-            app:layout_anchor="@id/fab_accesibility"
-            app:layout_anchorGravity="top|end" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_accesibility"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_round_accessible_forward"
+        android:tint="@color/colorIcons" />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_accesibility"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_round_accessible_forward"
-            android:tint="@color/colorIcons" />
-
-    </android.support.design.widget.CoordinatorLayout>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/near_gymkhanas"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:listitem="@layout/near_gymk_item">
-
-    </android.support.v7.widget.RecyclerView>
-
-</android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>

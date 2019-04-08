@@ -75,7 +75,7 @@
         android:id="@+id/textView8"
         android:layout_width="250dp"
         android:layout_height="26dp"
-        android:text="Tipo de gymkhana"
+        android:text="Tipo de gymkhanaBean"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.316"

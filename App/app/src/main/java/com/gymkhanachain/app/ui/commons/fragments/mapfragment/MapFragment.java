@@ -1,4 +1,4 @@
-package com.gymkhanachain.app.ui.commons.fragments;
+package com.gymkhanachain.app.ui.commons.fragments.mapfragment;
 
 import android.Manifest;
 import android.content.Context;
@@ -7,12 +7,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,33 +21,31 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.gymkhanachain.app.ui.commons.adapters.NearGymkAdapter;
 import com.gymkhanachain.app.R;
-import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
+
+import org.parceler.Parcels;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+public class MapFragment extends Fragment implements LocationListener {
+    public static final String GYMKHANA_POINTS = "gymkhanaPoints";
+    public static final String GIS_POINTS = "gisPoints";
+    public static final String NONE = "none";
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnMapFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MapFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class MapFragment extends Fragment implements LocationListener, NearGymkAdapter.NearGymkItem.OnNearGymkItemListener {
+    private static final String ARG_POINT_TYPE = "pointType";
+    private static final String ARG_POINTS = "points";
 
     @BindView(R.id.map_view)
     MapView mapView;
-
-    @BindView(R.id.near_gymkhanas)
-    RecyclerView nearGymkanas;
 
     @BindView(R.id.fab_search)
     FloatingActionButton fabSearch;
@@ -65,6 +62,9 @@ public class MapFragment extends Fragment implements LocationListener, NearGymkA
     private Location currentLocation = null;
     private GoogleMap map;
 
+    private String pointType;
+    private List<MapPoint> points = new ArrayList<>();
+
     public MapFragment() {
         // Required empty public constructor
     }
@@ -73,17 +73,29 @@ public class MapFragment extends Fragment implements LocationListener, NearGymkA
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
+     * @param pointType
+     *      The point type
+     * @param points
+     *      The points to show in the map
      * @return A new instance of fragment MapFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MapFragment newInstance() {
+    public static MapFragment newInstance(String pointType, List<MapPoint> points) {
         MapFragment fragment = new MapFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_POINT_TYPE, pointType);
+        args.putParcelable(ARG_POINTS, Parcels.wrap(points));
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            pointType = getArguments().getString(ARG_POINT_TYPE);
+            points = Parcels.unwrap(getArguments().getParcelable(ARG_POINTS));
+        }
     }
 
     @Override
@@ -91,8 +103,8 @@ public class MapFragment extends Fragment implements LocationListener, NearGymkA
                              final Bundle savedInstanceState) {
         // Get current location
         locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
+                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 250, 10, this);
             currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         }
@@ -108,10 +120,20 @@ public class MapFragment extends Fragment implements LocationListener, NearGymkA
             public void onMapReady(GoogleMap googleMap) {
                 map = googleMap;
 
-                // Add a marker in Corunna and move the camera
+                // Move the camera to Coruña
                 LatLng corunna = new LatLng(43.365, -8.410);
-                map.addMarker(new MarkerOptions().position(corunna).title("A Coruña"));
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(corunna, 12));
+
+                // Set marks in map
+                for (MapPoint point: points) {
+                    MarkerOptions opts = new MarkerOptions().position(point.getPosition()).
+                            title(point.getName()).icon(BitmapDescriptorFactory.
+                            defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    Marker marker = map.addMarker(opts);
+                    marker.setTag(point);
+                }
+
+                // Set on marker clicked
                 map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
@@ -126,8 +148,9 @@ public class MapFragment extends Fragment implements LocationListener, NearGymkA
                     }
                 });
 
-                if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) ==
-                        PackageManager.PERMISSION_GRANTED) {
+                // Active configurations
+                if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
+                        ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     map.setMyLocationEnabled(true);
                 }
 
@@ -160,23 +183,12 @@ public class MapFragment extends Fragment implements LocationListener, NearGymkA
                     LatLng latLng = new LatLng(getLatitude(), getLongitude());
                     map.animateCamera(CameraUpdateFactory.newLatLng(latLng), 1000, null);
                 }
-                Toast newToast = Toast.makeText(getContext(), "Localizado", Toast.LENGTH_SHORT);
+                String position = String.format("Localizado: (%.2f, %.2f)", getLatitude(),
+                        getLongitude());
+                Toast newToast = Toast.makeText(getContext(), position, Toast.LENGTH_SHORT);
                 newToast.show();
             }
         });
-
-        // Use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        nearGymkanas.setHasFixedSize(true);
-
-        nearGymkanas.setLayoutManager(new LinearLayoutManager(getContext(),
-                LinearLayoutManager.HORIZONTAL, false));
-
-        // Specify an adapter (see also next example)
-        String[] nearGymkhanas = {"A Coruña - Turismo", "Na procura do tesouro", "Orzán y su bahía",
-                "A Coruña Oculta"};
-        final NearGymkAdapter adapter = new NearGymkAdapter(nearGymkhanas, this);
-        nearGymkanas.setAdapter(adapter);
 
         return view;
     }
@@ -226,10 +238,6 @@ public class MapFragment extends Fragment implements LocationListener, NearGymkA
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
-    }
-
-    public void onNearGymkItemClick() {
-        listener.onMapFragmentInteraction();
     }
 
     public double getLatitude() {
