@@ -371,29 +371,6 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
         }
     }
 
-    private void setPic(ImageView mImageView, String imageUri){
-        int targetW = mImageView.getWidth(); // Get the dimensions of the View
-        int targetH = mImageView.getHeight();
-
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(imageUri, bmOptions);
-
-        int photoW = bmOptions.outWidth; // Get the dimensions of the bitmap
-        int photoH = bmOptions.outHeight;
-        // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-        // Decode the image file into a Bitmap sized to fill the View
-
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
-
-        Bitmap bitmap = BitmapFactory.decodeFile(imageUri,bmOptions);
-        ((ImageView) mImageView.findViewById(R.id.imageView_gymk)).setImageBitmap(bitmap);
-    }
-
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult " + requestCode);
@@ -401,22 +378,17 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
 
         switch (requestCode) {
             case REQUEST_TAKE_PHOTO:
-                if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+                if (resultCode == RESULT_OK) {
                     galleryAddPic();
-                    // ImageView mImageView = getActivity().findViewById(android.R.id.content);
-                    // mCurrentPhotoPath = mCurrentPhotoPath.replace("file:","");
-                    // setPic(mImageView, mCurrentPhotoPath);
                     setPic();
                 }
                 break;
             case REQUEST_TAKE_PHOTO_FROM_GALLERY:
                 if(resultCode == RESULT_OK){
                     Uri selectedImage = data.getData();
-                    // ImageView mImageView = getActivity().findViewById(android.R.id.content);
-                    // setPic(mImageView,selectedImage.getPath());
                     setPic(selectedImage);
-
                 }
+                break;
         }
     }
 }
