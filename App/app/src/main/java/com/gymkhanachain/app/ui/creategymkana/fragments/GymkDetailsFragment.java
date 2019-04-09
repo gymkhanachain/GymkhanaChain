@@ -2,16 +2,19 @@ package com.gymkhanachain.app.ui.creategymkana.fragments;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,17 +33,17 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.gymkhanachain.app.R;
-import com.gymkhanachain.app.ui.mainscreen.activity.MainActivity;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,7 +64,11 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
     String mCurrentPhotoPath;
     public static final int PERMISSION_REQUEST_CAMERA_CODE = 200;
     public static final int PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE = 201;
+    public static final int PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE_GALLERY = 202;
     public static final int REQUEST_TAKE_PHOTO = 301;
+    public static final int REQUEST_TAKE_PHOTO_FROM_GALLERY = 302;
+
+    private static final String TEMP_IMAGE_NAME = "tempImage";
 
     public GymkDetailsFragment() {
         // Required empty public constructor
@@ -150,10 +157,8 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
             case R.id.imageButton_edit_gymk_img:
                 /*Foto o coger de la galería*/
                 Log.d(TAG, "Editar foto");
-                checkPermissions();
-                /*Mostrarla como nueva imagen*/
-
-                /*Mandarla a la base de datos y guardarla allí*/
+                requestMode();
+                // checkPermissions();
 
                 break;
         }
@@ -174,48 +179,104 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
         void onFragmentInteraction(Uri uri);
     }
 
-    private void checkPermissions(){
-        if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
-                Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
-            dispatchTakePictureIntent();
-        }
-        if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
-                Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA},
-                    PERMISSION_REQUEST_CAMERA_CODE);
-            return;
-        } else if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE);
-            return;
+    private void requestMode(){
+            final CharSequence[] options = {"Sacar foto", "Escoger de la galería", "Cancelar"};
+            AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+            builder.setTitle("Opciones");
+            builder.setItems(options, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int item) {
+                    if (options[item].equals("Sacar foto")) {
+                        Log.d(TAG, "Sacar foto");
+                        checkPermissions(REQUEST_TAKE_PHOTO);
+                    } else if (options[item].equals("Escoger de la galería")) {
+                        checkPermissions(REQUEST_TAKE_PHOTO_FROM_GALLERY);
+                    } else if (options[item].equals("Cancelar")) {
+                        dialog.dismiss();
+                    }
+                }
+            });
+            builder.show();
+    }
+
+
+    public void checkPermissions(int mode){
+        Log.d(TAG, "Miro permisos");
+        switch(mode){
+            case REQUEST_TAKE_PHOTO:
+                if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                        Manifest.permission.CAMERA)
+                        == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    dispatchTakePictureIntent();
+                }
+                if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                        Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.CAMERA},
+                            PERMISSION_REQUEST_CAMERA_CODE);
+                    return;
+                } else if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE);
+                    return;
+                }
+                break;
+            case REQUEST_TAKE_PHOTO_FROM_GALLERY:
+                if ( ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    dispatchPickPictureIntent();
+                } else {
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE_GALLERY);
+                }
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.d(TAG, "onRequestPermissionsResult " + requestCode);
-        if (requestCode == PERMISSION_REQUEST_CAMERA_CODE) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                checkPermissions();
-            else {
-                Toast.makeText(getActivity().getApplicationContext(), "Se necesitan permisos de acceso a la cámara", Toast.LENGTH_LONG).show();
-            }
-        } else if (requestCode == PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                checkPermissions();
-            else {
-                Toast.makeText(getActivity().getApplicationContext(), "Se necesitan permisos de escritura en el sistema de ficheros", Toast.LENGTH_LONG).show();
-            }
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CAMERA_CODE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    checkPermissions(REQUEST_TAKE_PHOTO);
+                else {
+                    Toast.makeText(getActivity().getApplicationContext(), "Se necesitan permisos de acceso a la cámara", Toast.LENGTH_LONG).show();
+                }
+                break;
+            case PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    checkPermissions(REQUEST_TAKE_PHOTO);
+                else {
+                    Toast.makeText(getActivity().getApplicationContext(), "Se necesitan permisos de escritura en el sistema de ficheros", Toast.LENGTH_LONG).show();
+                }
+                break;
+            case PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE_GALLERY:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    checkPermissions(REQUEST_TAKE_PHOTO_FROM_GALLERY);
+                else {
+                    Toast.makeText(getActivity().getApplicationContext(), "Se necesitan permisos de escritura en el sistema de ficheros", Toast.LENGTH_LONG).show();
+                }
+                break;
         }
+    }
 
+
+    private void dispatchPickPictureIntent(){
+        Intent pickPhoto=new Intent(Intent.ACTION_PICK);
+        // Sets the type as image/*. This ensures only components of type image are selected
+        pickPhoto.setType("image/*");
+        //We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
+        String[] mimeTypes = {"image/jpeg", "image/png"};
+        pickPhoto.putExtra(Intent.EXTRA_MIME_TYPES,mimeTypes);
+        startActivityForResult(pickPhoto,REQUEST_TAKE_PHOTO_FROM_GALLERY);
     }
 
     private void dispatchTakePictureIntent() {
@@ -296,15 +357,66 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
         ((ImageView) mImageView.findViewById(R.id.imageView_gymk)).setImageBitmap(bitmap);
     }
 
+    private void setPic (Uri imageUri){
+        Log.d(TAG, "onActivityResult " + imageUri.toString());
+        View mImageView = getActivity().findViewById(android.R.id.content);
+
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getActivity().getContentResolver(), imageUri);
+            ((ImageView) mImageView.findViewById(R.id.imageView_gymk)).setImageBitmap(bitmap);
+        } catch (FileNotFoundException ex){
+            Toast.makeText(getContext(), "Ha fallado: " + ex.getMessage().toString() , Toast.LENGTH_SHORT).show();
+        } catch (IOException ex) {
+            Toast.makeText(getContext(), "Ha fallado: " + ex.getMessage().toString() , Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void setPic(ImageView mImageView, String imageUri){
+        int targetW = mImageView.getWidth(); // Get the dimensions of the View
+        int targetH = mImageView.getHeight();
+
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(imageUri, bmOptions);
+
+        int photoW = bmOptions.outWidth; // Get the dimensions of the bitmap
+        int photoH = bmOptions.outHeight;
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+        // Decode the image file into a Bitmap sized to fill the View
+
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(imageUri,bmOptions);
+        ((ImageView) mImageView.findViewById(R.id.imageView_gymk)).setImageBitmap(bitmap);
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult " + requestCode);
-        if (resultCode != RESULT_CANCELED) {
-            super.onActivityResult(requestCode, resultCode, data);
-            if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
-                galleryAddPic();
-                setPic();
-            }
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQUEST_TAKE_PHOTO:
+                if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+                    galleryAddPic();
+                    // ImageView mImageView = getActivity().findViewById(android.R.id.content);
+                    // mCurrentPhotoPath = mCurrentPhotoPath.replace("file:","");
+                    // setPic(mImageView, mCurrentPhotoPath);
+                    setPic();
+                }
+                break;
+            case REQUEST_TAKE_PHOTO_FROM_GALLERY:
+                if(resultCode == RESULT_OK){
+                    Uri selectedImage = data.getData();
+                    // ImageView mImageView = getActivity().findViewById(android.R.id.content);
+                    // setPic(mImageView,selectedImage.getPath());
+                    setPic(selectedImage);
+
+                }
         }
     }
 }
