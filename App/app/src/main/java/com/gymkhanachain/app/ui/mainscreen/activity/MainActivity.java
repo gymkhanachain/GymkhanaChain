@@ -208,14 +208,12 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case REQUEST_MY_LOCATION: {
-                if (grantResults.length > 0 || grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     setContent();
                     mDrawerToggle.syncState();
                 } else {
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.addCategory(Intent.CATEGORY_HOME);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
+                    Toast.makeText(this, getString(R.string.toast_no_location), Toast.LENGTH_SHORT).show();
+                    finish();
                 }
                 break;
             }
