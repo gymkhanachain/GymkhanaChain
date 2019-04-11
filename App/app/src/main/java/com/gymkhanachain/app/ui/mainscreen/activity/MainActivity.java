@@ -19,6 +19,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -27,6 +28,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
 import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
@@ -40,8 +42,11 @@ import com.gymkhanachain.app.ui.mainscreen.fragments.ListGymkFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MapFragment.OnMapFragmentInteractionListener, ListGymkFragment.OnListGymkFragmentInteractionListener, GymkInfoFragment.OnGymkInfoFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements MapFragment.OnMapFragmentInteractionListener,
+        ListGymkFragment.OnListGymkFragmentInteractionListener, GymkInfoFragment.OnGymkInfoFragmentInteractionListener,
+        NavigationView.OnNavigationItemSelectedListener, LoginFragment.OnLoginFragmentInteractionListener {
 
+    private static final String TAG = "MainActivity";
     // Tags para identificar los distintos fragmentos de la Actividad
     private static final String MAP_FRAGMENT_TAG = "MapFragment";
     private static final String LOGIN_FRAGMENT_TAG = "LoginFragment";
@@ -53,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
     public static final int REQUEST_MY_LOCATION = 0x666;
 
     private GoogleSignInClient mGoogleSignInClient;
-    private int RC_SIGN_IN = 9001;
 
     // Elementos del NavigationDrawer
     private DrawerLayout mDrawerLayout;
@@ -69,29 +73,25 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
         super.onCreate(savedInstanceState);
         fragmentManager = getSupportFragmentManager();
 
-
 //Login TODO: ilopez: Trasladar las clases de login y autenticación a main activity
         //(y borrar la barull que esta esparcida por el código)
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        updateUI(account);
+    }
 
-        if (account == null) {
-
-           // DialogFragment dialogLog = new LoginFragment();
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.addToBackStack(null);
-            /*
-            fragments.add(dialogLog);
-            fragmentManager.beginTransaction().add(dialogLog,LOGIN_FRAGMENT_TAG )
-            .commit();
-            */
-            DialogFragment dialogLog = new LoginFragment();
-            dialogLog.showNow(fragmentManager,LOGIN_FRAGMENT_TAG);
-            //dialogLog.show(fragmentManager, "loginRequired");
-        } else {
+    private void updateUI(@Nullable GoogleSignInAccount account) {
+        if (account != null) {
+            // Ya estamos logeados, por lo que se puede continuar el flujo de la app
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
                     PackageManager.PERMISSION_DENIED) {
                 DialogFragment dialog = new LocationDialog();
@@ -99,43 +99,11 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
             } else {
                 setContent();
             }
-        }
-
-
-
-    }
-
-    //1 Login In the activity's onClick method, handle sign-in button taps by creating a sign-in intent
-    private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    //Login 2: After the user signs in, you can get a GoogleSignInAccount object for the user in the activity's onActivityResult method
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        /*
-        if (requestCode == LoginFragment.RC_SIGN_IN) {
-            LoginFragment fragment = (LoginFragment) getFragmentManager()
-                    .findFragmentById(R.id.);
-            fragment.onActivityResult(requestCode, resultCode, data);
         } else {
-            super.onActivityResult(requestCode, resultCode, data);
+            // Se lanza el fragmento de login para solicitar inicio de sesión
+            DialogFragment dialogLog = new LoginFragment();
+            dialogLog.showNow(fragmentManager,LOGIN_FRAGMENT_TAG);
         }
-        */
-
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            //handleSignInResult(task);
-        }
-    }
-
-    private void closeApplication() {
-        this.finish();
     }
 
     private void setContent() {
@@ -291,6 +259,29 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
                 }
                 break;
             }
+        }
+    }
+
+    @Override
+    public void refusedToLogin() {
+        Toast.makeText(getApplicationContext(), getString(R.string.toast_no_login), Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    @Override
+    public void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        Log.d(TAG, "handleSignInResult");
+
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Signed in successfully, show authenticated UI.
+            updateUI(account);
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            updateUI(null);
         }
     }
 }

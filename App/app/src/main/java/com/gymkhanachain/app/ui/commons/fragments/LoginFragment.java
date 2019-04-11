@@ -1,5 +1,6 @@
 package com.gymkhanachain.app.ui.commons.fragments;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -30,14 +32,13 @@ import com.gymkhanachain.app.R;
 import static android.support.constraint.Constraints.TAG;
 
 
-public class LoginFragment extends DialogFragment implements OnClickListener {
+public class LoginFragment extends DialogFragment{
+
+    private final static String TAG = "LoginFragment";
+
+    private OnLoginFragmentInteractionListener mListener;
 
     private GoogleApiClient mGoogleApiClient;
-    private GoogleSignInClient mGoogleSignInClient;
-
-    private String mParam2;
-
-     SignInButton signInButton;
 
     public static final int RC_SIGN_IN = 9001;
 
@@ -45,22 +46,28 @@ public class LoginFragment extends DialogFragment implements OnClickListener {
 
     }
 
+    @Override
+    public void onAttach(final Context context) {
+        super.onAttach(context);
+
+        if (context instanceof OnLoginFragmentInteractionListener) {
+            mListener = (OnLoginFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnMapFragmentInteractionListener");
+        }
+    }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState) {
-
-        View view = inflater.inflate(R.layout.fragment_login, container, false);
-
-        signInButton = view.findViewById(R.id.button_signin);
-
-        return view;
+        return inflater.inflate(R.layout.fragment_login, container, false);
     }
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -71,92 +78,56 @@ public class LoginFragment extends DialogFragment implements OnClickListener {
                 .requestEmail()
                 .build();
 
-        mGoogleSignInClient = GoogleSignIn.getClient(getContext(),gso);
-
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-               // .enableAutoManage(getActivity(), this ,OnConnectionFailedListener)
                 .addApi(Auth.GOOGLE_SIGN_IN_API,gso)
                 .build();
-        try {
-            //signInButton = getActivity().findViewById(R.id.signInButton);// NUllpointer aqui: no debe estar bien inicializado
-            signInButton.setSize(SignInButton.SIZE_STANDARD);
-            signInButton.setOnClickListener(this);
 
-            signInButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(getContext(), "Login w/google", Toast.LENGTH_SHORT).show();
-                    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                    startActivityForResult(signInIntent, RC_SIGN_IN);
-                }
+        SignInButton signInButton = view.findViewById(R.id.button_signin);
+        signInButton.setSize(SignInButton.SIZE_STANDARD);
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                startActivityForResult(signInIntent, RC_SIGN_IN);
+            }
 
-            });
+        });
 
-        } catch (NullPointerException e){
-        }
-
+        Button refuseLoginButton = view.findViewById(R.id.button_refuse_login);
+        refuseLoginButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.refusedToLogin();
+                dismiss();
+            }
+        });
 
     }
 
+    @NonNull
     @Override
-    public void onClick(View v) {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.setCanceledOnTouchOutside(false);
 
-
-    @Override
-    public void onAttach(Context context){
-        super.onAttach(context);
+        return dialog;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        Log.d(TAG, "onActivityResult " + requestCode + " resultCode: " + resultCode);
         if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            //handleSignInResult(result);
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            mListener.handleSignInResult(task);
+            dismiss();
         }
     }
 
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
-        } catch (ApiException e) {
-
-            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
-
-        }
+    public interface OnLoginFragmentInteractionListener {
+        void refusedToLogin();
+        void handleSignInResult(Task<GoogleSignInAccount> completedTask);
     }
-
-
-
-/*
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new  AlertDialog.Builder(getActivity());
-        builder.setTitle("Login required");
-        builder.setMessage("Quieres iniciar sesion con tu cuenta de Google?");
-        builder.setPositiveButton(R.string.common_accept, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                 {
-                     //signIn();
-                    //String[] myPermissions = new String[] {
-                     //                        Manifest.permission.ACCESS_FINE_LOCATION
-                     //                };
-                };
-            }
-        })
-        .setNegativeButton(R.string.common_reject, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //close app
-            }
-        });
-        return builder.create();
-    }
-  */
 
 }

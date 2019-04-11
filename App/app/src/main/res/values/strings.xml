@@ -55,4 +55,5 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="toast_no_login">Es necesario iniciar sesión para poder utilizar GymkhanaChain. Hasta la próxima</string>
 </resources>
