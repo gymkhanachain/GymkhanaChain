@@ -2,6 +2,8 @@ package com.gymkhanachain.app.ui.mainscreen.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -21,7 +23,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.Task;
 import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
+import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
 import com.gymkhanachain.app.ui.commons.fragments.MapFragment;
 import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
@@ -36,12 +44,16 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
 
     // Tags para identificar los distintos fragmentos de la Actividad
     private static final String MAP_FRAGMENT_TAG = "MapFragment";
+    private static final String LOGIN_FRAGMENT_TAG = "LoginFragment";
     private static final String LIST_GYMK_FRAGMENT_TAG = "ListGymkFragment";
     private static final String INFO_GYMK_FRAGMENT_TAG = "GymkInfoFragment";
+
 
     // Tag para identificar los permisos
     public static final int REQUEST_MY_LOCATION = 0x666;
 
+    private GoogleSignInClient mGoogleSignInClient;
+    private int RC_SIGN_IN = 9001;
 
     // Elementos del NavigationDrawer
     private DrawerLayout mDrawerLayout;
@@ -57,13 +69,73 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
         super.onCreate(savedInstanceState);
         fragmentManager = getSupportFragmentManager();
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_DENIED) {
-            DialogFragment dialog = new LocationDialog();
-            dialog.show(fragmentManager, "requestLocation");
+
+//Login TODO: ilopez: Trasladar las clases de login y autenticación a main activity
+        //(y borrar la barull que esta esparcida por el código)
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+
+        if (account == null) {
+
+           // DialogFragment dialogLog = new LoginFragment();
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.addToBackStack(null);
+            /*
+            fragments.add(dialogLog);
+            fragmentManager.beginTransaction().add(dialogLog,LOGIN_FRAGMENT_TAG )
+            .commit();
+            */
+            DialogFragment dialogLog = new LoginFragment();
+            dialogLog.showNow(fragmentManager,LOGIN_FRAGMENT_TAG);
+            //dialogLog.show(fragmentManager, "loginRequired");
         } else {
-            setContent();
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_DENIED) {
+                DialogFragment dialog = new LocationDialog();
+                dialog.show(fragmentManager, "requestLocation");
+            } else {
+                setContent();
+            }
         }
+
+
+
+    }
+
+    //1 Login In the activity's onClick method, handle sign-in button taps by creating a sign-in intent
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    //Login 2: After the user signs in, you can get a GoogleSignInAccount object for the user in the activity's onActivityResult method
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        /*
+        if (requestCode == LoginFragment.RC_SIGN_IN) {
+            LoginFragment fragment = (LoginFragment) getFragmentManager()
+                    .findFragmentById(R.id.);
+            fragment.onActivityResult(requestCode, resultCode, data);
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+        */
+
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            //handleSignInResult(task);
+        }
+    }
+
+    private void closeApplication() {
+        this.finish();
     }
 
     private void setContent() {
@@ -134,8 +206,8 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
 
         if (fragment != null && fragment.getTag().equals(INFO_GYMK_FRAGMENT_TAG)) {
             fragmentManager.beginTransaction()
-                .replace(R.id.frameLayout, fragment)
-                .commit();
+                    .replace(R.id.frameLayout, fragment)
+                    .commit();
         } else {
             fragmentManager.beginTransaction()
                     .replace(R.id.placeholder_main, GymkInfoFragment.newInstance(), INFO_GYMK_FRAGMENT_TAG)
