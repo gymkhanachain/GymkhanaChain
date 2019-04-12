@@ -1,9 +1,6 @@
 package com.gymkhanachain.app.ui.mainscreen.activity;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -22,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -30,14 +28,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
 import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
 import com.gymkhanachain.app.ui.commons.fragments.MapFragment;
-import com.gymkhanachain.app.R;
-import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
 import com.gymkhanachain.app.ui.creategymkana.activity.CreateGymkActivity;
 import com.gymkhanachain.app.ui.mainscreen.fragments.GymkInfoFragment;
 import com.gymkhanachain.app.ui.mainscreen.fragments.ListGymkFragment;
+import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,8 +71,6 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
         super.onCreate(savedInstanceState);
         fragmentManager = getSupportFragmentManager();
 
-//Login TODO: ilopez: Trasladar las clases de login y autenticación a main activity
-        //(y borrar la barull que esta esparcida por el código)
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -130,6 +126,21 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        View headerView = navigationView.getHeaderView(0);
+
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+        if (acct != null) {
+            String personName = acct.getDisplayName();
+            String personEmail = acct.getEmail();
+
+            TextView tvUserName = headerView.findViewById(R.id.tv_drawer_username);
+            if (tvUserName != null)
+                tvUserName.setText(personName);
+
+            TextView tvMail = headerView.findViewById(R.id.tv_drawer_mail);
+            if (tvMail != null)
+                tvMail.setText(personEmail);
+        }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
@@ -142,6 +153,13 @@ public class MainActivity extends AppCompatActivity implements MapFragment.OnMap
         fragmentManager.beginTransaction()
                 .add(R.id.placeholder_main, mapFragment, MAP_FRAGMENT_TAG)
                 .commit();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
     }
 
     @Override
