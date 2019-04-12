@@ -51,7 +51,17 @@ public class ListGymkFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list_gymk, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_list_gymk, container, false);
+
+        FloatingActionButton fab = view.findViewById(R.id.fab_create_gymk);
+        fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.onCreateGymkInteraction();
+                }});
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -70,19 +80,6 @@ public class ListGymkFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnListGymkFragmentInteractionListener");
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab_create_gymk);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mListener.onCreateGymkInteraction();
-            }
-        });
     }
 
     @Override

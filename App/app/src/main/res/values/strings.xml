@@ -56,4 +56,5 @@
         completions."
     </string>
     <string name="toast_no_login">Es necesario iniciar sesión para poder utilizar GymkhanaChain. Hasta la próxima</string>
+    <string name="common_accept">Aceptar</string>
 </resources>
