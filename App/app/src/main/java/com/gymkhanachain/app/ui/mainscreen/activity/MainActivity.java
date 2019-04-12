@@ -18,21 +18,33 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.gymkhanachain.app.model.beans.GymkhanaBean;
 import com.gymkhanachain.app.model.commons.GymkhanaCache;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
+import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
+import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
 import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.ui.mainscreen.fragments.NearGymkFragment;
 import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
+import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
 import com.gymkhanachain.app.ui.creategymkana.activity.CreateGymkActivity;
 import com.gymkhanachain.app.ui.mainscreen.fragments.GymkInfoFragment;
 import com.gymkhanachain.app.ui.mainscreen.fragments.ListGymkFragment;
+import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
 
 import org.parceler.Parcels;
 
@@ -44,17 +56,23 @@ public class MainActivity extends AppCompatActivity implements
         MapFragment.OnMapFragmentInteractionListener,
         ListGymkFragment.OnListGymkFragmentInteractionListener,
         GymkInfoFragment.OnGymkInfoFragmentInteractionListener,
-        NavigationView.OnNavigationItemSelectedListener {
+        NavigationView.OnNavigationItemSelectedListener, LoginFragment.OnLoginFragmentInteractionListener {
 
     private static final GymkhanaCache gymkhanas = GymkhanaCache.getInstance();
 
+    private static final String TAG = "MainActivity";
     // Tags para identificar los distintos fragmentos de la Actividad
+    private static final String MAP_FRAGMENT_TAG = "MapFragment";
+    private static final String LOGIN_FRAGMENT_TAG = "LoginFragment";
     private static final String NEAR_GYMK_FRAGMENT_TAG = "NearGymkFragment";
     private static final String LIST_GYMK_FRAGMENT_TAG = "ListGymkFragment";
     private static final String INFO_GYMK_FRAGMENT_TAG = "GymkInfoFragment";
 
+
     // Tag para identificar los permisos
     public static final int REQUEST_MY_LOCATION = 0x01;
+
+    private GoogleSignInClient mGoogleSignInClient;
 
     // Elementos del NavigationDrawer
     private DrawerLayout mDrawerLayout;
@@ -72,12 +90,34 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         fragmentManager = getSupportFragmentManager();
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_DENIED) {
-            DialogFragment dialog = new LocationDialog();
-            dialog.show(fragmentManager, "requestLocation");
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        updateUI(account);
+    }
+
+    private void updateUI(@Nullable GoogleSignInAccount account) {
+        if (account != null) {
+            // Ya estamos logeados, por lo que se puede continuar el flujo de la app
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_DENIED) {
+                DialogFragment dialog = new LocationDialog();
+                dialog.show(fragmentManager, "requestLocation");
+            } else {
+                setContent();
+            }
         } else {
-            setContent();
+            // Se lanza el fragmento de login para solicitar inicio de sesión
+            DialogFragment dialogLog = new LoginFragment();
+            dialogLog.showNow(fragmentManager,LOGIN_FRAGMENT_TAG);
         }
     }
 
@@ -105,6 +145,21 @@ public class MainActivity extends AppCompatActivity implements
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        View headerView = navigationView.getHeaderView(0);
+
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+        if (acct != null) {
+            String personName = acct.getDisplayName();
+            String personEmail = acct.getEmail();
+
+            TextView tvUserName = headerView.findViewById(R.id.tv_drawer_username);
+            if (tvUserName != null)
+                tvUserName.setText(personName);
+
+            TextView tvMail = headerView.findViewById(R.id.tv_drawer_mail);
+            if (tvMail != null)
+                tvMail.setText(personEmail);
+        }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
@@ -118,6 +173,13 @@ public class MainActivity extends AppCompatActivity implements
         fragmentManager.beginTransaction()
                 .add(R.id.placeholder_main, nearGymkFragment, NEAR_GYMK_FRAGMENT_TAG)
                 .commit();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
     }
 
     @Override
@@ -172,8 +234,8 @@ public class MainActivity extends AppCompatActivity implements
 
         if (fragment != null && fragment.getTag().equals(INFO_GYMK_FRAGMENT_TAG)) {
             fragmentManager.beginTransaction()
-                .replace(R.id.frameLayout, fragment)
-                .commit();
+                    .replace(R.id.frameLayout, fragment)
+                    .commit();
         } else {
             fragmentManager.beginTransaction()
                     .replace(R.id.placeholder_main, GymkInfoFragment.newInstance(), INFO_GYMK_FRAGMENT_TAG)
@@ -261,6 +323,29 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onMapFragmentInteraction() {
         Toast.makeText(this, "Ejemplo", Toast.LENGTH_SHORT);
+    }
+
+    @Override
+    public void refusedToLogin() {
+        Toast.makeText(getApplicationContext(), getString(R.string.toast_no_login), Toast.LENGTH_SHORT).show();
+        finish();
+    }
+
+    @Override
+    public void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        Log.d(TAG, "handleSignInResult");
+
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Signed in successfully, show authenticated UI.
+            updateUI(account);
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            updateUI(null);
+        }
     }
 }
 

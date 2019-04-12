@@ -13,7 +13,7 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/iv_drawer_picture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="Header"
@@ -21,16 +21,20 @@
         app:srcCompat="@mipmap/ic_launcher_round" />
 
     <TextView
+        android:id="@+id/tv_drawer_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
         android:text="GymkhanaChain"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/colorPrimaryText"/>
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/tv_drawer_mail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="GymkhanaChain Inc" />
+        android:text="GymkhanaChain Inc"
+        android:textColor="@color/colorPrimaryText
+"/>
 
 </LinearLayout>
