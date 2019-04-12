@@ -29,6 +29,9 @@ public class LocationDialog extends DialogFragment {
             }
         });
 
-        return builder.create();
+        Dialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+
+        return dialog;
     }
 }
