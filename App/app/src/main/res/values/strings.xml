@@ -40,6 +40,6 @@
     </array>
     <string name="location_dialog_title">Localización</string>
     <string name="location_dialog_content">Esta aplicación necesita conocer tu posición en todo momento. Acepte el permiso para continuar</string>
-    <string name="common_accept" translatable="true">Aceptar</string>
+    <string name="common_accept">Aceptar</string>
     <string name="toast_no_location">Debes permitir el uso de la localización para usar GymkhanaChain</string>
 </resources>

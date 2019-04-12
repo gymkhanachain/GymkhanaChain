@@ -24,7 +24,7 @@ import com.gymkhanachain.app.R;
  * Use the {@link GymkPrivacyFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class GymkPrivacyFragment extends Fragment {
+public class GymkPrivacyFragment extends Fragment implements CompoundButton.OnCheckedChangeListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -79,58 +79,10 @@ public class GymkPrivacyFragment extends Fragment {
         View privView =  inflater.inflate(R.layout.fragment_gymk_privacy, container, false);
 
         CheckBox checkBox1 = ( CheckBox ) privView.findViewById(R.id.checkBox);
-        checkBox1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-        {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-            {
-                if ( isChecked )
-                {
-                    Context context = getActivity().getApplicationContext();
-                    CharSequence text = "Marcado!";
-                    int duration = Toast.LENGTH_SHORT;
-
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
-                }
-                else {
-                    Context context = getActivity().getApplicationContext();
-                    CharSequence text = "Desmarcado!";
-                    int duration = Toast.LENGTH_SHORT;
-
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
-                }
-
-            }
-        });
+        checkBox1.setOnCheckedChangeListener(this);
 
         CheckBox checkBox2 = ( CheckBox ) privView.findViewById(R.id.checkBox2);
-        checkBox2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-        {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-            {
-                if ( isChecked )
-                {
-                    Context context = getActivity().getApplicationContext();
-                    CharSequence text = "Marcado!";
-                    int duration = Toast.LENGTH_SHORT;
-
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
-                }
-                else {
-                    Context context = getActivity().getApplicationContext();
-                    CharSequence text = "Desmarcado!";
-                    int duration = Toast.LENGTH_SHORT;
-
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
-                }
-
-            }
-        });
+        checkBox2.setOnCheckedChangeListener(this);
 
         Spinner spinner = (Spinner) privView.findViewById(R.id.spinner);
 
@@ -178,6 +130,27 @@ public class GymkPrivacyFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if ( isChecked )
+        {
+            Context context = getActivity().getApplicationContext();
+            CharSequence text = "Marcado!";
+            int duration = Toast.LENGTH_SHORT;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+        }
+        else {
+            Context context = getActivity().getApplicationContext();
+            CharSequence text = "Desmarcado!";
+            int duration = Toast.LENGTH_SHORT;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+        }
     }
 
     /**
