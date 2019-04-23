@@ -21,10 +21,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.gymkhanachain.app.commons.DownloadImageToBitmapAsyncTask;
 import com.gymkhanachain.app.model.beans.GymkhanaBean;
 import com.gymkhanachain.app.model.commons.GymkhanaCache;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -159,6 +161,10 @@ public class MainActivity extends AppCompatActivity implements
             TextView tvMail = headerView.findViewById(R.id.tv_drawer_mail);
             if (tvMail != null)
                 tvMail.setText(personEmail);
+
+            ImageView imageView = headerView.findViewById(R.id.iv_drawer_picture);
+            DownloadImageToBitmapAsyncTask asyncTask = new DownloadImageToBitmapAsyncTask(getApplicationContext(), imageView);
+            asyncTask.execute(acct.getPhotoUrl());
         }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
