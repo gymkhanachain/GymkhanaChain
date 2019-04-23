@@ -3,52 +3,77 @@ package com.gymkhanachain.app.ui.userprofile.activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.annotation.Nullable;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.gymkhanachain.app.R;
+import com.gymkhanachain.app.commons.DownloadImageToBitmapAsyncTask;
+import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
 
-public class UserProfileActivity extends AppCompatActivity {
 
-    //Not the real one
+public class UserProfileActivity extends AppCompatActivity implements LoginFragment.OnLoginFragmentInteractionListener{
+
     private UserProfileInfoVo user;
+    private GoogleSignInClient mGoogleSignInClient;
+    private static final String LOGIN_FRAGMENT_TAG = "LoginFragment";
+    private static final String TAG = "UserProfile";
+
+    FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        //userinfo
-        if (user == null)  new FetchProfileInfo().execute(Long.getLong("0")) ;
-
-        setTitle("Perfil de usuario");// TODO, remove harcoded strings
-        if (getSupportActionBar() != null){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+        //Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        fragmentManager = getSupportFragmentManager();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        if (account!=null){
+            setTitle(R.string.title_activity_user_profile);
+            if (getSupportActionBar() != null){
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setDisplayShowHomeEnabled(true);
             }
-        });
+
+            FloatingActionButton fab = findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            });
+            updateUI(account);
+        } else {
+            DialogFragment dialog = new LoginFragment();
+            dialog.show(fragmentManager,LOGIN_FRAGMENT_TAG);
+
+        }
     }
 
     @Override
@@ -75,7 +100,6 @@ public class UserProfileActivity extends AppCompatActivity {
         if (item.getItemId() == android.R.id.home) {
             finish();
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -99,15 +123,46 @@ public class UserProfileActivity extends AppCompatActivity {
         toast.setGravity(Gravity.TOP| Gravity.LEFT, 51, 51);
         toast.show();
 
-
     }
 
-    private class FetchProfileInfo extends AsyncTask<Long, Integer, UserProfileInfoVo> {
+    @Override
+    public void refusedToLogin() {
+        Toast.makeText(getApplicationContext(), getString(R.string.toast_no_login), Toast.LENGTH_SHORT).show();
+        finish();
+    }
 
+    @Override
+    public void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            updateUI(account);
+        }
+
+         catch (ApiException e) {
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            updateUI(null);
+        }
+    }
+
+    private void updateUI(@Nullable GoogleSignInAccount account) {
+        if (account!=null) {
+            Uri personPhotoUrl = account.getPhotoUrl();
+            ((TextView) findViewById(R.id.UserName)).setText(account.getDisplayName());
+            if (user != null) new FetchProfileInfo().execute(Long.getLong("0"));
+            ImageView imageView = (ImageView)findViewById(R.id.profileImageView);
+            new DownloadImageToBitmapAsyncTask(getApplicationContext(),imageView).execute(personPhotoUrl);
+        }
+        else{
+            Log.e(TAG, " account is null");
+        }
+    }
+
+
+    private class FetchProfileInfo extends AsyncTask<Long, Integer, UserProfileInfoVo> {
         protected UserProfileInfoVo doInBackground(Long... userId) {
             //getAchievements()//AskGoogleAPI()
             //doStuff
-            //maybe fetchAchievements should be A separate Async task. Consider whether this one may be needed or not.
             return new UserProfileInfoVo();
         }
 
@@ -118,10 +173,10 @@ public class UserProfileActivity extends AppCompatActivity {
             ((TextView)findViewById(R.id.UserLocationValue)).setText(result.getUserLocation());
             ((TextView)findViewById(R.id.GymkanasCountValue)).setText(String.valueOf(result.getNumberOfGymkanas()));
             ((TextView)findViewById(R.id.PointsSecuredValue)).setText(">9000");
-            ((ImageView)findViewById(R.id.profileImageView)).setImageBitmap(result.getProfileImage());
 
         }
     }
+
 
     //User profile info mock stub, actual user retrieval yet to do (googleApis)
     protected class UserProfileInfoVo {
