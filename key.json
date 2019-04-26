@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "gymkhanachain",
+  "private_key_id": "001f4fbb1f10195136f15d879662d9eeb45f3d74",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCdVI2afKVI54be\ncGaeiQcnjAVA3G0/rnKjocWePV/bmTzYNfdwN9Qg6u8RQdPhFrjB93f97ZIWrrwh\nzMk9drUP+35Og/yCdQ7FAxBr074T8pnEpTGeb/uDhpR4P47dqCu9C7dSMkV3smoY\nd6+owhrPsgsCr80CZq3hOmP3AbVUzTATWDsVJApeCZ/ro54fVlfN+0yYotiLOswh\nria83sgWJbH/eRi3A++zBcph/6bwVNftaRkRT/Sd0bYkT8mbNzOOCb4Qotbxcj7G\nvK0av6WhdT6fF/cXiTPBf3ko/Yv1BHDaQPzS3VbFw/dIJFeyGlWPo/10I9IFGsXc\nyPvW6rNRAgMBAAECggEAEyqPnPAuCIggD4LHlZehi1P3ozOsjB353EJNu0hvIDxL\nmRarSqdFIdoiU/VeKk/PeTMRvJmk+uYViCk/o3ZjJLZ2vXo/GDt0wv5ru98N4GCP\nvVDXOchwQ6Zw+Ycwpdh3X5kzn4FSoibWMvMzBI7aSk6+daN/XkQDpGpYbukX3ePM\n6/KUmwqahGOfHYdmCMAseouXd1eDBq6Bhva8R82i7Rf+IHIpRcMdyiOVe2okaPIo\nGFdI+lT9HqRFDMba+2Cbsvr2OQ5h6ekR4GYJQDcsNz3xkHovh0SAI3iEN0YBm1L/\nVjkNEFazJUIlrMblhPZu6Nq/9IjuHgMKTn37GKXDIwKBgQDXJSPq8T+Kn05gniMH\nQwgNnbKyD/Ve6thoMfYEpYNuDnIYCh0H8bu+jjz6VxSpgXrwevpIcXl5EOKfdXvz\nSQtvnTEZJNSZBnzvRs1a2BSfQK6FRl5ETJRHBu36zMLzVFJ5J9ynRrUzWApuP5B6\nNsboA5l1SNX0XBypzD5LIAJziwKBgQC7NNvrXKrSwBb5TOtaNIk/5kPeThMXufny\n2aUZqC4fTSaznLvmcpMNCS+f4v+lNDJ7VdRetd4OisSMawNzUZy+Re+MShgZR5wp\nRNIjN/i4WeCRsLgdyggBm/Z94XTTCgexZ1vKV3oAFXe60mbeZm0vddo/mO6aEGWD\ng+rvbzhgEwKBgHx8uBC8sRij3zUWq4wLJEDEq95OT5sxZjC8H+9GWgs3fpscVvn+\nzLSRFwV/l6wRCLLXZbS/PBtqQscjsqnt7RkTKpKy9fTphSbqn+5ds2kGgzUIp4j7\nipyijNce3frwIpyKDSoZRsXDvp1WWGHvCh673nK3x10SY194l97eUazLAoGAFheY\n1F+tMQ3GKElxhMWqZMYRwExKaIRkAMq6dxqnxr3eEVgvvHRM8j7hRecN8DsGshNg\n6oRf3it2InQGhjddXf721AFycplGzn/2pH1Ydrj0jXzjXXCYHUiAgD55AOawHblq\n1agZF6Vw6bUmupwvymgIB3VOwxOoRyrsMLFZX80CgYEAhYV+qaK5EFafUyRWfa0e\nH2kO3zDM2tvLjro/ks6wUAWJOFixYPM5RAqpYHo7TXMjSmcWniq1dWRwxqfmdCV8\n99d0GZ3d0mxun9TQ4SwW2cAFpv3wY12r1znz/7xty45y7kb8WA7w0EfPI2GGwK0d\njN45a83++7Z3w+YGYs8FJNg=\n-----END PRIVATE KEY-----\n",
+  "client_email": "gymkhanachainas@gymkhanachain.iam.gserviceaccount.com",
+  "client_id": "109679968935882901168",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/gymkhanachainas%40gymkhanachain.iam.gserviceaccount.com"
+}

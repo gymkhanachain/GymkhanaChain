@@ -31,6 +31,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
+import com.gymkhanachain.app.model.beans.GymkhanaBean;
 
 import com.gymkhanachain.app.R;
 
@@ -365,12 +366,11 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getActivity().getContentResolver(), imageUri);
             ((ImageView) mImageView.findViewById(R.id.imageView_gymk)).setImageBitmap(bitmap);
         } catch (FileNotFoundException ex){
-            Toast.makeText(getContext(), "Ha fallado: " + ex.getMessage().toString() , Toast.LENGTH_SHORT).show();
+
         } catch (IOException ex) {
             Toast.makeText(getContext(), "Ha fallado: " + ex.getMessage().toString() , Toast.LENGTH_SHORT).show();
         }
     }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult " + requestCode);
