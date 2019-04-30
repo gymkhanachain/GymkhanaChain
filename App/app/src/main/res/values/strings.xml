@@ -13,6 +13,7 @@
     <string name="drawer_close">Cerrar</string>
     <string name="bt_activate">Activar</string>
     <string name="bt_delete">Borrar</string>
+    <string name="bt_accept">Aceptar</string>
     <string name="imview_gymk_description">Imagen de gymkhanaBean</string>
     <string name="et_gymk_name">Nombre gymkhanaBean</string>
     <string name="et_gymk_desc">Descripción gymkhanaBean</string>
@@ -57,4 +58,5 @@
     </string>
     <string name="toast_no_login">Es necesario iniciar sesión para poder utilizar GymkhanaChain. Hasta la próxima</string>
     <string name="common_accept">Aceptar</string>
+    <string name="title_activity_point">PointActivity</string>
 </resources>
