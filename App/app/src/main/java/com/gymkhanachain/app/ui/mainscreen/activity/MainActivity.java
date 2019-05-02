@@ -75,6 +75,10 @@ public class MainActivity extends AppCompatActivity implements
     private static final String INFO_GYMK_FRAGMENT_TAG = "GymkInfoFragment";
 
 
+
+
+    
+
     // Tag para identificar los permisos
     public static final int REQUEST_MY_LOCATION = 0x01;
 
