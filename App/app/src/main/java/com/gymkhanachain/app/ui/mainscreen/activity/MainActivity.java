@@ -44,6 +44,7 @@ import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
 import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.ui.mainscreen.fragments.NearGymkFragment;
+import com.gymkhanachain.app.ui.playgymkhana.PlayGymkhanaActivity;
 import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
 import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
 import com.gymkhanachain.app.ui.creategymkana.activity.CreateGymkActivity;
@@ -62,7 +63,8 @@ public class MainActivity extends AppCompatActivity implements
         MapFragment.OnMapFragmentInteractionListener,
         ListGymkFragment.OnListGymkFragmentInteractionListener,
         GymkInfoFragment.OnGymkInfoFragmentInteractionListener,
-        NavigationView.OnNavigationItemSelectedListener, LoginFragment.OnLoginFragmentInteractionListener {
+        NavigationView.OnNavigationItemSelectedListener,
+        LoginFragment.OnLoginFragmentInteractionListener {
 
     private static final GymkhanaCache gymkhanas = GymkhanaCache.getInstance();
 
@@ -257,6 +259,12 @@ public class MainActivity extends AppCompatActivity implements
                     .replace(R.id.placeholder_main, GymkInfoFragment.newInstance(), INFO_GYMK_FRAGMENT_TAG)
                     .commit();
         }
+    }
+
+    @Override
+    public void onStartGymkFragmentInteraction() {
+        Intent intent = new Intent(this, PlayGymkhanaActivity.class);
+        startActivity(intent);
     }
 
     @Override

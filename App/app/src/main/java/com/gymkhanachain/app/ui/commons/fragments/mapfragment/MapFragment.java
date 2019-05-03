@@ -43,6 +43,7 @@ public class MapFragment extends Fragment implements LocationListener {
 
     private static final String ARG_POINT_TYPE = "pointType";
     private static final String ARG_POINTS = "points";
+    private static final String ARG_SHOWPATH = "path";
 
     @BindView(R.id.map_view)
     MapView mapView;
@@ -64,6 +65,7 @@ public class MapFragment extends Fragment implements LocationListener {
 
     private String pointType;
     private List<MapPoint> points = new ArrayList<>();
+    private Boolean showPath;
 
     public MapFragment() {
         // Required empty public constructor
@@ -80,11 +82,12 @@ public class MapFragment extends Fragment implements LocationListener {
      * @return A new instance of fragment MapFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MapFragment newInstance(String pointType, List<MapPoint> points) {
+    public static MapFragment newInstance(String pointType, List<MapPoint> points, Boolean showPath) {
         MapFragment fragment = new MapFragment();
         Bundle args = new Bundle();
         args.putString(ARG_POINT_TYPE, pointType);
         args.putParcelable(ARG_POINTS, Parcels.wrap(points));
+        args.putBoolean(ARG_SHOWPATH, showPath);
         fragment.setArguments(args);
         return fragment;
     }
@@ -95,6 +98,7 @@ public class MapFragment extends Fragment implements LocationListener {
         if (getArguments() != null) {
             pointType = getArguments().getString(ARG_POINT_TYPE);
             points = Parcels.unwrap(getArguments().getParcelable(ARG_POINTS));
+            showPath = getArguments().getBoolean(ARG_SHOWPATH);
         }
     }
 
@@ -159,22 +163,27 @@ public class MapFragment extends Fragment implements LocationListener {
             }
         });
 
-        // Sets all fabs
-        fabSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast toast = Toast.makeText(getContext(), "Búsqueda", Toast.LENGTH_SHORT);
-                toast.show();
-            }
-        });
+        if (showPath) {
+            fabSearch.hide();
+            fabAccesibility.hide();
+        } else {
+            // Sets all fabs
+            fabSearch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast toast = Toast.makeText(getContext(), "Búsqueda", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            });
 
-        fabAccesibility.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast newToast = Toast.makeText(getContext(), "Accesibilidad", Toast.LENGTH_SHORT);
-                newToast.show();
-            }
-        });
+            fabAccesibility.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast newToast = Toast.makeText(getContext(), "Accesibilidad", Toast.LENGTH_SHORT);
+                    newToast.show();
+                }
+            });
+        }
 
         fabMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
