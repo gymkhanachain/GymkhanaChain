@@ -3,11 +3,11 @@ package com.gymkhanachain.app.ui.commons.fragments.mapfragment;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -17,6 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.akexorcist.googledirection.DirectionCallback;
+import com.akexorcist.googledirection.GoogleDirection;
+import com.akexorcist.googledirection.model.Direction;
+import com.akexorcist.googledirection.model.Leg;
+import com.akexorcist.googledirection.model.Route;
+import com.akexorcist.googledirection.util.DirectionConverter;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -25,18 +31,23 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.gymkhanachain.app.R;
+import com.gymkhanachain.app.commons.DownloadRouteAsyncTask;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class MapFragment extends Fragment implements LocationListener {
+public class MapFragment extends Fragment implements LocationListener, OnMapReadyCallback {
     public static final String GYMKHANA_POINTS = "gymkhanaPoints";
     public static final String GIS_POINTS = "gisPoints";
     public static final String NONE = "none";
@@ -95,6 +106,9 @@ public class MapFragment extends Fragment implements LocationListener {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+
         if (getArguments() != null) {
             pointType = getArguments().getString(ARG_POINT_TYPE);
             points = Parcels.unwrap(getArguments().getParcelable(ARG_POINTS));
@@ -105,63 +119,13 @@ public class MapFragment extends Fragment implements LocationListener {
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
-        // Get current location
-        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
-                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 250, 10, this);
-            currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        }
-
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         unbinder = ButterKnife.bind(this, view);
 
         // Sets the map
         mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                map = googleMap;
-
-                // Move the camera to Coruña
-                LatLng corunna = new LatLng(43.365, -8.410);
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(corunna, 12));
-
-                // Set marks in map
-                for (MapPoint point: points) {
-                    MarkerOptions opts = new MarkerOptions().position(point.getPosition()).
-                            title(point.getName()).icon(BitmapDescriptorFactory.
-                            defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                    Marker marker = map.addMarker(opts);
-                    marker.setTag(point);
-                }
-
-                // Set on marker clicked
-                map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(Marker marker) {
-                        if (!marker.isInfoWindowShown()) {
-                            marker.showInfoWindow();
-                            listener.onMapFragmentInteraction();
-                        } else {
-                            marker.hideInfoWindow();
-                        }
-
-                        return false;
-                    }
-                });
-
-                // Active configurations
-                if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
-                        ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    map.setMyLocationEnabled(true);
-                }
-
-                map.getUiSettings().setMapToolbarEnabled(false);
-                map.getUiSettings().setMyLocationButtonEnabled(false);
-            }
-        });
+        mapView.getMapAsync(this);
 
         if (showPath) {
             fabSearch.hide();
@@ -192,7 +156,10 @@ public class MapFragment extends Fragment implements LocationListener {
                     LatLng latLng = new LatLng(getLatitude(), getLongitude());
                     map.animateCamera(CameraUpdateFactory.newLatLng(latLng), 1000, null);
                 }
-                String position = String.format("Localizado: (%.2f, %.2f)", getLatitude(),
+
+                Locale spanish = new Locale("es", "ES");
+
+                String position = String.format(spanish, "Localizado: (%.2f, %.2f)", getLatitude(),
                         getLongitude());
                 Toast newToast = Toast.makeText(getContext(), position, Toast.LENGTH_SHORT);
                 newToast.show();
@@ -200,6 +167,86 @@ public class MapFragment extends Fragment implements LocationListener {
         });
 
         return view;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+
+        // Move the camera to Coruña
+        LatLng corunna = new LatLng(43.365, -8.410);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(corunna, 12));
+
+        // Set marks in map
+        for (MapPoint point: points) {
+            MarkerOptions opts = new MarkerOptions().position(point.getPosition()).
+                    title(point.getName()).icon(BitmapDescriptorFactory.
+                    defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            Marker marker = map.addMarker(opts);
+            marker.setTag(point);
+        }
+
+        // Set on marker clicked
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if (!marker.isInfoWindowShown()) {
+                    marker.showInfoWindow();
+                    listener.onMapFragmentInteraction();
+                } else {
+                    marker.hideInfoWindow();
+                }
+
+                return false;
+            }
+        });
+
+        // Set on map click
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(final LatLng dest) {
+                final LatLng origin = new LatLng(getLatitude(), getLongitude());
+
+                GoogleDirection.withServerKey(getString(R.string.maps_key))
+                    .from(origin)
+                    .to(dest)
+                    .execute(new DirectionCallback() {
+                        @Override
+                        public void onDirectionSuccess(Direction direction, String rawBody) {
+                            String url = "https://maps.googleapis.com/maps/api/directions/json?origin=" + origin.toString() + "&destination=" + dest.toString() + "&key=" + getString(R.string.maps_key);
+
+                            if (direction.isOK()) {
+                                onDrawPath(direction);
+                            } else {
+                                Log.e("MapFragment", "Error getting direction: " + direction.getStatus() + "\nUrl: " + url + "\nBody: " + rawBody);
+                            }
+                        }
+
+                        @Override
+                        public void onDirectionFailure(Throwable t) {
+                            throw new RuntimeException("Error getting route", t);
+                        }
+                    });
+            }
+        });
+
+        map.getUiSettings().setMapToolbarEnabled(false);
+        map.getUiSettings().setMyLocationButtonEnabled(false);
+
+        // Active configurations
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
+                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            map.setMyLocationEnabled(true);
+        }
+    }
+
+    private void onDrawPath(Direction direction) {
+        Route route = direction.getRouteList().get(0);
+        Leg leg = route.getLegList().get(0);
+        ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
+        PolylineOptions polylineOptions = DirectionConverter.createPolyline(getContext(), directionPositionList, 5, Color.GREEN);
+        map.clear();
+        map.addPolyline(polylineOptions);
     }
 
     @Override
@@ -222,12 +269,25 @@ public class MapFragment extends Fragment implements LocationListener {
 
     @Override
     public void onResume() {
+        // Get current location
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
+                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 250, 10, this);
+            currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
+
         super.onResume();
         mapView.onResume();
     }
 
     @Override
     public void onPause() {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
+                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager.removeUpdates(this);
+            map.setMyLocationEnabled(false);
+        }
+
         super.onPause();
         mapView.onPause();
     }

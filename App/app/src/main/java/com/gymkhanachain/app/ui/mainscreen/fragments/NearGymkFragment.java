@@ -2,13 +2,10 @@ package com.gymkhanachain.app.ui.mainscreen.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -108,7 +105,7 @@ public class NearGymkFragment extends Fragment implements NearGymkAdapter.
         }
 
         // Create map fragment
-        final MapFragment map = MapFragment.newInstance(MapFragment.GYMKHANA_POINTS, points);
+        final MapFragment map = MapFragment.newInstance(MapFragment.GYMKHANA_POINTS, points, false);
         getFragmentManager().beginTransaction().add(R.id.map_placeholder, map).commit();
 
         return view;
