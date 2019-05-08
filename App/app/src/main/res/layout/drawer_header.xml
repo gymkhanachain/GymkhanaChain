@@ -5,7 +5,7 @@
     android:id="@+id/linearLayout2"
     android:layout_width="match_parent"
     android:layout_height="176dp"
-    android:background="@drawable/beach"
+    android:background="@drawable/background"
     android:gravity="bottom"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
@@ -30,25 +30,25 @@
 
     <TextView
         android:id="@+id/tv_drawer_username"
+        style="@style/drawerHeaderText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:paddingTop="8dp"
         android:text="GymkhanaChain"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/colorPrimaryText"
         app:layout_constraintBottom_toTopOf="@+id/tv_drawer_mail"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/tv_drawer_mail"
+        style="@style/drawerHeaderText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginBottom="8dp"
         android:text="GymkhanaChain Inc"
-        android:textColor="@color/colorPrimaryText"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

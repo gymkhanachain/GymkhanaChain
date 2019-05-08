@@ -23,8 +23,26 @@
     </style>
 
     <style name="Description" >
-        <item name="android:textColor">#666666</item>
+        <item name="android:textColor">@color/colorSecondaryText</item>
         <item name="android:textSize">20dp</item>
+    </style>
+
+    <style name="PrefIcon" >
+        <item name="android:textColor">@color/colorSecondaryText</item>
+        <item name="android:textSize">12dp</item>
+    </style>
+
+    <style name="mapFAB" >
+        <item name="android:tint">@color/colorWhite</item>
+        <item name="android:backgroundTint">@color/colorPrimaryLight</item>
+    </style>
+
+    <style name="fab" >
+        <item name="android:tint">@color/colorWhite</item>
+    </style>
+
+    <style name="drawerHeaderText" >
+        <item name="android:textColor">@color/colorSecondaryLight</item>
     </style>
 
 </resources>

@@ -43,6 +43,7 @@ import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
 import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
 import com.gymkhanachain.app.R;
+import com.gymkhanachain.app.ui.gymkpoint.activity.PointActivity;
 import com.gymkhanachain.app.ui.mainscreen.fragments.NearGymkFragment;
 import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
 import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
@@ -292,7 +293,15 @@ public class MainActivity extends AppCompatActivity implements
                             .replace(R.id.placeholder_main, NearGymkFragment.newInstance(gymkhanasId), NEAR_GYMK_FRAGMENT_TAG)
                             .commit();
                 break;
-            case R.id.nav_my_gymk: // Listar gymkhanas
+            case R.id.nav_saved_gymk: // Listar gymkhanas guardadas
+                // TODO: mostrar fragment LIST_GYMK_FRAGMENT_TAG con lsa gymkhanas que correspondan
+                Toast.makeText(this, "Mostrar gymkhanas guardadas", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.nav_done_gymk: // Listar gymkhanas completadas
+                // TODO: mostrar fragment LIST_GYMK_FRAGMENT_TAG con lsa gymkhanas que correspondan
+                Toast.makeText(this, "Mostrar gymkhanas completadas", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.nav_my_gymk: // Listar gymkhanas creadas por el usuario
                 fragment = fragmentManager.findFragmentByTag(LIST_GYMK_FRAGMENT_TAG);
 
                 if (fragment != null) {
@@ -305,6 +314,11 @@ public class MainActivity extends AppCompatActivity implements
                     fragmentManager.beginTransaction()
                             .replace(R.id.placeholder_main, ListGymkFragment.newInstance(), LIST_GYMK_FRAGMENT_TAG)
                             .commit();
+                break;
+            case R.id.nav_create_gymk: // Listar gymkhanas creadas por el usuario
+                // TODO: abrir fragment para crear gymkhana
+//                Toast.makeText(this, "Crear gymkhana", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, CreateGymkActivity.class));
                 break;
             case R.id.nav_profile:
                 startActivity(new Intent(this, UserProfileActivity.class));
