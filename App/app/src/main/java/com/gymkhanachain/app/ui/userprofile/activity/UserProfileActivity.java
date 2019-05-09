@@ -35,7 +35,7 @@ public class UserProfileActivity extends AppCompatActivity {
         //userinfo
         if (user == null)  new FetchProfileInfo().execute(Long.getLong("0")) ;
 
-        setTitle("Perfil de usuario");// TODO, remove harcoded strings
+        setTitle(R.string.user_profile);
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -43,12 +43,23 @@ public class UserProfileActivity extends AppCompatActivity {
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
+            // TODO: cambiar sobre por lapiz
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                // TODO add edit profile functionality
+                Toast newToast = Toast.makeText(getApplicationContext(), "Editar perfil", Toast.LENGTH_SHORT);
+                newToast.show();
             }
         });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        // TODO add functionality, doesnt work properly
+        Toast newToast = Toast.makeText(getApplicationContext(), "Back pressed", Toast.LENGTH_SHORT);
+        newToast.show();
+        onBackPressed();
+        return true;
     }
 
     @Override
@@ -92,7 +103,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
     public void onClickAchievements(View view){
         Context context = getApplicationContext();
-        CharSequence text = "Click Logros";
+        CharSequence text = "Aquí aparecerán tus logros";
         int duration = Toast.LENGTH_SHORT;
 
         Toast toast = Toast.makeText(context, text, duration);

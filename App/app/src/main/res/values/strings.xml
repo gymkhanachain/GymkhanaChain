@@ -4,6 +4,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_create_gymk">CreateGymkActivity</string>
+    <string name="create_gymk">Crear nueva gymkhana</string>
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
     <string name="tab_text_3">Tab 3</string>
@@ -13,6 +14,7 @@
     <string name="drawer_close">Cerrar</string>
     <string name="bt_activate">Activar</string>
     <string name="bt_delete">Borrar</string>
+    <string name="bt_accept">Aceptar</string>
     <string name="imview_gymk_description">Imagen de gymkhanaBean</string>
     <string name="et_gymk_name">Nombre gymkhanaBean</string>
     <string name="et_gymk_desc">Descripción gymkhanaBean</string>
@@ -21,7 +23,11 @@
     <string name="imb_edit_gymk_img">Editar imagen de gymkhanaBean</string>
     <string name="title_activity_user_profile">Perfil de usuario</string>
     <string name="nav_start">Inicio</string>
+    <string name="nav_advanced_search">Búsqueda avanzada</string>
+    <string name="nav_saved_gymk">Gymkhanas guardadas</string>
+    <string name="nav_done_gymk">Gymkhanas completadas</string>
     <string name="nav_my_gymk">Mis gymkhanas</string>
+    <string name="nav_create_gymk">Crear gymkhana</string>
     <string name="nav_profile">Perfil</string>
     <string name="nav_settings">Ajustes</string>
 
@@ -57,6 +63,7 @@
     </string>
     <string name="toast_no_login">Es necesario iniciar sesión para poder utilizar GymkhanaChain. Hasta la próxima</string>
     <string name="common_accept">Aceptar</string>
+    <string name="title_activity_point">PointActivity</string>
     <string name="title_activity_settings">Ajustes</string>
 
     <!-- Strings related to Settings -->
@@ -124,4 +131,6 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibración</string>
+    <string name="user_profile">Perfil de usuario</string>
+    <string name="nav_config">Configuración</string>
 </resources>

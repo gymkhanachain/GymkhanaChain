@@ -19,21 +19,23 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_search"
+        style="@style/mapFAB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|top"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_search_black"
-        android:tint="@color/colorIcons" />
+        app:backgroundTint="@color/colorPrimaryLight" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_my_location"
+        style="@style/mapFAB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_round_my_location"
-        android:tint="@color/colorIcons"
+        app:backgroundTint="@color/colorPrimaryLight"
         app:layout_anchor="@id/fab_gap"
         app:layout_anchorGravity="top|end" />
 
@@ -47,11 +49,12 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_accesibility"
+        style="@style/mapFAB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_round_accessible_forward"
-        android:tint="@color/colorIcons" />
+        app:backgroundTint="@color/colorPrimaryLight" />
 
 </android.support.design.widget.CoordinatorLayout>
