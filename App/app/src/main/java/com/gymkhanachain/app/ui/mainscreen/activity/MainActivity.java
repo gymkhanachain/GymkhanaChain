@@ -42,21 +42,15 @@ import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
 import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
-import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.ui.mainscreen.fragments.NearGymkFragment;
-import com.gymkhanachain.app.ui.playgymkhana.PlayGymkhanaActivity;
+import com.gymkhanachain.app.ui.playgymkhana.activity.PlayGymkhanaActivity;
 import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
-import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
 import com.gymkhanachain.app.ui.creategymkana.activity.CreateGymkActivity;
 import com.gymkhanachain.app.ui.mainscreen.fragments.GymkInfoFragment;
 import com.gymkhanachain.app.ui.mainscreen.fragments.ListGymkFragment;
-import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
-
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.PreferenceChangeEvent;
 
 public class MainActivity extends AppCompatActivity implements
         NearGymkFragment.OnNearGymkFragmentInteractionListener,

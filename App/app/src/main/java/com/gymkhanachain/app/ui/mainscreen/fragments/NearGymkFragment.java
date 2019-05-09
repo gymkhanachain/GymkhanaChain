@@ -105,7 +105,7 @@ public class NearGymkFragment extends Fragment implements NearGymkAdapter.
         }
 
         // Create map fragment
-        final MapFragment map = MapFragment.newInstance(MapFragment.GYMKHANA_POINTS, points, false);
+        final MapFragment map = MapFragment.newInstance(MapFragment.GYMKHANA_POINTS, points);
         getFragmentManager().beginTransaction().add(R.id.map_placeholder, map).commit();
 
         return view;

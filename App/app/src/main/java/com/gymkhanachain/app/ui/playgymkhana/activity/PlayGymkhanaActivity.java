@@ -1,4 +1,4 @@
-package com.gymkhanachain.app.ui.playgymkhana;
+package com.gymkhanachain.app.ui.playgymkhana.activity;
 
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -22,7 +22,7 @@ public class PlayGymkhanaActivity extends AppCompatActivity implements MapFragme
         ButterKnife.bind(this);
 
         // Create map fragment
-        final Fragment map = MapFragment.newInstance(MapFragment.GYMKHANA_POINTS, new ArrayList<MapPoint>(), true);
+        final Fragment map = MapFragment.newInstance(MapFragment.GYMKHANA_POINTS, new ArrayList<MapPoint>());
         getSupportFragmentManager().beginTransaction().add(R.id.map_content, map).commit();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

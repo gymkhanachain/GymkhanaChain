@@ -3,6 +3,7 @@ package com.gymkhanachain.app.ui.commons.fragments.mapfragment;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -27,21 +28,19 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.gymkhanachain.app.R;
-import com.gymkhanachain.app.commons.DownloadRouteAsyncTask;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,11 +49,10 @@ import butterknife.Unbinder;
 public class MapFragment extends Fragment implements LocationListener, OnMapReadyCallback {
     public static final String GYMKHANA_POINTS = "gymkhanaPoints";
     public static final String GIS_POINTS = "gisPoints";
-    public static final String NONE = "none";
+    public static final String ROUTE_POINTS = "routePoints";
 
     private static final String ARG_POINT_TYPE = "pointType";
     private static final String ARG_POINTS = "points";
-    private static final String ARG_SHOWPATH = "path";
 
     @BindView(R.id.map_view)
     MapView mapView;
@@ -76,7 +74,6 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
     private String pointType;
     private List<MapPoint> points = new ArrayList<>();
-    private Boolean showPath;
 
     public MapFragment() {
         // Required empty public constructor
@@ -93,12 +90,11 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
      * @return A new instance of fragment MapFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MapFragment newInstance(String pointType, List<MapPoint> points, Boolean showPath) {
+    public static MapFragment newInstance(String pointType, List<MapPoint> points) {
         MapFragment fragment = new MapFragment();
         Bundle args = new Bundle();
         args.putString(ARG_POINT_TYPE, pointType);
         args.putParcelable(ARG_POINTS, Parcels.wrap(points));
-        args.putBoolean(ARG_SHOWPATH, showPath);
         fragment.setArguments(args);
         return fragment;
     }
@@ -112,7 +108,6 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         if (getArguments() != null) {
             pointType = getArguments().getString(ARG_POINT_TYPE);
             points = Parcels.unwrap(getArguments().getParcelable(ARG_POINTS));
-            showPath = getArguments().getBoolean(ARG_SHOWPATH);
         }
     }
 
@@ -127,27 +122,22 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
-        if (showPath) {
-            fabSearch.hide();
-            fabAccesibility.hide();
-        } else {
-            // Sets all fabs
-            fabSearch.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast toast = Toast.makeText(getContext(), "Búsqueda", Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-            });
+        // Sets all fabs
+        fabSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast toast = Toast.makeText(getContext(), "Búsqueda", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
 
-            fabAccesibility.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast newToast = Toast.makeText(getContext(), "Accesibilidad", Toast.LENGTH_SHORT);
-                    newToast.show();
-                }
-            });
-        }
+        fabAccesibility.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast newToast = Toast.makeText(getContext(), "Accesibilidad", Toast.LENGTH_SHORT);
+                newToast.show();
+            }
+        });
 
         fabMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -179,9 +169,19 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
         // Set marks in map
         for (MapPoint point: points) {
+            // Get the marker icon
+            BitmapDescriptor icon;
+            if (pointType == GYMKHANA_POINTS) {
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_gymkhana_marker);
+            } else if (pointType == GIS_POINTS) {
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_gis_marker);
+            } else {
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_route_marker);
+            }
+
+            // Set all marker options
             MarkerOptions opts = new MarkerOptions().position(point.getPosition()).
-                    title(point.getName()).icon(BitmapDescriptorFactory.
-                    defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    title(point.getName()).icon(icon);
             Marker marker = map.addMarker(opts);
             marker.setTag(point);
         }
@@ -213,12 +213,10 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                     .execute(new DirectionCallback() {
                         @Override
                         public void onDirectionSuccess(Direction direction, String rawBody) {
-                            String url = "https://maps.googleapis.com/maps/api/directions/json?origin=" + origin.toString() + "&destination=" + dest.toString() + "&key=" + getString(R.string.maps_key);
-
                             if (direction.isOK()) {
                                 onDrawPath(direction);
                             } else {
-                                Log.e("MapFragment", "Error getting direction: " + direction.getStatus() + "\nUrl: " + url + "\nBody: " + rawBody);
+                                Log.e("MapFragment", "Error getting direction: " + direction.getStatus());
                             }
                         }
 
@@ -232,6 +230,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
         map.getUiSettings().setMapToolbarEnabled(false);
         map.getUiSettings().setMyLocationButtonEnabled(false);
+        map.getUiSettings().setRotateGesturesEnabled(false);
 
         // Active configurations
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
