@@ -30,13 +30,16 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.gymkpoint.activity.PointActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_point"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".SettingsActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_settings"></activity>
         <activity
             android:name=".ui.mainscreen.activity.LoginActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_login"></activity>
         <activity
             android:name=".ui.creategymkana.activity.CreateGymkActivity"
@@ -54,6 +57,7 @@
         </activity>
         <activity
             android:name=".ui.userprofile.activity.UserProfileActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_user_profile"
             android:theme="@style/AppTheme.NoActionBar" />
 
