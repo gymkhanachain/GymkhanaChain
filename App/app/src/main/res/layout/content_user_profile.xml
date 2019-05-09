@@ -23,18 +23,25 @@
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/background" />
 
-    <ImageView
-        android:id="@+id/profileImageView"
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_iv_profile_picture"
+        style="@style/roundImgCardView"
         android:layout_width="88dp"
         android:layout_height="88dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:src="@drawable/profile_default"
+        android:layout_marginStart="0dp"
+        android:layout_marginBottom="0dp"
+        app:cardCornerRadius="42dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0">
+
+        <ImageView
+            android:id="@+id/profileImageView"
+            style="@style/roundImgImageView"
+            android:src="@mipmap/ic_launcher_round" />
+    </android.support.v7.widget.CardView>
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline"
