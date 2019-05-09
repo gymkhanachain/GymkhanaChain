@@ -21,6 +21,7 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_create_gymk"
+        style="@style/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"

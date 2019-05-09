@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#8BC34A</color>
-    <color name="colorPrimaryDark">#689F38</color>
-    <color name="colorPrimaryLight">#DCEDC8</color>
-    <color name="colorAccent">#FFC107</color>
+    <!-- https://coolors.co/ffa000-383d3b-eee5e9-3d315b-605678 /// -->
+    <color name="colorPrimary">#ffa000</color>
+    <color name="colorPrimaryDark">#ef8700</color>
+    <color name="colorPrimaryLight">#ffbf54</color>
+    <color name="colorSecondary">#383d3b</color>
+    <color name="colorSecondaryDark">#242726</color>
+    <color name="colorSecondaryLight">#eee5e9</color>
+    <color name="colorAccent">#3d315b</color>
+    <color name="colorAccentLight">#605678</color>
     <color name="colorPrimaryText">#212121</color>
     <color name="colorSecondaryText">#757575</color>
     <color name="colorIcons">#212121</color>
     <color name="colorDivider">#BDBDBD</color>
-
+    <color name="colorWhite">#FFFFFF</color>
 </resources>

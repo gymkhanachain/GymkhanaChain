@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
     package="com.gymkhanachain.app">
+
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
@@ -30,11 +31,18 @@
         android:theme="@style/AppTheme">
         <activity android:name=".ui.playgymkhana.activity.PlayGymkhanaActivity"></activity>
         <activity
+            android:name=".ui.gymkpoint.activity.PointActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_point"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
+            android:screenOrientation="portrait"
         <activity
             android:name=".ui.mainscreen.activity.LoginActivity"
             android:label="@string/title_activity_login" />
+            android:screenOrientation="portrait"
         <activity
             android:name=".ui.creategymkana.activity.CreateGymkActivity"
             android:label="@string/title_activity_create_gymk"
@@ -51,6 +59,7 @@
         </activity>
         <activity
             android:name=".ui.userprofile.activity.UserProfileActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_user_profile"
             android:theme="@style/AppTheme.NoActionBar" />
 

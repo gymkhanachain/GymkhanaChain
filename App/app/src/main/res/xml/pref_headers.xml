@@ -3,17 +3,20 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
+        style="@style/PrefIcon"
         android:fragment="com.gymkhanachain.app.SettingsActivity$GeneralPreferenceFragment"
         android:icon="@drawable/ic_info_black_24dp"
         android:title="@string/pref_header_general" />
 
     <header
+        style="@style/PrefIcon"
         android:fragment="com.gymkhanachain.app.SettingsActivity$LocationPreferenceFragment"
         android:icon="@drawable/ic_round_my_location"
         android:title="@string/pref_header_location"
         />
 
     <header
+        style="@style/PrefIcon"
         android:fragment="com.gymkhanachain.app.SettingsActivity$NotificationPreferenceFragment"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/pref_header_notifications" />
