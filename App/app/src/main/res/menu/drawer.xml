@@ -5,24 +5,48 @@
 
     <group android:checkableBehavior="single">
         <item
+            style="@style/PrefIcon"
             android:id="@+id/nav_start"
-            android:icon="@drawable/ic_baseline_add_24px"
+            android:icon="@drawable/ic_baseline_menu_24px"
             android:title="@string/nav_start" />
         <item
+            style="@style/PrefIcon"
+            android:id="@+id/advanced_search"
+            android:icon="@drawable/ic_search_black"
+            android:title="@string/nav_advanced_search" />
+        <item
+            style="@style/PrefIcon"
+            android:id="@+id/nav_saved_gymk"
+            android:icon="@drawable/ic_outline_bookmark_24px"
+            android:title="@string/nav_saved_gymk" />
+        <item
+            style="@style/PrefIcon"
+            android:id="@+id/nav_done_gymk"
+            android:icon="@drawable/ic_outline_check_circle_24px"
+            android:title="@string/nav_done_gymk" />
+        <item
+            style="@style/PrefIcon"
             android:id="@+id/nav_my_gymk"
-            android:icon="@drawable/ic_baseline_add_24px"
+            android:icon="@drawable/ic_outline_location_on_24px"
             android:title="@string/nav_my_gymk" />
+        <item
+            style="@style/PrefIcon"
+            android:id="@+id/nav_create_gymk"
+            android:icon="@drawable/ic_baseline_add_24px"
+            android:title="@string/nav_create_gymk" />
     </group>
 
-    <item android:title="">
+    <item android:title="@string/nav_config">
         <menu>
             <item
+                style="@style/PrefIcon"
                 android:id="@+id/nav_profile"
-                android:icon="@drawable/ic_baseline_settings_20px"
+                android:icon="@drawable/ic_outline_person_24px"
                 android:title="@string/nav_profile" />
             <item
+                style="@style/PrefIcon"
                 android:id="@+id/nav_settings"
-                android:icon="@drawable/ic_baseline_settings_20px"
+                android:icon="@drawable/ic_outline_settings_24px"
                 android:title="@string/nav_settings" />
         </menu>
     </item>
