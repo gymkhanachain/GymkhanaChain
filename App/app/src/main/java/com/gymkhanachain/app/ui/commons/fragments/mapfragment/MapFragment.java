@@ -4,14 +4,19 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +40,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.gymkhanachain.app.R;
+import com.gymkhanachain.app.model.commons.GymkhanaCache;
 
 import org.parceler.Parcels;
 
@@ -46,7 +52,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class MapFragment extends Fragment implements LocationListener, OnMapReadyCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback {
     public static final String GYMKHANA_POINTS = "gymkhanaPoints";
     public static final String GIS_POINTS = "gisPoints";
     public static final String ROUTE_POINTS = "routePoints";
@@ -142,17 +148,22 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         fabMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
+                        ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                }*/
+
                 if (currentLocation != null) {
                     LatLng latLng = new LatLng(getLatitude(), getLongitude());
                     map.animateCamera(CameraUpdateFactory.newLatLng(latLng), 1000, null);
+
+                    Locale spanish = new Locale("es", "ES");
+
+                    String position = String.format(spanish, "Localizado: (%.2f, %.2f)", getLatitude(),
+                            getLongitude());
+                    Toast newToast = Toast.makeText(getContext(), position, Toast.LENGTH_SHORT);
+                    newToast.show();
                 }
-
-                Locale spanish = new Locale("es", "ES");
-
-                String position = String.format(spanish, "Localizado: (%.2f, %.2f)", getLatitude(),
-                        getLongitude());
-                Toast newToast = Toast.makeText(getContext(), position, Toast.LENGTH_SHORT);
-                newToast.show();
             }
         });
 
@@ -169,21 +180,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
         // Set marks in map
         for (MapPoint point: points) {
-            // Get the marker icon
-            BitmapDescriptor icon;
-            if (pointType == GYMKHANA_POINTS) {
-                icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_gymkhana_marker);
-            } else if (pointType == GIS_POINTS) {
-                icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_gis_marker);
-            } else {
-                icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_route_marker);
-            }
-
-            // Set all marker options
-            MarkerOptions opts = new MarkerOptions().position(point.getPosition()).
-                    title(point.getName()).icon(icon);
-            Marker marker = map.addMarker(opts);
-            marker.setTag(point);
+            drawMark(point);
         }
 
         // Set on marker clicked
@@ -214,7 +211,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                         @Override
                         public void onDirectionSuccess(Direction direction, String rawBody) {
                             if (direction.isOK()) {
-                                onDrawPath(direction);
+                                drawPath(direction);
                             } else {
                                 Log.e("MapFragment", "Error getting direction: " + direction.getStatus());
                             }
@@ -236,16 +233,67 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
                 ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             map.setMyLocationEnabled(true);
+            map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+                @Override
+                public void onMyLocationChange(Location location) {
+                    Log.e("MapFragment", "Update location" + location);
+                    currentLocation = location;
+                }
+            });
         }
     }
 
-    private void onDrawPath(Direction direction) {
+    private void drawPath(Direction direction) {
         Route route = direction.getRouteList().get(0);
         Leg leg = route.getLegList().get(0);
         ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
         PolylineOptions polylineOptions = DirectionConverter.createPolyline(getContext(), directionPositionList, 5, Color.GREEN);
         map.clear();
         map.addPolyline(polylineOptions);
+    }
+
+    private void drawMark(MapPoint point) {
+        // Get background
+        Drawable background = ContextCompat.getDrawable(getContext(), R.drawable.ic_map_marker);
+        background.setBounds(0, 0, background.getIntrinsicWidth(), background.getIntrinsicHeight());
+
+        // Get logo
+        Drawable logo = ContextCompat.getDrawable(getContext(), R.drawable.ic_logo_white);
+        int size = (int) Math.round(background.getIntrinsicWidth()*340.0f/512.0f);
+        int xPos = (int) Math.round(background.getIntrinsicWidth()*86.0f/512.0f);
+        int yPos = (int) Math.round(background.getIntrinsicWidth()*40.0f/512.0f);
+
+        Log.i("MapFragment", background.getIntrinsicWidth() + ", " + background.getIntrinsicHeight());
+        Log.i("MapFragment", logo.getIntrinsicWidth() + ", " + logo.getIntrinsicHeight());
+        Log.i("MapFragment", xPos + ", " + yPos + ", " + size);
+
+        logo.setBounds(xPos, yPos, xPos+size, yPos+size);
+
+        // Draw marker
+        Drawable wrapped = null;
+
+        // Get color of background
+        if (pointType == GYMKHANA_POINTS) {
+            @ColorInt int color = getResources().getColor(R.color.colorAccent);
+            wrapped = DrawableCompat.wrap(background);
+            DrawableCompat.setTint(wrapped, color);
+        }
+
+        // If drawable exists, draw marker
+        if (wrapped != null) {
+            // Create icon mark
+            Bitmap bitmap = Bitmap.createBitmap(background.getIntrinsicWidth(), background.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            wrapped.draw(canvas);
+            logo.draw(canvas);
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bitmap);
+
+            // Set all marker options
+            MarkerOptions opts = new MarkerOptions().position(point.getPosition()).
+                    title(point.getName()).icon(icon);
+            Marker marker = map.addMarker(opts);
+            marker.setTag(point);
+        }
     }
 
     @Override
@@ -269,11 +317,11 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     @Override
     public void onResume() {
         // Get current location
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
+        /*if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
                 ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 250, 10, this);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 2, this);
             currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        }
+        }*/
 
         super.onResume();
         mapView.onResume();
@@ -281,11 +329,11 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
     @Override
     public void onPause() {
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
+        /*if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
                 ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.removeUpdates(this);
             map.setMyLocationEnabled(false);
-        }
+        }*/
 
         super.onPause();
         mapView.onPause();
@@ -324,8 +372,10 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         return 0.0;
     }
 
+/*
     @Override
     public void onLocationChanged(Location location) {
+        Log.e("MapFragment", "Update location");
         currentLocation = location;
     }
 
@@ -343,6 +393,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     public void onProviderDisabled(String provider) {
 
     }
+*/
 
     /**
      * This interface must be implemented by activities that contain this
