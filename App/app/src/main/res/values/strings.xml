@@ -30,6 +30,7 @@
     <string name="nav_create_gymk">Crear gymkhana</string>
     <string name="nav_profile">Perfil</string>
     <string name="nav_settings">Ajustes</string>
+    <string name="double_tap_exit_app">Doble click para salir de la aplicación</string>
 
     <array name="drawer_items">
         <item>Inicio</item>

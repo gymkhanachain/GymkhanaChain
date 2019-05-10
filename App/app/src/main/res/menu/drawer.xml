@@ -11,7 +11,7 @@
             android:title="@string/nav_start" />
         <item
             style="@style/PrefIcon"
-            android:id="@+id/advanced_search"
+            android:id="@+id/nav_advanced_search"
             android:icon="@drawable/ic_search_black"
             android:title="@string/nav_advanced_search" />
         <item

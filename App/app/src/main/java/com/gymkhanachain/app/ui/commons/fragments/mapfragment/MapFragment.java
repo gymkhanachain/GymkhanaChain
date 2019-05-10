@@ -4,14 +4,10 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +32,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class MapFragment extends Fragment implements LocationListener {
+public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationChangeListener {
     public static final String GYMKHANA_POINTS = "gymkhanaPoints";
     public static final String GIS_POINTS = "gisPoints";
     public static final String NONE = "none";
@@ -58,7 +54,6 @@ public class MapFragment extends Fragment implements LocationListener {
 
     private OnMapFragmentInteractionListener listener;
     private Unbinder unbinder;
-    private LocationManager locationManager;
     private Location currentLocation = null;
     private GoogleMap map;
 
@@ -101,63 +96,13 @@ public class MapFragment extends Fragment implements LocationListener {
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
-        // Get current location
-        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
-                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 250, 10, this);
-            currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        }
-
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         unbinder = ButterKnife.bind(this, view);
 
         // Sets the map
         mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                map = googleMap;
-
-                // Move the camera to Coruña
-                LatLng corunna = new LatLng(43.365, -8.410);
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(corunna, 12));
-
-                // Set marks in map
-                for (MapPoint point: points) {
-                    MarkerOptions opts = new MarkerOptions().position(point.getPosition()).
-                            title(point.getName()).icon(BitmapDescriptorFactory.
-                            defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                    Marker marker = map.addMarker(opts);
-                    marker.setTag(point);
-                }
-
-                // Set on marker clicked
-                map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(Marker marker) {
-                        if (!marker.isInfoWindowShown()) {
-                            marker.showInfoWindow();
-                            listener.onMapFragmentInteraction();
-                        } else {
-                            marker.hideInfoWindow();
-                        }
-
-                        return false;
-                    }
-                });
-
-                // Active configurations
-                if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
-                        ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    map.setMyLocationEnabled(true);
-                }
-
-                map.getUiSettings().setMapToolbarEnabled(false);
-                map.getUiSettings().setMyLocationButtonEnabled(false);
-            }
-        });
+        mapView.getMapAsync(this);
 
         // Sets all fabs
         fabSearch.setOnClickListener(new View.OnClickListener() {
@@ -215,12 +160,26 @@ public class MapFragment extends Fragment implements LocationListener {
     public void onResume() {
         super.onResume();
         mapView.onResume();
+
+        // Active configurations
+        if ((map != null) && (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
+                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+            map.setMyLocationEnabled(true);
+            map.setOnMyLocationChangeListener(this);
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mapView.onPause();
+
+        // Active configurations
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
+                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            map.setMyLocationEnabled(false);
+            map.setOnMyLocationChangeListener(null);
+        }
     }
 
     @Override
@@ -240,6 +199,55 @@ public class MapFragment extends Fragment implements LocationListener {
         unbinder.unbind();
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+
+        // Move the camera to Coruña
+        LatLng corunna = new LatLng(43.365, -8.410);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(corunna, 12));
+
+        // Set marks in map
+        for (MapPoint point: points) {
+            MarkerOptions opts = new MarkerOptions().position(point.getPosition()).
+                    title(point.getName()).icon(BitmapDescriptorFactory.
+                    defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            Marker marker = map.addMarker(opts);
+            marker.setTag(point);
+        }
+
+        // Set on marker clicked
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if (!marker.isInfoWindowShown()) {
+                    marker.showInfoWindow();
+                    listener.onMapFragmentInteraction();
+                } else {
+                    marker.hideInfoWindow();
+                }
+
+                return false;
+            }
+        });
+
+        // Active configurations
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
+                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            map.setMyLocationEnabled(true);
+            map.setOnMyLocationChangeListener(this);
+        }
+
+        map.getUiSettings().setMapToolbarEnabled(false);
+        map.getUiSettings().setMyLocationButtonEnabled(false);
+    }
+
+
+    @Override
+    public void onMyLocationChange(Location location) {
+        currentLocation = location;
+    }
+
     public double getLatitude() {
         if (currentLocation != null) {
             return currentLocation.getLatitude();
@@ -254,26 +262,6 @@ public class MapFragment extends Fragment implements LocationListener {
         }
 
         return 0.0;
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        currentLocation = location;
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
     }
 
     /**
