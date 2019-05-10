@@ -251,10 +251,12 @@ public class MainActivity extends AppCompatActivity implements
         if (fragment != null && fragment.getTag().equals(INFO_GYMK_FRAGMENT_TAG)) {
             fragmentManager.beginTransaction()
                     .replace(R.id.frameLayout, fragment)
+                    .addToBackStack(null)
                     .commit();
         } else {
             fragmentManager.beginTransaction()
                     .replace(R.id.placeholder_main, GymkInfoFragment.newInstance(), INFO_GYMK_FRAGMENT_TAG)
+                    .addToBackStack(null)
                     .commit();
         }
     }
