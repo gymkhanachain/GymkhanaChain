@@ -9,8 +9,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.design.widget.FloatingActionButton;
@@ -52,7 +50,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMyLocationChangeListener {
     public static final String GYMKHANA_POINTS = "gymkhanaPoints";
     public static final String GIS_POINTS = "gisPoints";
     public static final String ROUTE_POINTS = "routePoints";
@@ -74,7 +72,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private OnMapFragmentInteractionListener listener;
     private Unbinder unbinder;
-    private LocationManager locationManager;
     private Location currentLocation = null;
     private GoogleMap map;
 
@@ -108,9 +105,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-
         if (getArguments() != null) {
             pointType = getArguments().getString(ARG_POINT_TYPE);
             points = Parcels.unwrap(getArguments().getParcelable(ARG_POINTS));
@@ -148,99 +142,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         fabMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
-                        ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                }*/
+                LatLng latLng = new LatLng(getLatitude(), getLongitude());
+                map.animateCamera(CameraUpdateFactory.newLatLng(latLng), 1000, null);
 
-                if (currentLocation != null) {
-                    LatLng latLng = new LatLng(getLatitude(), getLongitude());
-                    map.animateCamera(CameraUpdateFactory.newLatLng(latLng), 1000, null);
+                Locale spanish = new Locale("es", "ES");
 
-                    Locale spanish = new Locale("es", "ES");
-
-                    String position = String.format(spanish, "Localizado: (%.2f, %.2f)", getLatitude(),
-                            getLongitude());
-                    Toast newToast = Toast.makeText(getContext(), position, Toast.LENGTH_SHORT);
-                    newToast.show();
-                }
+                String position = String.format(spanish, "Localizado: (%.2f, %.2f)", getLatitude(),
+                        getLongitude());
+                Toast newToast = Toast.makeText(getContext(), position, Toast.LENGTH_SHORT);
+                newToast.show();
             }
         });
 
         return view;
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
-
-        // Move the camera to Coruña
-        LatLng corunna = new LatLng(43.365, -8.410);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(corunna, 12));
-
-        // Set marks in map
-        for (MapPoint point: points) {
-            drawMark(point);
-        }
-
-        // Set on marker clicked
-        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                if (!marker.isInfoWindowShown()) {
-                    marker.showInfoWindow();
-                    listener.onMapFragmentInteraction();
-                } else {
-                    marker.hideInfoWindow();
-                }
-
-                return false;
-            }
-        });
-
-        // Set on map click
-        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(final LatLng dest) {
-                final LatLng origin = new LatLng(getLatitude(), getLongitude());
-
-                GoogleDirection.withServerKey(getString(R.string.maps_key))
-                    .from(origin)
-                    .to(dest)
-                    .execute(new DirectionCallback() {
-                        @Override
-                        public void onDirectionSuccess(Direction direction, String rawBody) {
-                            if (direction.isOK()) {
-                                drawPath(direction);
-                            } else {
-                                Log.e("MapFragment", "Error getting direction: " + direction.getStatus());
-                            }
-                        }
-
-                        @Override
-                        public void onDirectionFailure(Throwable t) {
-                            throw new RuntimeException("Error getting route", t);
-                        }
-                    });
-            }
-        });
-
-        map.getUiSettings().setMapToolbarEnabled(false);
-        map.getUiSettings().setMyLocationButtonEnabled(false);
-        map.getUiSettings().setRotateGesturesEnabled(false);
-
-        // Active configurations
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
-                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            map.setMyLocationEnabled(true);
-            map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-                @Override
-                public void onMyLocationChange(Location location) {
-                    Log.e("MapFragment", "Update location" + location);
-                    currentLocation = location;
-                }
-            });
-        }
     }
 
     private void drawPath(Direction direction) {
@@ -316,27 +230,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onResume() {
-        // Get current location
-        /*if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
-                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 2, this);
-            currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        }*/
-
         super.onResume();
         mapView.onResume();
+
+        // Active configurations
+        if ((map != null) && (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
+                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+            map.setMyLocationEnabled(true);
+            map.setOnMyLocationChangeListener(this);
+        }
     }
 
     @Override
     public void onPause() {
-        /*if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
-                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager.removeUpdates(this);
-            map.setMyLocationEnabled(false);
-        }*/
-
         super.onPause();
         mapView.onPause();
+
+        // Active configurations
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
+                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            map.setMyLocationEnabled(false);
+            map.setOnMyLocationChangeListener(null);
+        }
     }
 
     @Override
@@ -356,6 +271,79 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         unbinder.unbind();
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+
+        // Move the camera to Coruña
+        LatLng corunna = new LatLng(43.365, -8.410);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(corunna, 12));
+
+        // Set marks in map
+        for (MapPoint point: points) {
+            drawMark(point);
+        }
+
+        // Set on map click
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(final LatLng dest) {
+                final LatLng origin = new LatLng(getLatitude(), getLongitude());
+
+                GoogleDirection.withServerKey(getString(R.string.maps_key))
+                        .from(origin)
+                        .to(dest)
+                        .execute(new DirectionCallback() {
+                            @Override
+                            public void onDirectionSuccess(Direction direction, String rawBody) {
+                                if (direction.isOK()) {
+                                    drawPath(direction);
+                                } else {
+                                    Log.e("MapFragment", "Error getting direction: " + direction.getStatus());
+                                }
+                            }
+
+                            @Override
+                            public void onDirectionFailure(Throwable t) {
+                                throw new RuntimeException("Error getting route", t);
+                            }
+                        });
+            }
+        });
+
+        // Set on marker clicked
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if (!marker.isInfoWindowShown()) {
+                    marker.showInfoWindow();
+                    listener.onMapFragmentInteraction();
+                } else {
+                    marker.hideInfoWindow();
+                }
+
+                return false;
+            }
+        });
+
+        // Active configurations
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.
+                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            map.setMyLocationEnabled(true);
+            map.setOnMyLocationChangeListener(this);
+        }
+
+        map.getUiSettings().setMapToolbarEnabled(false);
+        map.getUiSettings().setMyLocationButtonEnabled(false);
+        map.getUiSettings().setRotateGesturesEnabled(false);
+    }
+
+
+    @Override
+    public void onMyLocationChange(Location location) {
+        currentLocation = location;
+    }
+
     public double getLatitude() {
         if (currentLocation != null) {
             return currentLocation.getLatitude();
@@ -371,29 +359,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         return 0.0;
     }
-
-/*
-    @Override
-    public void onLocationChanged(Location location) {
-        Log.e("MapFragment", "Update location");
-        currentLocation = location;
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
-*/
 
     /**
      * This interface must be implemented by activities that contain this
