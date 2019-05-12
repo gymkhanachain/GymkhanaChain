@@ -45,4 +45,22 @@
         <item name="android:textColor">@color/colorSecondaryLight</item>
     </style>
 
+    <style name="roundImgCardView" >
+        <item name="android:layout_width">72dp</item>
+        <item name="android:layout_height">72dp</item>
+        <item name="android:layout_marginStart">32dp</item>
+        <item name="android:layout_marginTop">48dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:elevation">12dp</item>
+        <item name="android:layout_centerHorizontal">true</item>
+    </style>
+
+    <style name="roundImgImageView" >
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
 </resources>
