@@ -2,7 +2,6 @@ package com.gymkhanachain.app.ui.mainscreen.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +12,6 @@ import android.view.ViewGroup;
 import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.model.beans.GymkhanaBean;
 import com.gymkhanachain.app.model.commons.GymkhanaCache;
-import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapPoint;
 import com.gymkhanachain.app.ui.mainscreen.adapters.NearGymkAdapter;
 
@@ -31,9 +29,6 @@ public class NearGymkFragment extends Fragment implements NearGymkAdapter.
     private static final String ARG_NEAR_GYMKHANAS = "nearGymks";
 
     private static final GymkhanaCache gymkhanas = GymkhanaCache.getInstance();
-
-    @BindView(R.id.play_debug)
-    FloatingActionButton playDebugFab;
 
     @BindView(R.id.near_gymkhanas)
     RecyclerView nearGymkhanasView;
@@ -89,13 +84,6 @@ public class NearGymkFragment extends Fragment implements NearGymkAdapter.
         final NearGymkAdapter adapter = new NearGymkAdapter(nearGymkhanas, this);
         nearGymkhanasView.setAdapter(adapter);
 
-        playDebugFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onStartGymkFragmentInteraction();
-            }
-        });
-
         // Load all points
         List<MapPoint> points = new ArrayList<>();
         for (Integer id : nearGymkhanas) {
@@ -105,8 +93,8 @@ public class NearGymkFragment extends Fragment implements NearGymkAdapter.
         }
 
         // Create map fragment
-        final MapFragment map = MapFragment.newInstance(MapFragment.GYMKHANA_POINTS, points);
-        getFragmentManager().beginTransaction().add(R.id.map_placeholder, map).commit();
+        //final MapFragment map = MapFragment.newInstance(MapFragment.GYMKHANA_POINTS, points);
+        //getFragmentManager().beginTransaction().add(R.id.map_placeholder, map).commit();
 
         return view;
     }

@@ -27,35 +27,33 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.gymkhanachain.app.SettingsActivity;
-import com.gymkhanachain.app.commons.DownloadImageToBitmapAsyncTask;
-import com.gymkhanachain.app.model.beans.GymkhanaBean;
-import com.gymkhanachain.app.model.commons.GymkhanaCache;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Task;
 import com.gymkhanachain.app.R;
+import com.gymkhanachain.app.SettingsActivity;
+import com.gymkhanachain.app.commons.DownloadImageToBitmapAsyncTask;
+import com.gymkhanachain.app.model.beans.GymkhanaBean;
+import com.gymkhanachain.app.model.commons.GymkhanaCache;
 import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
 import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
-import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
-import com.gymkhanachain.app.ui.mainscreen.fragments.NearGymkFragment;
-import com.gymkhanachain.app.ui.gymkpoint.activity.PointActivity;
-import com.gymkhanachain.app.ui.playgymkhana.activity.PlayGymkhanaActivity;
-import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
 import com.gymkhanachain.app.ui.creategymkana.activity.CreateGymkActivity;
 import com.gymkhanachain.app.ui.mainscreen.fragments.GymkInfoFragment;
 import com.gymkhanachain.app.ui.mainscreen.fragments.ListGymkFragment;
+import com.gymkhanachain.app.ui.mainscreen.fragments.NearGymkFragment;
+import com.gymkhanachain.app.ui.playgymkhana.activity.PlayGymkhanaActivity;
+import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         NearGymkFragment.OnNearGymkFragmentInteractionListener,
-        MapFragment.OnMapFragmentInteractionListener,
+        // MapFragment.OnMapFragmentInteractionListener,
         ListGymkFragment.OnListGymkFragmentInteractionListener,
         GymkInfoFragment.OnGymkInfoFragmentInteractionListener,
         NavigationView.OnNavigationItemSelectedListener,
@@ -350,11 +348,6 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             }
         }
-    }
-
-    @Override
-    public void onMapFragmentInteraction() {
-        Toast.makeText(this, "Ejemplo", Toast.LENGTH_SHORT);
     }
 
     @Override

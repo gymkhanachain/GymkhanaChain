@@ -14,4 +14,8 @@
     <color name="colorIcons">#212121</color>
     <color name="colorDivider">#BDBDBD</color>
     <color name="colorWhite">#FFFFFF</color>
+
+    <color name="colorGymkhana">#ffd080</color>
+    <color name="colorGis">#bdd37c</color>
+    <color name="colorRoute">#6ccece</color>
 </resources>

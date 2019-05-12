@@ -1,7 +1,5 @@
 package com.gymkhanachain.app.ui.creategymkana.activity;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -11,20 +9,21 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.ImageView;
 
+import com.gymkhanachain.app.R;
+import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
 import com.gymkhanachain.app.ui.creategymkana.fragments.GymkDetailsFragment;
 import com.gymkhanachain.app.ui.creategymkana.fragments.GymkPointsFragment;
 import com.gymkhanachain.app.ui.creategymkana.fragments.GymkPrivacyFragment;
-import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
-import com.gymkhanachain.app.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateGymkActivity extends AppCompatActivity implements GymkDetailsFragment.OnFragmentInteractionListener,
-        GymkPointsFragment.OnFragmentInteractionListener, GymkPrivacyFragment.OnFragmentInteractionListener, MapFragment.OnMapFragmentInteractionListener {
+public class CreateGymkActivity extends AppCompatActivity
+        implements GymkDetailsFragment.OnFragmentInteractionListener,
+        GymkPointsFragment.OnFragmentInteractionListener,
+        GymkPrivacyFragment.OnFragmentInteractionListener {
+        // MapFragment.OnMapFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -71,11 +70,6 @@ public class CreateGymkActivity extends AppCompatActivity implements GymkDetails
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
-    }
-
-    @Override
-    public void onMapFragmentInteraction() {
 
     }
 
