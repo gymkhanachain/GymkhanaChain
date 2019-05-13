@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.annotation.ColorInt;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -77,6 +78,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @BindView(R.id.fab_accesibility)
     FloatingActionButton fabAccesibility;
 
+    private Vibrator vibrator;
     private MapFragmentParams params;
     private OnMapFragmentInteractionListener listener;
     private Unbinder unbinder;
@@ -131,22 +133,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mapView.getMapAsync(this);
 
         // Sets all fabs listener
-        fabSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast toast = Toast.makeText(getContext(), "Búsqueda", Toast.LENGTH_SHORT);
-                toast.show();
-            }
-        });
+        if (params.getMapMode() == MapMode.PLAY_MODE) {
+           fabSearch.hide();
+        } else {
+            fabSearch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onMapSearchButtonClickListener();
+                }
+            });
+        }
 
-        fabAccesibility.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast newToast = Toast.makeText(getContext(), "Accesibilidad",
-                        Toast.LENGTH_SHORT);
-                newToast.show();
-            }
-        });
+        if (params.getMapMode() != MapMode.NORMAL_MODE) {
+            fabAccesibility.hide();
+        } else {
+            fabAccesibility.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onMapAccesibilityFilterClickListener();
+                }
+            });
+        }
 
         fabMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,12 +196,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     /**
-     * Establece el intervalo de actualización del mapa
-     * @param locationInterval Intervalo de actualización del mapa en segundos
+     * Establece el la prioridad de actualización de la localicación del mapa
+     * @param locationPriority Prioridad de actualización de la localicación del mapa
+     * @see LocationRequest
      */
-    public void setLocationInterval(float locationInterval) {
+    public void setLocationPriority(int locationPriority) {
         if (params != null) {
-            params.setLocationInterval(locationInterval);
+            params.setLocationPriority(locationPriority);
         }
 
         // Reiniciamos el servicio
@@ -260,7 +268,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         logo.setBounds(xPos, yPos, xPos+size, yPos+size);
 
         // Draw marker
-        Drawable wrapped = null;
+        Drawable wrapped;
 
         // Get color of background
         if (params.getTypePoints() == PointType.GYMKHANA_POINTS) {
@@ -273,28 +281,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             DrawableCompat.setTint(wrapped, color);
         }
 
-        // If drawable exists, draw marker
-        if (wrapped != null) {
-            // Create icon mark
-            Bitmap bitmap = Bitmap.createBitmap(background.getIntrinsicWidth(), background
-                    .getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            wrapped.draw(canvas);
-            logo.draw(canvas);
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bitmap);
+        // Create icon mark
+        Bitmap bitmap = Bitmap.createBitmap(background.getIntrinsicWidth(), background
+                .getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        wrapped.draw(canvas);
+        logo.draw(canvas);
+        BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bitmap);
 
-            // Set all marker options
-            MarkerOptions opts = new MarkerOptions()
-                    .position(point.getPosition())
-                    .icon(icon);
+        // Set all marker options
+        MarkerOptions opts = new MarkerOptions()
+                .position(point.getPosition())
+                .icon(icon);
 
-            if (params.getMapMode() == MapMode.EDIT_MODE) {
-                opts.draggable(true);
-            }
-
-            Marker marker = map.addMarker(opts);
-            marker.setTag(point);
+        if (params.getMapMode() == MapMode.EDIT_MODE) {
+            opts.draggable(true);
         }
+
+        Marker marker = map.addMarker(opts);
+        marker.setTag(point);
     }
 
     @SuppressWarnings({"MissingPermission"})
@@ -325,8 +330,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             // Creamos el criterio de localización
             if (locationRequest == null) {
-                locationRequest = LocationRequest.create().setFastestInterval((long) Math
-                        .round(params.getLocationInterval()*1000));
+                locationRequest = LocationRequest.create().setPriority(params.getLocationPriority());
             }
 
             // Obtenemos un cliente de localización
@@ -448,7 +452,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                     @Override
                     public void onDirectionFailure(Throwable t) {
-                        throw new RuntimeException("Error getting route", t);
+                        Log.e(TAG, "Error getting route", t);
+
+                        // Si es el primer thread, tendrá que limpiar el mapa
+                        if (clearMap.compareAndSet(true, false)) {
+                            map.clear();
+                        }
+
+                        // Si es el último thread, dibuja los marcadores
+                        if (completeRoutes.get() == maxRoutes-1) {
+                            drawMarkers();
+                        }
+
+                        completeRoutes.getAndAdd(1);
                     }
                 });
     }
@@ -513,6 +529,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             throw new RuntimeException(context.toString()
                     + " must implement OnMapFragmentInteractionListener");
         }
+
+        vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
     }
 
     @Override
@@ -579,7 +597,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             setFirstPointLocation();
         }
 
-
         // Dibuja el mapa
         drawMap();
 
@@ -609,11 +626,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        // Si estamos en el modo editar, se añade el listener de de D&D
+        // Si estamos en el modo editar se añade el listener de D&D
         if (params.getMapMode() == MapMode.EDIT_MODE) {
             map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
                 @Override
                 public void onMarkerDragStart(Marker marker) {
+                    vibrator.vibrate(10);
                     isDragPoint.set(true);
                 }
 
@@ -635,7 +653,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     }
 
                     // Se llama al callback
-                    listener.onMapPointEditListener(newPoint);
+                    listener.onMapPointMoveListener(newPoint);
 
                     // Dibuja el mapa
                     isDragPoint.set(false);
@@ -675,6 +693,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     public interface OnMapFragmentInteractionListener {
         /**
+         * Callback que se llama cuando se ha pulsado el botón de búsqueda
+         */
+        void onMapSearchButtonClickListener();
+
+        /**
+         * Callbacl que se llama cuando se ha pusado el botón de accesibilidad
+         */
+        void onMapAccesibilityFilterClickListener();
+
+        /**
          * Callback que se llama cuando se ha hecho una pulsación larga en el mapa
          * @param point Posición donde se ha pulsado
          */
@@ -691,17 +719,5 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
          * @param point Marcador que se ha movido
          */
         void onMapPointMoveListener(MapPoint point);
-
-        /**
-         * Callback que se llama cuando se quiere editar un marcador
-         * @param point Marcador que se quiere editar
-         */
-        void onMapPointEditListener(MapPoint point);
-
-        /**
-         * Callback que se llama cuando se quiere borrar un marcador
-         * @param point Marcador que se quiere borrar
-         */
-        void onMapPointRemoveListener(MapPoint point);
     }
 }

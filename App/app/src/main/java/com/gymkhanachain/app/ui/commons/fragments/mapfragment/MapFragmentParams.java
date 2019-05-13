@@ -1,5 +1,6 @@
 package com.gymkhanachain.app.ui.commons.fragments.mapfragment;
 
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.model.MapStyleOptions;
 
 import org.parceler.Parcel;
@@ -15,7 +16,7 @@ public class MapFragmentParams {
     PointOrder orderPoints;
     MapMode mapMode;
     boolean showInfoWindow;
-    float locationInterval;
+    int locationPriority;
     MapStyleOptions style;
     int mapType;
 
@@ -34,15 +35,16 @@ public class MapFragmentParams {
      * @param mapMode Modo del mapa (mirar MapMode)
      */
     public MapFragmentParams(PointType typePoints, PointOrder orderPoints, MapMode mapMode) {
-        this(typePoints, orderPoints, mapMode, false, 25, null, -1);
+        this(typePoints, orderPoints, mapMode, false, LocationRequest
+                .PRIORITY_HIGH_ACCURACY, null, -1);
     }
 
     @ParcelConstructor
     public MapFragmentParams(PointType typePoints, PointOrder orderPoints, MapMode mapMode,
-                             boolean showInfoWindow, float locationInterval, MapStyleOptions style,
+                             boolean showInfoWindow, int locationPriority, MapStyleOptions style,
                              int mapType) {
         setTypePoints(typePoints).setOrderPoints(orderPoints).setMapMode(mapMode)
-                .setLocationInterval(locationInterval).setStyle(style).setMapType(mapType);
+                .setLocationPriority(locationPriority).setStyle(style).setMapType(mapType);
     }
 
     public PointType getTypePoints() {
@@ -81,12 +83,12 @@ public class MapFragmentParams {
         return this;
     }
 
-    public float getLocationInterval() {
-        return locationInterval;
+    public int getLocationPriority() {
+        return locationPriority;
     }
 
-    public MapFragmentParams setLocationInterval(float locationInterval) {
-        this.locationInterval = locationInterval;
+    public MapFragmentParams setLocationPriority(int locationPriority) {
+        this.locationPriority = locationPriority;
         return this;
     }
 

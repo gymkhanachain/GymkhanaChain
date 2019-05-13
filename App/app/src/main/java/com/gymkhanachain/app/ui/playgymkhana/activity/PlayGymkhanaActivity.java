@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.gymkhanachain.app.R;
@@ -30,7 +31,7 @@ public class PlayGymkhanaActivity extends AppCompatActivity implements MapFragme
         ButterKnife.bind(this);
 
         // Create map fragment
-        final MapFragmentParams params = new MapFragmentParams(PointType.GIS_POINTS, PointOrder.NONE_ORDER, MapMode.EDIT_MODE);
+        final MapFragmentParams params = new MapFragmentParams(PointType.GIS_POINTS, PointOrder.ROUTE_ORDER, MapMode.NORMAL_MODE);
         final Fragment map = MapFragment.newInstance(params, getGisPoints());
         getSupportFragmentManager().beginTransaction().add(R.id.map_content, map).commit();
 
@@ -43,8 +44,8 @@ public class PlayGymkhanaActivity extends AppCompatActivity implements MapFragme
 
         MapPoint estadioUdc = new MapPoint(0, new LatLng(43.333259, -8.4126029), "Estadio UDC");
         points.add(estadioUdc);
-        MapPoint facultadSociología = new MapPoint(1, new LatLng(43.332556, -8.4139761), "Facultad de Sociología");
-        points.add(facultadSociología);
+        MapPoint facultadSociologia = new MapPoint(1, new LatLng(43.332556, -8.4139761), "Facultad de Sociología");
+        points.add(facultadSociologia);
         MapPoint circuito = new MapPoint(2, new LatLng(43.3313183, -8.4116328), "Servicios de Apoyo a la Investigación");
         points.add(circuito);
         MapPoint areaCientifica = new MapPoint(3, new LatLng(43.3300947, -8.4125125), "UDC");
@@ -61,6 +62,20 @@ public class PlayGymkhanaActivity extends AppCompatActivity implements MapFragme
 
 
     @Override
+    public void onMapSearchButtonClickListener() {
+        Log.i(TAG, "Búsqueda");
+        Toast toast = Toast.makeText(this, "Búsqueda", Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+    @Override
+    public void onMapAccesibilityFilterClickListener() {
+        Log.i(TAG, "Accesibilidad");
+        Toast toast = Toast.makeText(this, "Accesibilidad", Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+    @Override
     public void onMapLongClickListener(LatLng point) {
         Log.i(TAG, "Pulsación larga en: " + point);
     }
@@ -73,15 +88,5 @@ public class PlayGymkhanaActivity extends AppCompatActivity implements MapFragme
     @Override
     public void onMapPointMoveListener(MapPoint point) {
         Log.i(TAG, "Marcador movido: " + point.getName());
-    }
-
-    @Override
-    public void onMapPointEditListener(MapPoint point) {
-        Log.i(TAG, "Marcador editado: " + point.getName());
-    }
-
-    @Override
-    public void onMapPointRemoveListener(MapPoint point) {
-        Log.i(TAG, "Marcador eliminado: " + point.getName());
     }
 }
