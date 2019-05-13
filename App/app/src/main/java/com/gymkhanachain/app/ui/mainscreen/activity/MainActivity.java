@@ -300,11 +300,11 @@ public class MainActivity extends AppCompatActivity implements
                 Toast.makeText(this, "Búsqueda avanzada", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.nav_saved_gymk: // Listar gymkhanas guardadas
-                // TODO: mostrar fragment LIST_GYMK_FRAGMENT_TAG con lsa gymkhanas que correspondan
+                // TODO: mostrar fragment LIST_GYMK_FRAGMENT_TAG con las gymkhanas que correspondan
                 Toast.makeText(this, "Mostrar gymkhanas guardadas", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.nav_done_gymk: // Listar gymkhanas completadas
-                // TODO: mostrar fragment LIST_GYMK_FRAGMENT_TAG con lsa gymkhanas que correspondan
+                // TODO: mostrar fragment LIST_GYMK_FRAGMENT_TAG con las gymkhanas que correspondan
                 Toast.makeText(this, "Mostrar gymkhanas completadas", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.nav_my_gymk: // Listar gymkhanas creadas por el usuario
@@ -315,10 +315,12 @@ public class MainActivity extends AppCompatActivity implements
                         break;
                     fragmentManager.beginTransaction()
                             .replace(R.id.frameLayout, fragment)
+                            .addToBackStack(LIST_GYMK_FRAGMENT_TAG)
                             .commit();
                 } else
                     fragmentManager.beginTransaction()
                             .replace(R.id.placeholder_main, ListGymkFragment.newInstance(), LIST_GYMK_FRAGMENT_TAG)
+                            .addToBackStack(LIST_GYMK_FRAGMENT_TAG)
                             .commit();
                 break;
             case R.id.nav_create_gymk: // Listar gymkhanas creadas por el usuario
@@ -386,21 +388,27 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if (doubleBackToExitPressedOnce) {
-            super.onBackPressed();
-            return;
-        }
 
-        this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, getString(R.string.double_tap_exit_app), Toast.LENGTH_SHORT).show();
+        Fragment fragment = fragmentManager.findFragmentByTag(NEAR_GYMK_FRAGMENT_TAG);
 
-        new Handler().postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce=false;
+        if (fragment != null && fragment.isVisible()) {
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                return;
             }
-        }, 2000);
+
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, getString(R.string.double_tap_exit_app), Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 2000);
+        } else
+            super.onBackPressed();
     }
 }
 

@@ -92,8 +92,10 @@ public class NearGymkFragment extends Fragment implements NearGymkAdapter.
         List<MapPoint> points = new ArrayList<>();
         for (Integer id : nearGymkhanas) {
             GymkhanaBean bean = gymkhanas.getGymkhana(id);
-            MapPoint point = new MapPoint(id, bean.getPosition(), bean.getName());
-            points.add(point);
+            if (bean != null) {
+                MapPoint point = new MapPoint(id, bean.getPosition(), bean.getName());
+                points.add(point);
+            }
         }
 
         // Create map fragment
