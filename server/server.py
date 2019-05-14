@@ -96,9 +96,51 @@ class Gymkhana(Resource):
     	return jsonify(result_part1)
 
     def post(self, GYMK_ID):
-        gymk = request.get_json()
-        print gymk
-	#query = 'UPDATE INTO GYMKHANAS(GYMK_ID, IMAGE, NAME, DESC, LAT, LNG, TYPE, A11Y, PRIV, ACC_COD, CREATOR, CREA_DATE, APER_TIME, CLOSE_TIME) VALUES (' + gymk_id + ',\'' + imagen + '\',\'' + nombre + '\',\'' + desc + '\',' + lat + ',' + lng + ',' + typ + ',\'' + a11y + '\',\'' + priv + '\',\'' + acc_cod + '\',\'' + creator + '\',' + crea_time + ',' + aper_time + ',' + close_time + ')'
+        gymkhana = request.get_json()
+        print gymkhana
+        gymk_id = gymkhana['GYMK_ID']
+        imagen = gymkhana['IMAGE']	
+        nombre = gymkhana['NAME']
+        desc = gymkhana['DESCRIPCION']
+        lat = gymkhana['LAT']
+        lng = gymkhana['LNG']
+        typ = gymkhana['TYPE']
+        a11y = gymkhana['A11Y']
+        priv = gymkhana['PRIV']
+        acc_cod = gymkhana['ACC_COD']
+        creator = gymkhana['CREATOR']
+        crea_date = gymkhana['CREA_DATE']
+        aper_time = gymkhana['APER_TIME']
+        close_time = gymkhana['CLOSE_TIME']
+        query_gymk = 'UPDATE GYMKHANAS SET IMAGE = \'' + imagen + '\', NAME = \'' + nombre + '\', DESC = \'' + desc + '\', LAT = ' + str(lat) + ', LNG = ' + str(lng) + ',TYPE = \'' + typ + '\', A11Y = \'' + str(a11y) + '\', PRIV = \'' + str(priv) + '\', ACC_COD = \'' + acc_cod + '\', CREATOR = \'' + creator + '\', CREA_DATE = ' + str(crea_date) + ', APER_TIME = ' + str(aper_time) + ', CLOSE_TIME = ' + str(close_time) + ' WHERE GYMK_ID = ' + str(gymk_id)
+        conn = db_connect.connect()
+        conn.execute(query_gymk)
+        if gymkhana['POINTS'] is not None:
+            for punto in gymkhana['POINTS']:
+                punt_id = punto['POINT_ID']
+                punt_img = punto['IMAGE']
+                punt_lat = punto['LAT']
+                punt_lng = punto['LNG']
+                punt_name = punto['NAME']
+                punt_short = punto['SHORT_DESC']
+                query_point = 'UPDATE POINT SET IMAGE = \'' + punt_img + '\', NAME = \'' + punt_name + '\', SHORT_DESC = \'' + punt_short + '\', LAT = ' + str(punt_lat) + ', LNG = ' + str(punt_lng) + ' WHERE POINT_ID = ' + str(punt_id)
+                conn.execute(query_point)
+                if 'LONG_DESC' in punto:
+                    text_id = conn.execute("SELECT TEXT FROM POINT_ACT WHERE POINT_ID =%d" %int(punt_id))
+                    punt_long = punto['LONG_DESC']
+                    query_text = 'UPDATE TEXT SET LONG_DESC = \'' + punt_long + '\' WHERE TEXT_ID = ' + str(text_id.cursor.fetchone()[0])
+                    conn.execute(query_text)
+                else:
+                    quizz_id = conn.execute("SELECT QUIZZ FROM POINT_ACT WHERE POINT_ID =%d" %int(punt_id))
+                    punt_qt = punto['QUIZ_TEXT']
+                    punt_sol1 = punto['SOL1']
+                    punt_sol2 = punto['SOL2']
+                    punt_sol3 = punto['SOL3']
+                    punt_sol4 = punto['SOL4']
+                    punt_cor = punto['CORRECT']
+                    query_quizz = 'UPDATE QUIZZ SET QUIZ_TEXT = \'' + punt_qt + '\', SOL1 = \'' + punt_sol1 + '\', SOL2 = \'' + punt_sol2 + '\', SOL3 = \'' + punt_sol3 + '\', SOL4 = \'' + punt_sol4 + '\', CORRECT = ' + str(punt_cor) + ' WHERE QUIZZ_ID = ' + str(quizz_id.cursor.fetchone()[0])
+                    conn.execute(query_quizz)
+
     def delete(self, GYMK_ID):
         conn = db_connect.connect()
         query = conn.execute("DELETE FROM GYMKHANAS WHERE GYMK_ID=%d" %int(GYMK_ID))

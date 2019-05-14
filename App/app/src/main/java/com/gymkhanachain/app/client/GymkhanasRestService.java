@@ -24,7 +24,7 @@ public interface GymkhanasRestService {
     @GET(ApiRoutes.GYMKHANAS+"/user/{user}")
     Call<List<Gymkhana>> getUserGymkanas(@Path("user") String user);
 
-    //Operaciones con Gymkhanas
+    //Operaciones CRUD con Gymkhanas
     // Obtener una gymkhana
     @GET(ApiRoutes.GYMKHANAS+"/{id}")
     Call<Gymkhana> getGymkanaById(@Path("id") int id);
@@ -34,7 +34,8 @@ public interface GymkhanasRestService {
     Call<String> doPost(@Body Gymkhana gymkhana);
 
     // Modificar una gymkhana
-
+    @POST(ApiRoutes.GYMKHANAS+"/{id}")
+    Call<Void> modGymkana(@Path("id") int id, @Body Gymkhana gymkhana);
 
     //Borrar una gymkhana
     @DELETE(ApiRoutes.GYMKHANAS+"/{id}")

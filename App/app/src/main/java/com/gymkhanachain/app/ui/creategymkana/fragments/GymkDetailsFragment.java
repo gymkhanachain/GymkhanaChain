@@ -119,9 +119,9 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
         }
         /* LatLng l = new LatLng(40,40);
         LatLng l2 = new LatLng(0,0);
-        List<Gymkhana> prueba = RestServ.getUserGymkanas("CREADORCIO");*/
+        List<Gymkhana> prueba = RestServ.getUserGymkanas("CREADORCIO");
         RestServ.deleteGymkhana(43);
-        /* Point p1 = new TextPoint(null,"p1123e","punto1","desc", l, "Holo");
+        Point p1 = new TextPoint(null,"p1123e","punto1","desc", l, "Holo");
         Point p2 = new QuizzPoint(null,"p1123e","punto1","desc", l, "Holo","","","","",1);
         Point p3 = new TextPoint(null,"p1123e","punto1","desc", l, "Holo");
         List<Point> points = new ArrayList<>();
@@ -134,7 +134,14 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
         prueba.add(g);
         prueba.add(g2);
         RestServ.addGymkhana(prueba);*/
-
+        LatLng l = new LatLng(40,40);
+        Point p1 = new TextPoint(94,"IMAGENONCIA","MINPUTNTO","DESCRIPVIONCAMBIADA", l, "Pruebamod");
+        Point p2 = new QuizzPoint(95,"p1123e","punto1","desc", l, "Holo","","","moooood","",1);
+        List<Point> points = new ArrayList<>();
+        points.add(p1);
+        points.add(p2);
+        Gymkhana g = new Gymkhana(41,"1111","s","e",l, GymkhanaType.desordenada,FALSE,FALSE,"","",1,1,1, points);
+        RestServ.modGymkhana(g);
         buttonActivate.setOnClickListener(this);
         buttonDelete.setOnClickListener(this);
         ImageButton imageButtonEditGymkImg = getActivity().findViewById(R.id.imageButton_edit_gymk_img);

@@ -83,6 +83,27 @@ public class RestServ {
         });
     }
 
+    public static void modGymkhana(Gymkhana g){
+        GymkhanasRestService service = GymkhanasClient.createServiceSer(GymkhanasRestService.class);
+        Call<Void> gymkhanaCall = service.modGymkana(g.getGymk_id(),g);
+        gymkhanaCall.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                try {
+                    Log.d("onResponse", "Correto");
+                } catch (Exception e) {
+                    Log.d("onResponse", "There is an error");
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.d("onFailure", t.toString());
+            }
+        });
+    }
+
     public static void deleteGymkhana(int id){
         GymkhanasRestService service = GymkhanasClient.createServiceSimple(GymkhanasRestService.class);
         Call<Void> gymkhanaCall = service.deleteGymkhana(id);

@@ -14,7 +14,7 @@ public class PointSerializer implements JsonSerializer<Point> {
     public JsonElement serialize(Point p, Type typeOfSrc, JsonSerializationContext context) {
         Log.d("onResponse", "pasa por aqui");
         JsonObject json = new JsonObject();
-
+        json.addProperty("POINT_ID",p.getPoint_id());
         json.addProperty("IMAGE", p.getImage());
         json.addProperty("LAT", p.getLatitude());
         json.addProperty("LNG",p.getLongitude());
