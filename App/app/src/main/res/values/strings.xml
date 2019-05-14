@@ -134,4 +134,30 @@
     <string name="pref_title_vibrate">Vibración</string>
     <string name="user_profile">Perfil de usuario</string>
     <string name="nav_config">Configuración</string>
+
+    <string name="pref_header_appearance">Apariencia</string>
+    <string name="pref_title_activate_dark_theme">Cambiar a tema oscuro</string>
+    <string name="pref_title_map_theme">Cambiar colores del mapa</string>
+    <string-array name="pref_map_theme_entries">
+        <item>Por defecto</item>
+        <item>Modo retro</item>
+        <item>Escala de grises</item>
+        <item>Modo nocturno</item>
+        <item>Oscuro</item>
+    </string-array>
+    <string-array name="pref_map_theme_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string name="pref_show_profile_img">Mostrar imagen de perfil</string>
+    <string name="pref_logout">Cerrar sesión</string>
+
+
+    <string name="test">test</string>
+
+
 </resources>

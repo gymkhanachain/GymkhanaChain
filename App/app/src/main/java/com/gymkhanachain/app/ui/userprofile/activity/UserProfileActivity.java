@@ -1,12 +1,14 @@
 package com.gymkhanachain.app.ui.userprofile.activity;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
@@ -44,6 +46,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoginFragm
     private static final String TAG = "UserProfile";
 
     FragmentManager fragmentManager;
+    SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoginFragm
         fragmentManager = getSupportFragmentManager();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if (account!=null){
             setTitle(R.string.user_profile);
             if (getSupportActionBar() != null){
@@ -170,8 +174,10 @@ public class UserProfileActivity extends AppCompatActivity implements LoginFragm
             Uri personPhotoUrl = account.getPhotoUrl();
             ((TextView) findViewById(R.id.UserName)).setText(account.getDisplayName());
             if (user != null) new FetchProfileInfo().execute(Long.getLong("0"));
-            ImageView imageView = (ImageView)findViewById(R.id.profileImageView);
-            new DownloadImageToBitmapAsyncTask(getApplicationContext(),imageView).execute(personPhotoUrl);
+            if (preferences.getBoolean("profilepic_pref_switch", false)) {
+                ImageView imageView = (ImageView)findViewById(R.id.profileImageView);
+                new DownloadImageToBitmapAsyncTask(getApplicationContext(),imageView).execute(personPhotoUrl);
+            }
         }
         else{
             Log.e(TAG, " account is null");
