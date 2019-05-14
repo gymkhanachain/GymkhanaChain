@@ -15,6 +15,8 @@
     <string name="bt_activate">Activar</string>
     <string name="bt_delete">Borrar</string>
     <string name="bt_accept">Aceptar</string>
+    <string name="bt_save">Guardar</string>
+    <string name="bt_report">Reportar</string>
     <string name="imview_gymk_description">Imagen de gymkhanaBean</string>
     <string name="et_gymk_name">Nombre gymkhanaBean</string>
     <string name="et_gymk_desc">Descripción gymkhanaBean</string>
