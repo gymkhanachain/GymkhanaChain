@@ -2,23 +2,18 @@ package com.gymkhanachain.app.ui.creategymkana.fragments;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -31,9 +26,18 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
-import com.gymkhanachain.app.model.beans.GymkhanaBean;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.gymkhanachain.app.client.Gymkhana;
+import com.gymkhanachain.app.client.GymkhanasClient;
+import com.gymkhanachain.app.client.GymkhanasRestService;
+import com.gymkhanachain.app.client.Point;
+import com.gymkhanachain.app.client.QuizzPoint;
+import com.gymkhanachain.app.client.RestServ;
+import com.gymkhanachain.app.client.TextPoint;
 
 import com.gymkhanachain.app.R;
+import com.gymkhanachain.app.model.beans.GymkhanaType;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -43,8 +47,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static android.app.Activity.RESULT_CANCELED;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import static android.app.Activity.RESULT_OK;
+import static java.lang.Boolean.FALSE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -109,11 +117,28 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
         } catch (NullPointerException e){
 
         }
+        /* LatLng l = new LatLng(40,40);
+        LatLng l2 = new LatLng(0,0);
+        List<Gymkhana> prueba = RestServ.getUserGymkanas("CREADORCIO");*/
+        RestServ.deleteGymkhana(43);
+        /* Point p1 = new TextPoint(null,"p1123e","punto1","desc", l, "Holo");
+        Point p2 = new QuizzPoint(null,"p1123e","punto1","desc", l, "Holo","","","","",1);
+        Point p3 = new TextPoint(null,"p1123e","punto1","desc", l, "Holo");
+        List<Point> points = new ArrayList<>();
+        points.add(p1);
+        points.add(p2);
+        points.add(p3);
+        Gymkhana g = new Gymkhana(null,"1111","s","e",l, GymkhanaType.desordenada,FALSE,FALSE,"","",1,1,1, points);
+        Gymkhana g2 = new Gymkhana(null,"222","s2","2e",l, GymkhanaType.desordenada,FALSE,FALSE,"","",21,21,12, points);
+        List<Gymkhana> prueba = new ArrayList<>();
+        prueba.add(g);
+        prueba.add(g2);
+        RestServ.addGymkhana(prueba);*/
+
         buttonActivate.setOnClickListener(this);
         buttonDelete.setOnClickListener(this);
         ImageButton imageButtonEditGymkImg = getActivity().findViewById(R.id.imageButton_edit_gymk_img);
         imageButtonEditGymkImg.setOnClickListener(this);
-
     }
 
     @Override
@@ -391,5 +416,7 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
                 break;
         }
     }
+
+
 }
 

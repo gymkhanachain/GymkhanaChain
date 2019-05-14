@@ -5,66 +5,66 @@ import android.graphics.Bitmap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.gymkhanachain.app.model.beans.GymkhanaType;
 
 import java.util.Date;
+import java.util.List;
 
-public class GymkhanaResponse {
-
+public class Gymkhana {
     @Expose
-    @SerializedName("gymk_id")
+    @SerializedName("GYMK_ID")
     private Integer gymk_id;
     @Expose
-    @SerializedName("image")
-    private Bitmap image;
+    @SerializedName("IMAGE")
+    private String image;
     @Expose
-    @SerializedName("name")
+    @SerializedName("NAME")
     private String name;
     @Expose
-    @SerializedName("description")
+    @SerializedName("DESCRIPCION")
     private String description;
     @Expose
-    @SerializedName("lat")
-    private long latitude;
+    @SerializedName("LAT")
+    private double latitude;
     @Expose
-    @SerializedName("lng")
-    private long longitude;
-
-    private LatLng position;
-    // 'lng'+ 'lat';
+    @SerializedName("LNG")
+    private double longitude;
     @Expose
-    @SerializedName("type")
-    private String type;
+    @SerializedName("TYPE")
+    private GymkhanaType type;
     @Expose
-    @SerializedName("a11y")
+    @SerializedName("A11Y")
     private boolean a11y;
     @Expose
-    @SerializedName("priv")
+    @SerializedName("PRIV")
     private boolean priv;
     @Expose
-    @SerializedName("acc_cod")
+    @SerializedName("ACC_COD")
     private String acc_cod;
     @Expose
-    @SerializedName("creator")
+    @SerializedName("CREATOR")
     private String creator; //Object
     @Expose
-    @SerializedName("crea_time")
-    private Date crea_time; //'crea_time'
+    @SerializedName("CREA_DATE")
+    private int crea_time; //'crea_time'
     @Expose
-    @SerializedName("aper_time")
-    private Date aper_time; //aper_time
+    @SerializedName("APER_TIME")
+    private int aper_time; //aper_time
     @Expose
-    @SerializedName("close_time")
-    private Date close_time;//close_time
+    @SerializedName("CLOSE_TIME")
+    private int close_time;//close_time
+    @Expose
+    @SerializedName("POINTS")
+    private List<Point> points; //close_time
 
-    public GymkhanaResponse(Integer gymk_id, Bitmap image, String name, String description,
-                            long lat, long lng , String type, boolean a11y, boolean priv, String acc_cod, String creator, Date crea_time, Date aper_time, Date close_time) {
+    public Gymkhana(Integer gymk_id, String image, String name, String description,
+                    LatLng latlng , GymkhanaType type, boolean a11y, boolean priv, String acc_cod, String creator, int crea_time, int aper_time, int close_time, List<Point> points) {
         this.gymk_id = gymk_id;
         this.image = image;
         this.name = name;
         this.description = description;
-        this.latitude=lat;
-        this.longitude = lng;
-        this.position = new LatLng(latitude,longitude);
+        this.latitude= latlng.latitude;
+        this.longitude = latlng.longitude;
         this.type = type;
         this.a11y = a11y;
         this.priv = priv;
@@ -73,6 +73,7 @@ public class GymkhanaResponse {
         this.crea_time = crea_time;
         this.aper_time = aper_time;
         this.close_time = close_time;
+        this.points = points;
     }
 
     public Integer getGymk_id() {
@@ -83,11 +84,11 @@ public class GymkhanaResponse {
         this.gymk_id = gymk_id;
     }
 
-    public Bitmap getImage() {
+    public String getImage() {
         return image;
     }
 
-    public void setImage(Bitmap image) {
+    public void setImage(String image) {
         this.image = image;
     }
 
@@ -107,26 +108,26 @@ public class GymkhanaResponse {
         this.description = description;
     }
 
-    public long getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(long latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
-    public Long getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(long position) {
+    public void setLongitude(double position) {
         this.longitude = position;
     }
 
-    public String getType() {
+    public GymkhanaType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(GymkhanaType type) {
         this.type = type;
     }
 
@@ -162,30 +163,40 @@ public class GymkhanaResponse {
         this.creator = creator;
     }
 
-    public Date getCrea_time() {
+    public int getCrea_time() {
         return crea_time;
     }
 
-    public void setCrea_time(Date crea_time) {
+    public void setCrea_time(int crea_time) {
         this.crea_time = crea_time;
     }
 
-    public Date getAper_time() {
+    public int getAper_time() {
         return aper_time;
     }
 
-    public void setAper_time(Date aper_time) {
+    public void setAper_time(int aper_time) {
         this.aper_time = aper_time;
     }
 
-    public Date getClose_time() {
+    public int getClose_time() {
         return close_time;
     }
 
-    public void setClose_time(Date close_time) {
+    public void setClose_time(int close_time) {
         this.close_time = close_time;
     }
 
+    public LatLng getPosition(){
+        LatLng latlng = new LatLng(this.latitude, this.longitude);
+        return latlng;
+    }
+    public List<Point> getPuntos() {
+        return points;
+    }
+    public void setPuntos(List<Point> points) {
+        this.points = points;
+    }
 }
 
 
