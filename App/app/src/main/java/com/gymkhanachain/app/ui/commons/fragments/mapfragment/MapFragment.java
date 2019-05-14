@@ -570,6 +570,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         // Set all marker options
         MarkerOptions opts = new MarkerOptions()
                 .position(point.getPosition())
+                .title(point.getName())
                 .icon(icon);
 
         if (params.getMapMode() == MapMode.EDIT_MODE) {
@@ -632,7 +633,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if (isLocationRequestPermission()) {
             map.setMyLocationEnabled(false);
 
-            if (fusedLocationClient != null) {
+            if ((fusedLocationClient != null) && (locationCallback != null)) {
                 fusedLocationClient.removeLocationUpdates(locationCallback);
             }
         }

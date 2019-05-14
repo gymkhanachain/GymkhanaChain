@@ -40,7 +40,7 @@ public class MapFragmentParams {
      * @param mapMode Modo del mapa (mirar MapMode)
      */
     public MapFragmentParams(PointType typePoints, PointOrder orderPoints, MapMode mapMode) {
-        this(typePoints, orderPoints, mapMode, false, 2.0f,
+        this(typePoints, orderPoints, mapMode, true, 2.0f,
                 5.0f, 20, null, -1);
     }
 

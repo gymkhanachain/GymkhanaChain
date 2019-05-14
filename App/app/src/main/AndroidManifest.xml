@@ -33,11 +33,6 @@
         <activity
             android:name=".ui.playgymkhana.activity.PlayGymkhanaActivity"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.gymkpoint.activity.PointActivity"
@@ -46,12 +41,12 @@
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" />
-            android:screenOrientation="portrait"
+            android:label="@string/title_activity_settings"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.mainscreen.activity.LoginActivity"
-            android:label="@string/title_activity_login" />
-            android:screenOrientation="portrait"
+            android:label="@string/title_activity_login"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.creategymkana.activity.CreateGymkActivity"
             android:label="@string/title_activity_create_gymk"
@@ -60,6 +55,10 @@
         <activity
             android:name=".ui.mainscreen.activity.MainActivity"
             android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.userprofile.activity.UserProfileActivity"

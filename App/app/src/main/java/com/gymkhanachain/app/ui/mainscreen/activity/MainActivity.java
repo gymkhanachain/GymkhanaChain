@@ -33,6 +33,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Task;
 import com.gymkhanachain.app.R;
@@ -42,6 +43,8 @@ import com.gymkhanachain.app.model.beans.GymkhanaBean;
 import com.gymkhanachain.app.model.commons.GymkhanaCache;
 import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
 import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
+import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
+import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapPoint;
 import com.gymkhanachain.app.ui.creategymkana.activity.CreateGymkActivity;
 import com.gymkhanachain.app.ui.mainscreen.fragments.GymkInfoFragment;
 import com.gymkhanachain.app.ui.mainscreen.fragments.ListGymkFragment;
@@ -54,7 +57,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         NearGymkFragment.OnNearGymkFragmentInteractionListener,
-        // MapFragment.OnMapFragmentInteractionListener,
+        MapFragment.OnMapFragmentInteractionListener,
         ListGymkFragment.OnListGymkFragmentInteractionListener,
         GymkInfoFragment.OnGymkInfoFragmentInteractionListener,
         NavigationView.OnNavigationItemSelectedListener,
@@ -394,6 +397,41 @@ public class MainActivity extends AppCompatActivity implements
                 doubleBackToExitPressedOnce=false;
             }
         }, 2000);
+    }
+
+    @Override
+    public void onMapSearchButtonClickListener() {
+
+    }
+
+    @Override
+    public void onMapAccesibilityFilterClickListener() {
+
+    }
+
+    @Override
+    public void onMapLongClickListener(LatLng point) {
+
+    }
+
+    @Override
+    public void onMapChangeListener(CameraPosition position) {
+
+    }
+
+    @Override
+    public void onMapPointClickListener(MapPoint point) {
+
+    }
+
+    @Override
+    public void onMapPointMoveListener(MapPoint point) {
+
+    }
+
+    @Override
+    public void onMapPointsNearLocationListener(List<MapPoint> points) {
+
     }
 }
 
