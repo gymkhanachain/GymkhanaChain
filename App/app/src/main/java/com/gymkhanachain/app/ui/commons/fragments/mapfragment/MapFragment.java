@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
@@ -42,7 +41,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -578,11 +576,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             opts.draggable(true);
         }
 
-        map.addCircle(new CircleOptions()
-            .center(point.getPosition())
-            .radius(params.triggeredDistance)
-            .strokeColor(Color.RED)
-            .fillColor((Color.RED & 0x00ffffff) | 0x88000000));
         Marker marker = map.addMarker(opts);
         marker.setTag(point);
     }

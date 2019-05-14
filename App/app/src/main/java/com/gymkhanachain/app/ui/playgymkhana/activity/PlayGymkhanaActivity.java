@@ -49,9 +49,9 @@ public class PlayGymkhanaActivity extends AppCompatActivity
     private List<MapPoint> getGisPoints() {
         List<MapPoint> points = new ArrayList<>();
 
-        MapPoint pabellonDeDeportes = new MapPoint(0, new LatLng(43.335080, -8.414539),
-                "Pabellon de deportes");
-        points.add(pabellonDeDeportes);
+        MapPoint estadioUniversitario = new MapPoint(0, new LatLng(43.333683, -8.412958),
+                "Estadio universitario");
+        points.add(estadioUniversitario);
         MapPoint xoanaCapdevielle = new MapPoint(1, new LatLng(43.334206, -8.405787),
                 "Xoana Capdevielle");
         points.add(xoanaCapdevielle);
@@ -110,6 +110,8 @@ public class PlayGymkhanaActivity extends AppCompatActivity
     public void onMapPointsNearLocationListener(List<MapPoint> points) {
         for (MapPoint point : points) {
             Log.i(TAG, "Has pasado cerca de " + point.getName());
+            Toast toast = Toast.makeText(this, "Has completado " + point.getName(), Toast.LENGTH_SHORT);
+            toast.show();
             mapFragment.removePoint(point);
         }
     }
