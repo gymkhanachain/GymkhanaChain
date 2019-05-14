@@ -133,7 +133,7 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
         List<Gymkhana> prueba = new ArrayList<>();
         prueba.add(g);
         prueba.add(g2);
-        RestServ.addGymkhana(prueba);*/
+        RestServ.addGymkhana(prueba);
         LatLng l = new LatLng(40,40);
         Point p1 = new TextPoint(94,"IMAGENONCIA","MINPUTNTO","DESCRIPVIONCAMBIADA", l, "Pruebamod");
         Point p2 = new QuizzPoint(95,"p1123e","punto1","desc", l, "Holo","","","moooood","",1);
@@ -141,7 +141,7 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
         points.add(p1);
         points.add(p2);
         Gymkhana g = new Gymkhana(41,"1111","s","e",l, GymkhanaType.desordenada,FALSE,FALSE,"","",1,1,1, points);
-        RestServ.modGymkhana(g);
+        RestServ.modGymkhana(g);*/
         buttonActivate.setOnClickListener(this);
         buttonDelete.setOnClickListener(this);
         ImageButton imageButtonEditGymkImg = getActivity().findViewById(R.id.imageButton_edit_gymk_img);
