@@ -1,6 +1,7 @@
 package com.gymkhanachain.app.ui.commons.fragments.mapfragment;
 
-import com.google.android.gms.location.LocationRequest;
+import android.util.Log;
+
 import com.google.android.gms.maps.model.MapStyleOptions;
 
 import org.parceler.Parcel;
@@ -12,11 +13,15 @@ import org.parceler.ParcelConstructor;
  */
 @Parcel
 public class MapFragmentParams {
+    private static String TAG = "MapFragmentParams";
+
     PointType typePoints;
     PointOrder orderPoints;
     MapMode mapMode;
     boolean showInfoWindow;
-    int locationPriority;
+    float minimumLocationInterval;
+    float maximumLocationInterval;
+    int triggeredDistance;
     MapStyleOptions style;
     int mapType;
 
@@ -35,16 +40,24 @@ public class MapFragmentParams {
      * @param mapMode Modo del mapa (mirar MapMode)
      */
     public MapFragmentParams(PointType typePoints, PointOrder orderPoints, MapMode mapMode) {
-        this(typePoints, orderPoints, mapMode, false, LocationRequest
-                .PRIORITY_HIGH_ACCURACY, null, -1);
+        this(typePoints, orderPoints, mapMode, false, 2.0f,
+                5.0f, 20, null, -1);
     }
 
     @ParcelConstructor
     public MapFragmentParams(PointType typePoints, PointOrder orderPoints, MapMode mapMode,
-                             boolean showInfoWindow, int locationPriority, MapStyleOptions style,
-                             int mapType) {
-        setTypePoints(typePoints).setOrderPoints(orderPoints).setMapMode(mapMode)
-                .setLocationPriority(locationPriority).setStyle(style).setMapType(mapType);
+                             boolean showInfoWindow, float minimumLocationInterval,
+                             float maximumLocationInterval, int triggeredDistance,
+                             MapStyleOptions style, int mapType) {
+        setTypePoints(typePoints)
+                .setOrderPoints(orderPoints)
+                .setMapMode(mapMode)
+                .setShowInfoWindow(showInfoWindow)
+                .setMinimumLocationInterval(minimumLocationInterval)
+                .setMinimumLocationInterval(maximumLocationInterval)
+                .setTriggeredDistance(triggeredDistance)
+                .setStyle(style)
+                .setMapType(mapType);
     }
 
     public PointType getTypePoints() {
@@ -83,12 +96,40 @@ public class MapFragmentParams {
         return this;
     }
 
-    public int getLocationPriority() {
-        return locationPriority;
+    public float getMinimumLocationInterval() {
+        return minimumLocationInterval;
     }
 
-    public MapFragmentParams setLocationPriority(int locationPriority) {
-        this.locationPriority = locationPriority;
+    public MapFragmentParams setMinimumLocationInterval(float minimumLocationInterval) {
+        this.minimumLocationInterval = minimumLocationInterval;
+
+        if (this.maximumLocationInterval < this.minimumLocationInterval *2.0) {
+            Log.w(TAG, "The minimun value should be less that the half of maximun");
+        }
+
+        return this;
+    }
+
+    public float getMaximumLocationInterval() {
+        return maximumLocationInterval;
+    }
+
+    public MapFragmentParams setMaximumLocationInterval(float maximumLocationInterval) {
+        this.maximumLocationInterval = maximumLocationInterval;
+
+        if (this.maximumLocationInterval < this.minimumLocationInterval *2.0) {
+            Log.w(TAG, "The maximun value should be greater that the double of minimun");
+        }
+
+        return this;
+    }
+
+    public int getTriggeredDistance() {
+        return triggeredDistance;
+    }
+
+    public MapFragmentParams setTriggeredDistance(int triggeredDistance) {
+        this.triggeredDistance = triggeredDistance;
         return this;
     }
 

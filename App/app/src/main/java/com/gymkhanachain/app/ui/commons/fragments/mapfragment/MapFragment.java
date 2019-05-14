@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
@@ -41,10 +42,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.gymkhanachain.app.R;
@@ -53,6 +57,8 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -63,6 +69,7 @@ import butterknife.Unbinder;
 public class MapFragment extends Fragment implements OnMapReadyCallback {
     private static final String TAG = "MapFragment";
 
+    private static final String ARG_GYMKHANA_NAME = "GymkhanaName";
     private static final String ARG_PARAMS = "Params";
     private static final String ARG_POINTS = "Points";
 
@@ -78,7 +85,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @BindView(R.id.fab_accesibility)
     FloatingActionButton fabAccesibility;
 
-    private Vibrator vibrator;
+    private String gymkhanaName;
     private MapFragmentParams params;
     private OnMapFragmentInteractionListener listener;
     private Unbinder unbinder;
@@ -87,8 +94,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private LocationRequest locationRequest = null;
     private LocationCallback locationCallback = null;
     private GoogleMap map;
-    private AtomicBoolean isDragPoint = new AtomicBoolean(false);
+    private AtomicBoolean isPointDragging = new AtomicBoolean(false);
     private List<MapPoint> points = new ArrayList<>();
+    private Map<String, Route> routeMap = new ConcurrentHashMap<>();
+    private String routeSelected = "";
 
     public MapFragment() {
         // Required empty public constructor
@@ -102,9 +111,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      * @param points
      *      Los puntos que se mostrarán en el mapa
      */
-    public static MapFragment newInstance(MapFragmentParams params, List<MapPoint> points) {
+    public static MapFragment newInstance(String gymkhanaName, MapFragmentParams params,
+                                          List<MapPoint> points) {
         MapFragment fragment = new MapFragment();
         Bundle args = new Bundle();
+        args.putString(ARG_GYMKHANA_NAME, gymkhanaName);
         args.putParcelable(ARG_PARAMS, Parcels.wrap(params));
         args.putParcelable(ARG_POINTS, Parcels.wrap(points));
         fragment.setArguments(args);
@@ -116,8 +127,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
+            gymkhanaName = getArguments().getString(ARG_GYMKHANA_NAME);
             params = Parcels.unwrap(getArguments().getParcelable(ARG_PARAMS));
             points = Parcels.unwrap(getArguments().getParcelable(ARG_POINTS));
+        } else {
+            throw new RuntimeException("MapFragment needs `gymkhana name', `param' and `points' arguments");
+        }
+
+        if (params.getTypePoints() == PointType.GYMKHANA_POINTS && params.getMapMode() != MapMode.NORMAL_MODE) {
+            throw new RuntimeException("Gymkhana points must show in normal mode");
         }
     }
 
@@ -190,19 +208,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      * @param point Punto a eliminar
      */
     public void removePoint(MapPoint point) {
+        // TODO Hay que cambiarlo por algo mejor
         points.remove(point);
-        // Actualizamos el mapa
+        drawMap();
+    }
+
+    public void setPoints(List<MapPoint> points) {
+        // TODO Hay que cambiarlo por algo mejor
+        points.clear();
+        points.addAll(points);
         drawMap();
     }
 
     /**
-     * Establece el la prioridad de actualización de la localicación del mapa
-     * @param locationPriority Prioridad de actualización de la localicación del mapa
-     * @see LocationRequest
+     * Establece el intervalo de actualización de la localicación del mapa
+     * @param locationInterval intervalo de actualización de la localicación del mapa en segundos
      */
-    public void setLocationPriority(int locationPriority) {
+    public void setLocationInterval(float locationInterval) {
         if (params != null) {
-            params.setLocationPriority(locationPriority);
+            params.setMinimumLocationInterval(locationInterval);
+            params.setMaximumLocationInterval(locationInterval*2.0f);
         }
 
         // Reiniciamos el servicio
@@ -241,78 +266,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void drawPath(Direction direction) {
-        @ColorInt int color = getResources().getColor(R.color.colorRoute);
-
-        Route route = direction.getRouteList().get(0);
-
-        for (Leg leg : route.getLegList()) {
-            ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
-            PolylineOptions polylineOptions = DirectionConverter.createPolyline(getContext(),
-                    directionPositionList, 5, color);
-            map.addPolyline(polylineOptions);
-        }
-    }
-
-    private void drawMark(MapPoint point) {
-        // Get background
-        Drawable background = ContextCompat.getDrawable(getContext(), R.drawable.ic_map_marker);
-        background.setBounds(0, 0, background.getIntrinsicWidth(), background
-                .getIntrinsicHeight());
-
-        // Get logo
-        Drawable logo = ContextCompat.getDrawable(getContext(), R.drawable.ic_logo_white);
-        int size = Math.round(background.getIntrinsicWidth()*340.0f/512.0f);
-        int xPos = Math.round(background.getIntrinsicWidth()*86.0f/512.0f);
-        int yPos = Math.round(background.getIntrinsicWidth()*40.0f/512.0f);
-        logo.setBounds(xPos, yPos, xPos+size, yPos+size);
-
-        // Draw marker
-        Drawable wrapped;
-
-        // Get color of background
-        if (params.getTypePoints() == PointType.GYMKHANA_POINTS) {
-            @ColorInt int color = getResources().getColor(R.color.colorGymkhana);
-            wrapped = DrawableCompat.wrap(background);
-            DrawableCompat.setTint(wrapped, color);
-        } else {
-            @ColorInt int color = getResources().getColor(R.color.colorGis);
-            wrapped = DrawableCompat.wrap(background);
-            DrawableCompat.setTint(wrapped, color);
-        }
-
-        // Create icon mark
-        Bitmap bitmap = Bitmap.createBitmap(background.getIntrinsicWidth(), background
-                .getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        wrapped.draw(canvas);
-        logo.draw(canvas);
-        BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bitmap);
-
-        // Set all marker options
-        MarkerOptions opts = new MarkerOptions()
-                .position(point.getPosition())
-                .icon(icon);
-
-        if (params.getMapMode() == MapMode.EDIT_MODE) {
-            opts.draggable(true);
-        }
-
-        Marker marker = map.addMarker(opts);
-        marker.setTag(point);
-    }
-
     @SuppressWarnings({"MissingPermission"})
     private void startLocationUpdates() {
         // Comprobamos los permisos de localización
-        if (isLocationRequestPermission() && (params.getMapMode() != MapMode.EDIT_MODE)) {
+        if (isLocationRequestPermission() && (params.getMapMode() != MapMode.NORMAL_MODE)) {
             // Creamos el callback de localización
             if (locationCallback == null) {
                 locationCallback = new LocationCallback() {
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
                         // Si se está arrastrando un punto, no actualizamos la posición actual
-                        if (!isDragPoint.get()) {
+                        if (!isPointDragging.get()) {
                             if (locationResult == null) {
                                 return;
                             }
@@ -321,7 +285,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             Log.i(TAG, "Current location: " + currentLocation);
 
                             if (map != null) {
-                                drawRoute();
+                                List<MapPoint> nearPoints = new ArrayList<>();
+
+                                // Obtenemos los puntos y comprobamos si estamos cerca de uno
+                                for (MapPoint mapPoint : points) {
+                                    Location point = new Location("");
+                                    point.setLatitude(mapPoint.getPosition().latitude);
+                                    point.setLongitude(mapPoint.getPosition().longitude);
+
+                                    Log.i(TAG, "Distancia a " + mapPoint.getName() + ": " + currentLocation.distanceTo(point));
+
+                                    if (currentLocation.distanceTo(point) <= params.getTriggeredDistance()) {
+                                        nearPoints.add(mapPoint);
+                                    }
+                                }
+
+                                // Si estamos cerca de un punto, llamamos al callback
+                                if (!nearPoints.isEmpty()) {
+                                    listener.onMapPointsNearLocationListener(nearPoints);
+                                }
+
+                                // Actualizamos el mapa
+                                getRoutes();
                             }
                         }
                     }
@@ -330,7 +315,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             // Creamos el criterio de localización
             if (locationRequest == null) {
-                locationRequest = LocationRequest.create().setPriority(params.getLocationPriority());
+                locationRequest = LocationRequest
+                        .create()
+                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                        .setFastestInterval((long) Math.round(params
+                                .getMinimumLocationInterval()*1000.0f))
+                        .setInterval((long) Math.round(params
+                                .getMaximumLocationInterval()*1000.0f))
+                        .setSmallestDisplacement(5);
             }
 
             // Obtenemos un cliente de localización
@@ -398,24 +390,47 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private List<LatLng> getPoints() {
-        List<LatLng> points = new ArrayList<>();
+    private void drawPath(boolean selected, String name, Route route) {
+        @ColorInt int color = getResources().getColor(R.color.colorRoute);
 
-        // Si estamos en modo de jugar, se añade la posición actual del jugador
-        if (params.getMapMode() == MapMode.PLAY_MODE) {
-            points.add(new LatLng(getLatitude(), getLongitude()));
+        // Si hay una ruta seleccionada y esta no está seleccionada, la ponemos de color claro
+        if (!routeSelected.equals("") && !selected) {
+            color &= 0x00ffffff;
+            color |= 0x44000000;
         }
 
-        for (MapPoint point : this.points) {
-            points.add(point.getPosition());
-        }
+        // Dibujamos sus polilíneas
+        for (Leg leg : route.getLegList()) {
+            ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
+            PolylineOptions polylineOptions = DirectionConverter.createPolyline(getContext(),
+                    directionPositionList, 8, color);
+            Polyline polyline = map.addPolyline(polylineOptions);
 
-        return points;
+            if (params.getMapMode() == MapMode.PLAY_MODE) {
+                polyline.setClickable(true);
+                polyline.setTag(name);
+            }
+        }
     }
 
-    private void getRoute(LatLng firstPoint, LatLng lastPoint, List<LatLng> wayPoints,
-                          final AtomicBoolean clearMap, final AtomicInteger completeRoutes,
-                          final int maxRoutes) {
+    private void drawRoutes() {
+        // Recorremos la lista de rutas y dibujamos las que no están seleccionadas
+        for (Map.Entry<String, Route> entry : routeMap.entrySet()) {
+            if (!entry.getKey().equals(routeSelected)) {
+                drawPath(false, entry.getKey(), entry.getValue());
+            }
+        }
+
+        // Si hay una ruta seleccionada, la dibujamos
+        Route route = routeMap.get(routeSelected);
+        if (route != null) {
+            drawPath(true, routeSelected, route);
+        }
+    }
+
+    private void getRoute(final String name, LatLng firstPoint, LatLng lastPoint,
+                          List<LatLng> wayPoints, final AtomicBoolean clearMap,
+                          final AtomicInteger completeRoutes, final int maxRoutes) {
         // Obtenemos la ruta
         DirectionDestinationRequest request = GoogleDirection.withServerKey(getString(R.string.maps_key))
                 .from(firstPoint);
@@ -429,22 +444,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 .execute(new DirectionCallback() {
                     @Override
                     public void onDirectionSuccess(Direction direction, String rawBody) {
-                        if (direction.isOK()) {
-                            // Si es el primer thread, tendrá que limpiar el mapa
-                            if (clearMap.compareAndSet(true, false)) {
-                                map.clear();
-                            }
+                        // Si es el primer thread, tendrá que limpiar el mapa
+                        if (clearMap.compareAndSet(true, false)) {
+                            routeMap.clear();
+                        }
 
-                            // Dibuja el camino
-                            drawPath(direction);
+                        // Si se ha calculado una dirección correcta, se guarda en el mapa
+                        if (direction.isOK()) {
+                            routeMap.put(name, direction.getRouteList().get(0));
                         } else {
-                            Log.e("MapFragment", "Error getting direction: "
+                            Log.e("MapFragment", "No se ha podido obtener la dirección: "
                                     + direction.getStatus());
                         }
 
-                        // Si es el último thread, dibuja los marcadores
-                        if (completeRoutes.get() == maxRoutes-1) {
-                            drawMarkers();
+                        // Si es el último thread, dibuja el mapa
+                        if (completeRoutes.get() == maxRoutes - 1) {
+                            drawMap();
                         }
 
                         completeRoutes.getAndAdd(1);
@@ -456,12 +471,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                         // Si es el primer thread, tendrá que limpiar el mapa
                         if (clearMap.compareAndSet(true, false)) {
-                            map.clear();
+                            routeMap.clear();
                         }
 
-                        // Si es el último thread, dibuja los marcadores
-                        if (completeRoutes.get() == maxRoutes-1) {
-                            drawMarkers();
+                        // Si es el último thread, dibuja el mapa
+                        if (completeRoutes.get() == maxRoutes - 1) {
+                            // drawMarkers();
                         }
 
                         completeRoutes.getAndAdd(1);
@@ -469,14 +484,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 });
     }
 
-    private void drawRoute() {
+    private List<MapPoint> getPoints() {
+        List<MapPoint> points = new ArrayList<>();
+
+        // Si estamos en modo de jugar, se añade la posición actual del jugador
+        if (params.getMapMode() == MapMode.PLAY_MODE) {
+            points.add(new MapPoint(-1, new LatLng(getLatitude(), getLongitude()), "Here"));
+        }
+
+        points.addAll(this.points);
+
+        return points;
+    }
+
+    private void getRoutes() {
         // Obtenemos una lista de punto para trazar la ruta
-        List<LatLng> points = getPoints();
+        List<MapPoint> points = getPoints();
 
         // Dibujamos los puntos de ruta
         if (params.getOrderPoints() == PointOrder.ROUTE_ORDER) {
-            LatLng fromPoint = points.get(0);
-            LatLng toPoint = points.get(points.size()-1);
+            MapPoint fromPoint = points.get(0);
+            MapPoint toPoint = points.get(points.size()-1);
             List<LatLng> wayPoints = null;
 
             for (int i = 1; i < points.size()-1; i++) {
@@ -484,24 +512,79 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     wayPoints = new ArrayList<>();
                 }
 
-                wayPoints.add(points.get(i));
+                wayPoints.add(points.get(i).getPosition());
             }
 
-            getRoute(fromPoint, toPoint, wayPoints, new AtomicBoolean(true),
-                    new AtomicInteger(0), 1);
+            getRoute(gymkhanaName, fromPoint.getPosition(), toPoint.getPosition(), wayPoints,
+                    new AtomicBoolean(true), new AtomicInteger(0),
+                    1);
         }
 
         // Dibujamos los puntos aleatorios
         if (params.getOrderPoints() == PointOrder.NONE_ORDER) {
             AtomicBoolean clearMap = new AtomicBoolean(true);
             AtomicInteger completeRoutes = new AtomicInteger(0);
-            LatLng fromPoint = points.get(0);
+            MapPoint fromPoint = points.get(0);
 
             for (int i = 1; i < points.size(); i++) {
-                getRoute(fromPoint, points.get(i), null, clearMap, completeRoutes,
-                        points.size()-1);
+                MapPoint toPoint = points.get(i);
+                getRoute(toPoint.getName(), fromPoint.getPosition(), toPoint.getPosition(),
+                        null, clearMap, completeRoutes,points.size()-1);
             }
         }
+    }
+
+    private void drawMark(MapPoint point) {
+        // Get background
+        Drawable background = ContextCompat.getDrawable(getContext(), R.drawable.ic_map_marker);
+        background.setBounds(0, 0, background.getIntrinsicWidth(), background
+                .getIntrinsicHeight());
+
+        // Get logo
+        Drawable logo = ContextCompat.getDrawable(getContext(), R.drawable.ic_logo_white);
+        int size = Math.round(background.getIntrinsicWidth()*340.0f/512.0f);
+        int xPos = Math.round(background.getIntrinsicWidth()*86.0f/512.0f);
+        int yPos = Math.round(background.getIntrinsicWidth()*40.0f/512.0f);
+        logo.setBounds(xPos, yPos, xPos+size, yPos+size);
+
+        // Draw marker
+        Drawable wrapped;
+
+        // Get color of background
+        if (params.getTypePoints() == PointType.GYMKHANA_POINTS) {
+            @ColorInt int color = getResources().getColor(R.color.colorGymkhana);
+            wrapped = DrawableCompat.wrap(background);
+            DrawableCompat.setTint(wrapped, color);
+        } else {
+            @ColorInt int color = getResources().getColor(R.color.colorGis);
+            wrapped = DrawableCompat.wrap(background);
+            DrawableCompat.setTint(wrapped, color);
+        }
+
+        // Create icon mark
+        Bitmap bitmap = Bitmap.createBitmap(background.getIntrinsicWidth(), background
+                .getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        wrapped.draw(canvas);
+        logo.draw(canvas);
+        BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bitmap);
+
+        // Set all marker options
+        MarkerOptions opts = new MarkerOptions()
+                .position(point.getPosition())
+                .icon(icon);
+
+        if (params.getMapMode() == MapMode.EDIT_MODE) {
+            opts.draggable(true);
+        }
+
+        map.addCircle(new CircleOptions()
+            .center(point.getPosition())
+            .radius(params.triggeredDistance)
+            .strokeColor(Color.RED)
+            .fillColor((Color.RED & 0x00ffffff) | 0x88000000));
+        Marker marker = map.addMarker(opts);
+        marker.setTag(point);
     }
 
     private void drawMarkers() {
@@ -511,8 +594,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void drawMap() {
+        map.clear();
         if (params.getTypePoints() == PointType.GIS_POINTS && (points.size() > 1)) {
-            drawRoute();
+            drawRoutes();
+            drawMarkers();
         } else {
             drawMarkers();
         }
@@ -529,8 +614,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             throw new RuntimeException(context.toString()
                     + " must implement OnMapFragmentInteractionListener");
         }
-
-        vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
     }
 
     @Override
@@ -543,10 +626,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onResume() {
         super.onResume();
         mapView.onResume();
-
-        if (isLocationRequestPermission()) {
-            startLocationUpdates();
-        }
+        startLocationUpdates();
     }
 
     @Override
@@ -587,7 +667,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         map = googleMap;
 
         // Se define un zoom mínimo y máximo
-        map.setMinZoomPreference(10.0f);
+        map.setMinZoomPreference(12.0f);
         map.setMaxZoomPreference(20.0f);
 
         // Centra el mapa en la posición actual o en el punto de inicio
@@ -626,13 +706,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        // Callback cuando la cámara cambia
+        map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition position) {
+                listener.onMapChangeListener(position);
+            }
+        });
+
         // Si estamos en el modo editar se añade el listener de D&D
         if (params.getMapMode() == MapMode.EDIT_MODE) {
             map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
                 @Override
                 public void onMarkerDragStart(Marker marker) {
+                    Vibrator vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
                     vibrator.vibrate(10);
-                    isDragPoint.set(true);
+                    isPointDragging.set(true);
                 }
 
                 @Override
@@ -656,8 +745,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     listener.onMapPointMoveListener(newPoint);
 
                     // Dibuja el mapa
-                    isDragPoint.set(false);
+                    isPointDragging.set(false);
                     drawMap();
+                }
+            });
+        }
+
+        // Si estamos jugando, se puede pinchar en las rutas
+        if (params.getMapMode() == MapMode.PLAY_MODE) {
+            map.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
+                @Override
+                public void onPolylineClick(Polyline polyline) {
+                    routeSelected = (String) polyline.getTag();
+                    List<LatLng> points = polyline.getPoints();
+                    LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+
+                    for (LatLng point : points) {
+                        boundsBuilder.include(point);
+                    }
+
+                    drawMap();
+                    map.animateCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(),
+                            getResources().getDimensionPixelSize(R.dimen.fab_margin)*2));
                 }
             });
         }
@@ -709,6 +818,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         void onMapLongClickListener(LatLng point);
 
         /**
+         * Callbacl que se llama cuando la camara del mapa ha cambiado por el usuario
+         * @param position Nueva posición del mapa
+         */
+        void onMapChangeListener(CameraPosition position);
+
+        /**
          * Callback que se llama cuando se ha pulsado uno de los marcadores del mapa
          * @param point Marcador que se ha pulsado
          */
@@ -719,5 +834,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
          * @param point Marcador que se ha movido
          */
         void onMapPointMoveListener(MapPoint point);
+
+        /**
+         * Callback que se llama cuando se está cerca de uno o varios marcadores
+         * @param points Marcadores cercanos
+         */
+        void onMapPointsNearLocationListener(List<MapPoint> points);
     }
 }

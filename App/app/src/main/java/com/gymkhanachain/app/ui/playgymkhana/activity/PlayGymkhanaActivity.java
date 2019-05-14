@@ -1,11 +1,11 @@
 package com.gymkhanachain.app.ui.playgymkhana.activity;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
@@ -20,9 +20,14 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 
-public class PlayGymkhanaActivity extends AppCompatActivity implements MapFragment.OnMapFragmentInteractionListener {
+public class PlayGymkhanaActivity extends AppCompatActivity
+        implements MapFragment.OnMapFragmentInteractionListener {
 
     private static String TAG = "PlayGymkhanaActivity";
+
+    private static int RADIUS_POINT = 10;
+
+    private MapFragment mapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,11 +35,13 @@ public class PlayGymkhanaActivity extends AppCompatActivity implements MapFragme
         setContentView(R.layout.activity_play_gymkhana);
         ButterKnife.bind(this);
 
-        // Create map fragment
-        final MapFragmentParams params = new MapFragmentParams(PointType.GIS_POINTS, PointOrder.ROUTE_ORDER, MapMode.NORMAL_MODE);
-        final Fragment map = MapFragment.newInstance(params, getGisPoints());
-        getSupportFragmentManager().beginTransaction().add(R.id.map_content, map).commit();
+        // Se crea el mapa con gymhanas
+        final MapFragmentParams params = new MapFragmentParams(PointType.GIS_POINTS,
+                PointOrder.NONE_ORDER, MapMode.PLAY_MODE);
+        mapFragment = MapFragment.newInstance("Ejemplo", params, getGisPoints());
+        getSupportFragmentManager().beginTransaction().add(R.id.map_content, mapFragment).commit();
 
+        // Para activar el botón de volver atrás
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
@@ -42,14 +49,18 @@ public class PlayGymkhanaActivity extends AppCompatActivity implements MapFragme
     private List<MapPoint> getGisPoints() {
         List<MapPoint> points = new ArrayList<>();
 
-        MapPoint estadioUdc = new MapPoint(0, new LatLng(43.333259, -8.4126029), "Estadio UDC");
-        points.add(estadioUdc);
-        MapPoint facultadSociologia = new MapPoint(1, new LatLng(43.332556, -8.4139761), "Facultad de Sociología");
-        points.add(facultadSociologia);
-        MapPoint circuito = new MapPoint(2, new LatLng(43.3313183, -8.4116328), "Servicios de Apoyo a la Investigación");
-        points.add(circuito);
-        MapPoint areaCientifica = new MapPoint(3, new LatLng(43.3300947, -8.4125125), "UDC");
-        points.add(areaCientifica);
+        MapPoint pabellonDeDeportes = new MapPoint(0, new LatLng(43.335080, -8.414539),
+                "Pabellon de deportes");
+        points.add(pabellonDeDeportes);
+        MapPoint xoanaCapdevielle = new MapPoint(1, new LatLng(43.334206, -8.405787),
+                "Xoana Capdevielle");
+        points.add(xoanaCapdevielle);
+        MapPoint facultadeDeEconomicas = new MapPoint(2, new LatLng(43.331124,
+                -8.413017), "Facultade de económicas");
+        points.add(facultadeDeEconomicas);
+        MapPoint arquitectura = new MapPoint(3, new LatLng(43.328036, -8.408088),
+                "Arquitectura");
+        points.add(arquitectura);
 
         return points;
     }
@@ -81,6 +92,11 @@ public class PlayGymkhanaActivity extends AppCompatActivity implements MapFragme
     }
 
     @Override
+    public void onMapChangeListener(CameraPosition position) {
+        Log.i(TAG, "La cámara ha cambiado");
+    }
+
+    @Override
     public void onMapPointClickListener(MapPoint point) {
         Log.i(TAG, "Marcador pulsado: " + point.getName());
     }
@@ -88,5 +104,13 @@ public class PlayGymkhanaActivity extends AppCompatActivity implements MapFragme
     @Override
     public void onMapPointMoveListener(MapPoint point) {
         Log.i(TAG, "Marcador movido: " + point.getName());
+    }
+
+    @Override
+    public void onMapPointsNearLocationListener(List<MapPoint> points) {
+        for (MapPoint point : points) {
+            Log.i(TAG, "Has pasado cerca de " + point.getName());
+            mapFragment.removePoint(point);
+        }
     }
 }
