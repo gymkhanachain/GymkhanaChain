@@ -16,6 +16,10 @@
     <color name="colorWhite">#FFFFFF</color>
 
     <color name="colorGymkhana">#ffd080</color>
+    <color name="colorGymkhanaLight">#ffbf54</color>
+    <color name="colorGymkhanaDark">#3d315b</color>
     <color name="colorGis">#bdd37c</color>
+    <color name="colorGisLight">#A2B862</color>
+    <color name="colorGisDark">#495C1D</color>
     <color name="colorRoute">#6ccece</color>
 </resources>

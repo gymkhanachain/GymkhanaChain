@@ -2,7 +2,9 @@ package com.gymkhanachain.app.ui.commons.fragments.mapfragment;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -10,6 +12,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -96,6 +99,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private List<MapPoint> points = new ArrayList<>();
     private Map<String, Route> routeMap = new ConcurrentHashMap<>();
     private String routeSelected = "";
+
+    SharedPreferences preferences;
 
     public MapFragment() {
         // Required empty public constructor
@@ -549,12 +554,35 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         Drawable wrapped;
 
         // Get color of background
+        int gymkColor;
+        int pointColor;
+        switch (preferences.getString("map_theme_list", "1")) {
+            case "1":
+            case "2":
+            case "3":
+                // light map, dark marker
+                gymkColor = R.color.colorGymkhanaDark;
+                pointColor = R.color.colorGisDark;
+                break;
+            case "4":
+            case "5":
+                // dark map, light marker
+                gymkColor = R.color.colorGymkhanaLight;
+                pointColor = R.color.colorGisLight;
+                break;
+            default:
+                // dark marker
+                gymkColor = R.color.colorGymkhanaDark;
+                pointColor = R.color.colorGisDark;
+                break;
+        }
+
         if (params.getTypePoints() == PointType.GYMKHANA_POINTS) {
-            @ColorInt int color = getResources().getColor(R.color.colorGymkhana);
+            @ColorInt int color = getResources().getColor(gymkColor);
             wrapped = DrawableCompat.wrap(background);
             DrawableCompat.setTint(wrapped, color);
         } else {
-            @ColorInt int color = getResources().getColor(R.color.colorGis);
+            @ColorInt int color = getResources().getColor(pointColor);
             wrapped = DrawableCompat.wrap(background);
             DrawableCompat.setTint(wrapped, color);
         }
@@ -608,6 +636,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             throw new RuntimeException(context.toString()
                     + " must implement OnMapFragmentInteractionListener");
         }
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
     }
 
     @Override
@@ -659,6 +689,44 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+
+        // Check map style preferences and assign selected style to map
+        // Also change marker color (violet on light maps and yellow on dark ones)
+        int currentStyle;
+        switch (preferences.getString("map_theme_list", "1")) {
+            case "1":
+                currentStyle = R.raw.standard_map_style;
+                // R.color.colorGymkhanaDark
+                break;
+            case "2":
+                currentStyle = R.raw.retro_map_style;
+                break;
+            case "3":
+                currentStyle = R.raw.silver_map_style;
+                break;
+            case "4":
+                currentStyle = R.raw.night_map_style;
+                break;
+            case "5":
+                currentStyle = R.raw.dark_map_style;
+                break;
+            default:
+                currentStyle = R.raw.standard_map_style;
+                break;
+        }
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            getContext(), currentStyle));
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
 
         // Se define un zoom mínimo y máximo
         map.setMinZoomPreference(12.0f);

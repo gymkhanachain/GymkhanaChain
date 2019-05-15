@@ -158,8 +158,4 @@
     <string name="pref_show_profile_img">Mostrar imagen de perfil</string>
     <string name="pref_logout">Cerrar sesión</string>
 
-
-    <string name="test">test</string>
-
-
 </resources>
