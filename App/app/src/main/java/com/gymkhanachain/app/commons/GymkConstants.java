@@ -8,7 +8,7 @@ public class GymkConstants {
     /**
      * Número máximo de elementos que se pueden cachear
      */
-    public static int MAX_ELEMENTS_CACHED = 16;
+    public static int MAX_ELEMENTS_CACHED = 24;
 
     // Elementos por defecto
 

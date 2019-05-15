@@ -630,7 +630,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mapView.onPause();
 
         // Deshabilita el seguimiento
-        if (isLocationRequestPermission()) {
+        if (map != null && isLocationRequestPermission()) {
             map.setMyLocationEnabled(false);
 
             if ((fusedLocationClient != null) && (locationCallback != null)) {

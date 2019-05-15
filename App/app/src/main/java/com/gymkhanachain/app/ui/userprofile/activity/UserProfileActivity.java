@@ -27,7 +27,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.gymkhanachain.app.R;
-import com.gymkhanachain.app.commons.asynctasks.DownloadImageToBitmapAsyncTask;
+import com.gymkhanachain.app.commons.asynctasks.DownloadImageToImageViewAsyncTask;
 import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
 
 
@@ -166,7 +166,7 @@ public class UserProfileActivity extends AppCompatActivity implements LoginFragm
             ((TextView) findViewById(R.id.UserName)).setText(account.getDisplayName());
             if (user != null) new FetchProfileInfo().execute(Long.getLong("0"));
             ImageView imageView = (ImageView)findViewById(R.id.profileImageView);
-            new DownloadImageToBitmapAsyncTask(getApplicationContext(),imageView).execute(personPhotoUrl);
+            new DownloadImageToImageViewAsyncTask(getApplicationContext(),imageView).execute(personPhotoUrl);
         }
         else{
             Log.e(TAG, " account is null");

@@ -1,8 +1,7 @@
 package com.gymkhanachain.app.model.beans;
 
-import android.widget.ImageView;
-
 import com.google.android.gms.maps.model.LatLng;
+import com.gymkhanachain.app.commons.WrapperBitmap;
 
 import java.util.Date;
 import java.util.List;
@@ -19,7 +18,7 @@ public class GymkhanaBean {
     Date createDate;
     Date openDate;
     Date closeDate;
-    ImageView image;
+    WrapperBitmap image;
     LatLng position;
     List<PointBean> points;
 
@@ -27,11 +26,11 @@ public class GymkhanaBean {
                         final GymkhanaType type, final Boolean accessibility,
                         final Boolean privGymk, final String accessCode, final String creator,
                         final Date createDate, final Date openDate, final Date closeDate,
-                        final ImageView image, final LatLng position, final List<PointBean> points) {
+                        final WrapperBitmap image, final LatLng position, final List<PointBean> points) {
         setId(id).setName(name).setDescription(description).setType(type)
-                .setAccessibility(accessibility).setPrivGymk(privGymk).setCreator(creator)
-                .setCreateDate(createDate).setOpenDate(openDate).setCloseDate(closeDate)
-                .setImage(image).setPosition(position).setPoints(points);
+                .setAccessibility(accessibility).setPrivGymk(privGymk).setAccessCode(accessCode)
+                .setCreator(creator).setCreateDate(createDate).setOpenDate(openDate)
+                .setCloseDate(closeDate).setImage(image).setPosition(position).setPoints(points);
     }
 
     public Integer getId() {
@@ -70,11 +69,11 @@ public class GymkhanaBean {
         return this;
     }
 
-    public ImageView getImage() {
+    public WrapperBitmap getImage() {
         return image;
     }
 
-    public GymkhanaBean setImage(ImageView image) {
+    public GymkhanaBean setImage(WrapperBitmap image) {
         this.image = image;
         return this;
     }

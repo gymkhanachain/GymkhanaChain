@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,7 +36,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Task;
 import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.SettingsActivity;
-import com.gymkhanachain.app.commons.asynctasks.DownloadImageToBitmapAsyncTask;
+import com.gymkhanachain.app.commons.WrapperBitmap;
+import com.gymkhanachain.app.commons.asynctasks.DownloadImageToImageViewAsyncTask;
+import com.gymkhanachain.app.commons.asynctasks.DownloadImageToWrapperBitmapAsyncTask;
+import com.gymkhanachain.app.model.beans.GymkhanaBean;
+import com.gymkhanachain.app.model.beans.GymkhanaType;
+import com.gymkhanachain.app.model.beans.PointBean;
+import com.gymkhanachain.app.model.beans.TextPointBean;
 import com.gymkhanachain.app.model.commons.GymkhanaCache;
 import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
 import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
@@ -52,6 +56,7 @@ import com.gymkhanachain.app.ui.playgymkhana.activity.PlayGymkhanaActivity;
 import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
@@ -169,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements
 
             if (preferences.getBoolean("profilepic_pref_switch", false)) {
                 ImageView imageView = headerView.findViewById(R.id.iv_drawer_picture);
-                DownloadImageToBitmapAsyncTask asyncTask = new DownloadImageToBitmapAsyncTask(getApplicationContext(), imageView);
+                DownloadImageToImageViewAsyncTask asyncTask = new DownloadImageToImageViewAsyncTask(getApplicationContext(), imageView);
                 asyncTask.execute(acct.getPhotoUrl());
             }
         }
@@ -217,30 +222,88 @@ public class MainActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
+    // TODO Borrar
+    private PointBean loadPoint(int id, String name, String description, String url, LatLng position, String longText) {
+        Uri uri = Uri.parse(url);
+        WrapperBitmap wrapper = new WrapperBitmap(uri, null);
+        DownloadImageToWrapperBitmapAsyncTask asyncTask = new DownloadImageToWrapperBitmapAsyncTask(wrapper);
+        asyncTask.execute(uri);
+        return new TextPointBean(id, name, description, wrapper, position, longText);
+    }
+
+    // TODO Borrar
+    private GymkhanaBean loadGymkhana(int id, String name, String description, GymkhanaType type, LatLng position, String url, List<PointBean> points) {
+        Uri uri = Uri.parse(url);
+        WrapperBitmap wrapper = new WrapperBitmap(uri, null);
+        DownloadImageToWrapperBitmapAsyncTask asyncTask = new DownloadImageToWrapperBitmapAsyncTask(wrapper);
+        Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 8);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+        Calendar tomorrow = Calendar.getInstance();
+        tomorrow.setTimeInMillis(today.getTimeInMillis());
+        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+        asyncTask.execute(uri);
+        return new GymkhanaBean(id, name, description, type, false, false, "", "-", today.getTime(), today.getTime(), tomorrow.getTime(), wrapper, position, points);
+    }
+
+    // TODO Borrar
     private void loadDummyGymkhanas() {
         gymkhanasId = new ArrayList<>();
+        int pointId = 0;
+        int gymkId = 0;
 
-        Bitmap beach = BitmapFactory.decodeResource(getResources(), R.drawable.beach);
-        /**
-         *  TODO LO COMENTO PORQUE ESTO ESTÁ ROTO
-         *
-        // Torre de hércules
-        GymkhanaBean torre = new GymkhanaBean(0, "Torre de Hércules", "El faro romano más antiguo", beach, new LatLng(43.3821723,-8.4061368));
-        gymkhanas.setGymkhana(torre);
-        gymkhanasId.add(0);
-        // A Coruña Oculta
-        GymkhanaBean oculta = new GymkhanaBean(1, "A Coruña Oculta", "Descobre sitios que non están ao alcance de todo o mundo", beach, new LatLng(43.3613122,-8.4117282));
-        gymkhanas.setGymkhana(oculta);
-        gymkhanasId.add(1);
-        // Orzán
-        GymkhanaBean orzan = new GymkhanaBean(2, "Orzán y su bahía", "Las costas del océano atlantico bañan esta localidad", beach, new LatLng(43.3735763,-8.4029852));
-        gymkhanas.setGymkhana(orzan);
-        gymkhanasId.add(2);
-        // Coruña turismo
-        GymkhanaBean turismo = new GymkhanaBean(3, "A Coruña-Turismo", "GAL: GymkhanaBean promocionada pola Oficina de Turismo da Coruña. ESP: GymkhanaBean promocionada por la Oficina de Turismo de A Coruña. ENG: GymkhanaBean provide by the A Coruña Official Tourism", beach, new LatLng(43.370967,-8.3959424));
-        gymkhanas.setGymkhana(turismo);
-        gymkhanasId.add(3);
-         **/
+        // PUNTOS DE GYMKHANA
+        List<PointBean> pointsGymk = new ArrayList<>();
+        pointsGymk.add(loadPoint(pointId++, "Area Científica", "-",
+                "https://i.avoz.es/default/2014/12/07/00121417989423745121334/Foto/H05M2043.jpg",
+                new LatLng(43.333035, -8.409033), "En este edificio se hacen cosas ewe"));
+        pointsGymk.add(loadPoint(pointId++, "Facultade de Informática", "-",
+                "https://www.fic.udc.es/sites/default/files/styles/banner_inicio/public/banner/facultad-informatica-coruna.jpg?itok=1TIC5sZI",
+                new LatLng(43.332685, -8.410568), "En esta facultad sufrimos mucho"));
+        pointsGymk.add(loadPoint(pointId++, "Plaza del campus", "-",
+                "https://fotos02.laopinioncoruna.es/2016/01/23/318x200/universidade-abre.jpg",
+                new LatLng(43.332606, -8.412421), "Por fin algo libre"));
+
+        GymkhanaBean bean = loadGymkhana(gymkId++, "GymkhanaChain Pruebas", "-", GymkhanaType.desordenada,
+                new LatLng(43.333516, -8.410707),"http://consellosocial.udc.es/uploadedFiles/CSUDC.b7psr/fileManager/universidad_300112_68_LQ.jpg",
+                pointsGymk);
+
+        // GYMKHANA DE PRUEBA
+        GymkhanaCache gymkCache = GymkhanaCache.getInstance();
+        gymkCache.setGymkhana(bean);
+        gymkhanasId.add(bean.getId());
+
+        // PUNTOS DE GYMKHANA
+        pointsGymk = new ArrayList<>();
+        pointsGymk.add(loadPoint(pointId++, "Plaza del humor", "-",
+                "http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
+                new LatLng(43.371417, -8.397840), "Plaza del Humor"));
+        pointsGymk.add(loadPoint(pointId++, "Plaza de María Píta", "-",
+                "http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
+                new LatLng(43.370897, -8.395806), "Plaza de Maria Pita"));
+        pointsGymk.add(loadPoint(pointId++, "Playas de Coruña", "-",
+                "http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
+                new LatLng(43.369305, -8.407861), "Playas de Coruña"));
+        pointsGymk.add(loadPoint(pointId++, "Jardines de Mendez Núñez", "-",
+                "http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
+                new LatLng(43.367022, -8.403461), "Jardines de Mendez Núñez"));
+        pointsGymk.add(loadPoint(pointId++, "Plaza de España", "-",
+                "http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
+                new LatLng(43.368082, -8.407074), "Plaza de España"));
+        pointsGymk.add(loadPoint(pointId++, "Plaza Pontevedra", "-",
+                "http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
+                new LatLng(43.373076, -8.396615), "Plaza Pontevedra"));
+
+        bean = loadGymkhana(gymkId++, "GymkhanaChain Pruebas", "-", GymkhanaType.libre,
+                new LatLng(43.333516, -8.410707),"http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
+                pointsGymk);
+
+        // GYMKHANA DE PRUEBA
+        gymkCache = GymkhanaCache.getInstance();
+        gymkCache.setGymkhana(bean);
+        gymkhanasId.add(bean.getId());
     }
 
     // Implementación de las interfaces de los fragmentos

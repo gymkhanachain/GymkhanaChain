@@ -1,18 +1,17 @@
 package com.gymkhanachain.app.model.beans;
 
-import android.widget.ImageView;
-
 import com.google.android.gms.maps.model.LatLng;
+import com.gymkhanachain.app.commons.WrapperBitmap;
 
 public abstract class PointBean {
     Integer id;
     String name;
     String description;
-    ImageView image;
+    WrapperBitmap image;
     LatLng position;
 
     public PointBean(final Integer id, final String name, final String description,
-                     final ImageView image, final LatLng position) {
+                     final WrapperBitmap image, final LatLng position) {
         setId(id).setName(name).setDescription(description).setImage(image).setPosition(position);
     }
 
@@ -43,11 +42,11 @@ public abstract class PointBean {
         return this;
     }
 
-    public ImageView getImage() {
+    public WrapperBitmap getImage() {
         return image;
     }
 
-    public PointBean setImage(ImageView image) {
+    public PointBean setImage(WrapperBitmap image) {
         this.image = image;
         return this;
     }

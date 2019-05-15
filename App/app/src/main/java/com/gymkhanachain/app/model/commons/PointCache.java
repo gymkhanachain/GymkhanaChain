@@ -1,5 +1,7 @@
 package com.gymkhanachain.app.model.commons;
 
+import android.util.Log;
+
 import com.gymkhanachain.app.commons.GymkConstants;
 import com.gymkhanachain.app.model.beans.PointBean;
 
@@ -9,9 +11,12 @@ import java.util.Map;
 import java.util.Queue;
 
 public class PointCache {
-    private static Queue<Integer> pointsIds;
-    private static Map<Integer, PointBean> points;
+    private static final String TAG = "PointCache";
+
     private static PointCache instance = null;
+
+    private Queue<Integer> pointsIds;
+    private Map<Integer, PointBean> points;
 
     private PointCache() {
         pointsIds = new ArrayDeque<>();
@@ -29,14 +34,14 @@ public class PointCache {
 
     public synchronized PointBean getPoint(Integer id) {
         PointBean pointBean = points.get(id);
-
-        // TODO: comprobar que si no existe, se obtiene del modelo y se invoca a setPoint
-
         return pointBean;
     }
 
     public synchronized void setPoint(PointBean pointBean) {
+        Log.i(TAG, "Caching " + pointBean.getName());
+
         if (pointsIds.size() == GymkConstants.MAX_ELEMENTS_CACHED) {
+            Log.w(TAG, "Poll filled, removing old points");
             Integer id = pointsIds.poll();
             points.remove(id);
         }

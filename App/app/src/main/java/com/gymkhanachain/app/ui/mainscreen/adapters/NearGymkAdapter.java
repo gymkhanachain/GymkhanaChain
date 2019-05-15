@@ -9,20 +9,31 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gymkhanachain.app.R;
+import com.gymkhanachain.app.commons.WrapperBitmap;
 import com.gymkhanachain.app.model.beans.GymkhanaBean;
 import com.gymkhanachain.app.model.commons.GymkhanaCache;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class NearGymkAdapter extends RecyclerView.Adapter<NearGymkAdapter.NearGymkItem> {
+public class NearGymkAdapter extends RecyclerView.Adapter<NearGymkAdapter.NearGymkItem>
+        implements WrapperBitmap.OnWrapperBitmapListener {
     private static final GymkhanaCache gymkhanas = GymkhanaCache.getInstance();
 
     private List<Integer> gymkhanaIds;
+    private Map<WrapperBitmap, NearGymkItem> bitmapNearGymkItemMap;
     private NearGymkItem.OnNearGymkItemListener listener;
+
+    @Override
+    public void onBitmapChange(WrapperBitmap bitmap) {
+        NearGymkItem item = bitmapNearGymkItemMap.get(bitmap);
+        item.setImage(bitmap.getBitmap());
+    }
 
     public static class NearGymkItem extends RecyclerView.ViewHolder {
         @BindView(R.id.near_gymk_image)
@@ -62,7 +73,7 @@ public class NearGymkAdapter extends RecyclerView.Adapter<NearGymkAdapter.NearGy
     public NearGymkAdapter(List<Integer> gymkhanaIds, NearGymkItem.OnNearGymkItemListener listener) {
         this.gymkhanaIds = gymkhanaIds;
         this.listener = listener;
-
+        this.bitmapNearGymkItemMap = new HashMap<>();
     }
 
     @Override
@@ -74,7 +85,9 @@ public class NearGymkAdapter extends RecyclerView.Adapter<NearGymkAdapter.NearGy
 
     @Override
     public void onBindViewHolder(final NearGymkItem viewHolder, final int position) {
-        GymkhanaBean bean = gymkhanas.getGymkhana(gymkhanaIds.get(position));
+        GymkhanaBean bean = gymkhanas.getGymkhana(gymkhanaIds.get(position), this);
+        bitmapNearGymkItemMap.put(bean.getImage(), viewHolder);
+        bean.getImage().setListener(this);
         viewHolder.setText(bean.getName());
         viewHolder.viewItem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,7 +95,7 @@ public class NearGymkAdapter extends RecyclerView.Adapter<NearGymkAdapter.NearGy
                 listener.onNearGymkItemClick();
             }
         });
-        //viewHolder.setImage(bean.getImage());
+        viewHolder.setImage(bean.getImage().getBitmap());
     }
 
     @Override

@@ -89,7 +89,7 @@ public class NearGymkFragment extends Fragment
         // Load all points
         List<MapPoint> points = new ArrayList<>();
         for (Integer id : nearGymkhanas) {
-            GymkhanaBean bean = gymkhanas.getGymkhana(id);
+            GymkhanaBean bean = gymkhanas.getGymkhana(id, null);
             MapPoint point = new MapPoint(id, bean.getPosition(), bean.getName());
             points.add(point);
         }
