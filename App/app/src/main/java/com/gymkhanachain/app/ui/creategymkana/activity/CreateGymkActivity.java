@@ -1,7 +1,5 @@
 package com.gymkhanachain.app.ui.creategymkana.activity;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -11,20 +9,24 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.ImageView;
 
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.gymkhanachain.app.R;
+import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
+import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapPoint;
 import com.gymkhanachain.app.ui.creategymkana.fragments.GymkDetailsFragment;
 import com.gymkhanachain.app.ui.creategymkana.fragments.GymkPointsFragment;
 import com.gymkhanachain.app.ui.creategymkana.fragments.GymkPrivacyFragment;
-import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
-import com.gymkhanachain.app.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateGymkActivity extends AppCompatActivity implements GymkDetailsFragment.OnFragmentInteractionListener,
-        GymkPointsFragment.OnFragmentInteractionListener, GymkPrivacyFragment.OnFragmentInteractionListener, MapFragment.OnMapFragmentInteractionListener {
+public class CreateGymkActivity extends AppCompatActivity
+        implements GymkDetailsFragment.OnFragmentInteractionListener,
+        GymkPointsFragment.OnFragmentInteractionListener,
+        GymkPrivacyFragment.OnFragmentInteractionListener,
+        MapFragment.OnMapFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -75,10 +77,39 @@ public class CreateGymkActivity extends AppCompatActivity implements GymkDetails
     }
 
     @Override
-    public void onMapFragmentInteraction() {
+    public void onMapSearchButtonClickListener() {
 
     }
 
+    @Override
+    public void onMapAccesibilityFilterClickListener () {
+
+    }
+
+    @Override
+    public void onMapLongClickListener(LatLng point) {
+
+    }
+
+    @Override
+    public void onMapChangeListener(CameraPosition position) {
+
+    }
+
+    @Override
+    public void onMapPointClickListener(MapPoint point) {
+
+    }
+
+    @Override
+    public void onMapPointMoveListener(MapPoint point) {
+
+    }
+
+    @Override
+    public void onMapPointsNearLocationListener(List<MapPoint> points) {
+
+    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
