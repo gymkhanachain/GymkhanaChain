@@ -2,23 +2,18 @@ package com.gymkhanachain.app.ui.creategymkana.fragments;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -38,11 +33,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 /**
@@ -108,11 +100,35 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
         } catch (NullPointerException e){
 
         }
+        /* LatLng l = new LatLng(40,40);
+        LatLng l2 = new LatLng(0,0);
+        List<Gymkhana> prueba = RestServ.getUserGymkanas("CREADORCIO");
+        RestServ.deleteGymkhana(43);
+        Point p1 = new TextPoint(null,"p1123e","punto1","desc", l, "Holo");
+        Point p2 = new QuizzPoint(null,"p1123e","punto1","desc", l, "Holo","","","","",1);
+        Point p3 = new TextPoint(null,"p1123e","punto1","desc", l, "Holo");
+        List<Point> points = new ArrayList<>();
+        points.add(p1);
+        points.add(p2);
+        points.add(p3);
+        Gymkhana g = new Gymkhana(null,"1111","s","e",l, GymkhanaType.desordenada,FALSE,FALSE,"","",1,1,1, points);
+        Gymkhana g2 = new Gymkhana(null,"222","s2","2e",l, GymkhanaType.desordenada,FALSE,FALSE,"","",21,21,12, points);
+        List<Gymkhana> prueba = new ArrayList<>();
+        prueba.add(g);
+        prueba.add(g2);
+        RestServ.addGymkhana(prueba);
+        LatLng l = new LatLng(40,40);
+        Point p1 = new TextPoint(94,"IMAGENONCIA","MINPUTNTO","DESCRIPVIONCAMBIADA", l, "Pruebamod");
+        Point p2 = new QuizzPoint(95,"p1123e","punto1","desc", l, "Holo","","","moooood","",1);
+        List<Point> points = new ArrayList<>();
+        points.add(p1);
+        points.add(p2);
+        Gymkhana g = new Gymkhana(41,"1111","s","e",l, GymkhanaType.desordenada,FALSE,FALSE,"","",1,1,1, points);
+        RestServ.modGymkhana(g);*/
         buttonActivate.setOnClickListener(this);
         buttonDelete.setOnClickListener(this);
         ImageButton imageButtonEditGymkImg = getActivity().findViewById(R.id.imageButton_edit_gymk_img);
         imageButtonEditGymkImg.setOnClickListener(this);
-
     }
 
     @Override
@@ -365,12 +381,11 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getActivity().getContentResolver(), imageUri);
             ((ImageView) mImageView.findViewById(R.id.imageView_gymk)).setImageBitmap(bitmap);
         } catch (FileNotFoundException ex){
-            Toast.makeText(getContext(), "Ha fallado: " + ex.getMessage().toString() , Toast.LENGTH_SHORT).show();
+
         } catch (IOException ex) {
             Toast.makeText(getContext(), "Ha fallado: " + ex.getMessage().toString() , Toast.LENGTH_SHORT).show();
         }
     }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult " + requestCode);
@@ -391,5 +406,7 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
                 break;
         }
     }
+
+
 }
 

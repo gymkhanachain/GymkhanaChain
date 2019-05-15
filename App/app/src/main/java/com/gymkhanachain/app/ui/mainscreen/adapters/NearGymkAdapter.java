@@ -1,7 +1,6 @@
 package com.gymkhanachain.app.ui.mainscreen.adapters;
 
 import android.graphics.Bitmap;
-import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +12,6 @@ import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.model.beans.GymkhanaBean;
 import com.gymkhanachain.app.model.commons.GymkhanaCache;
 
-import org.parceler.Parcels;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -86,7 +82,7 @@ public class NearGymkAdapter extends RecyclerView.Adapter<NearGymkAdapter.NearGy
                 listener.onNearGymkItemClick();
             }
         });
-        viewHolder.setImage(bean.getImage());
+        //viewHolder.setImage(bean.getImage());
     }
 
     @Override

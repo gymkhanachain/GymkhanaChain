@@ -1,5 +1,6 @@
 package com.gymkhanachain.app.model.commons;
 
+import com.gymkhanachain.app.commons.GymkConstants;
 import com.gymkhanachain.app.model.beans.GymkhanaBean;
 
 import java.util.ArrayDeque;
@@ -11,8 +12,6 @@ public class GymkhanaCache {
     private static Queue<Integer> gymkhanaIds;
     private static Map<Integer, GymkhanaBean> gymkhanas;
     private static GymkhanaCache instance = null;
-
-    private static int MAX_ELEMENTS = 16;
 
     private GymkhanaCache() {
         gymkhanaIds = new ArrayDeque<>();
@@ -36,7 +35,7 @@ public class GymkhanaCache {
     }
 
     public synchronized void setGymkhana(GymkhanaBean gymkhanaBean) {
-        if (gymkhanaIds.size() == MAX_ELEMENTS) {
+        if (gymkhanaIds.size() == GymkConstants.MAX_ELEMENTS_CACHED) {
             Integer id = gymkhanaIds.poll();
             gymkhanas.remove(id);
         }

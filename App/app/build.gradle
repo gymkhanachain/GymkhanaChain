@@ -42,5 +42,10 @@ dependencies {
     implementation 'org.parceler:parceler-api:1.1.12'
     annotationProcessor 'org.parceler:parceler:1.1.12'
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
     implementation 'com.akexorcist:googledirectionlibrary:1.1.1'
+
+    //implementation 'com.google.cloud.sql:mysql-socket-factory-connector-j-8:1.0.13'
 }

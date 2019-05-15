@@ -27,6 +27,9 @@ out/
 .gradle/
 build/
 
+#web server
+server/venv
+
 # Local configuration file (sdk path, etc)
 local.properties
 

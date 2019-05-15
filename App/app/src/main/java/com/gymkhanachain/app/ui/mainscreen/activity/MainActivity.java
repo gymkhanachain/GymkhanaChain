@@ -38,8 +38,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Task;
 import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.SettingsActivity;
-import com.gymkhanachain.app.commons.DownloadImageToBitmapAsyncTask;
-import com.gymkhanachain.app.model.beans.GymkhanaBean;
+import com.gymkhanachain.app.commons.asynctasks.DownloadImageToBitmapAsyncTask;
 import com.gymkhanachain.app.model.commons.GymkhanaCache;
 import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
 import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
@@ -222,6 +221,9 @@ public class MainActivity extends AppCompatActivity implements
         gymkhanasId = new ArrayList<>();
 
         Bitmap beach = BitmapFactory.decodeResource(getResources(), R.drawable.beach);
+        /**
+         *  TODO LO COMENTO PORQUE ESTO ESTÁ ROTO
+         *
         // Torre de hércules
         GymkhanaBean torre = new GymkhanaBean(0, "Torre de Hércules", "El faro romano más antiguo", beach, new LatLng(43.3821723,-8.4061368));
         gymkhanas.setGymkhana(torre);
@@ -238,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements
         GymkhanaBean turismo = new GymkhanaBean(3, "A Coruña-Turismo", "GAL: GymkhanaBean promocionada pola Oficina de Turismo da Coruña. ESP: GymkhanaBean promocionada por la Oficina de Turismo de A Coruña. ENG: GymkhanaBean provide by the A Coruña Official Tourism", beach, new LatLng(43.370967,-8.3959424));
         gymkhanas.setGymkhana(turismo);
         gymkhanasId.add(3);
+         **/
     }
 
     // Implementación de las interfaces de los fragmentos

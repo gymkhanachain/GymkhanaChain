@@ -3,6 +3,7 @@ package com.gymkhanachain.app.ui.commons.fragments.mapfragment;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.gymkhanachain.app.commons.GymkConstants;
 
 import org.parceler.Parcel;
 import org.parceler.ParcelConstructor;
@@ -27,10 +28,11 @@ public class MapFragmentParams {
 
     /**
      * Crea un nuevo MapFragment con puntos de Gymkhana en modo normal, sin mostrar el pop-up de los
-     * marcadores, con un intervalo de 25s de actualización, sin estilo y sin tipo de mapa
+     * marcadores, con un intervalo de 2s-5s de actualización, sin estilo y sin tipo de mapa
      */
     public MapFragmentParams() {
-        this(PointType.GYMKHANA_POINTS, PointOrder.NONE_ORDER, MapMode.NORMAL_MODE);
+        this(GymkConstants.DEFAULT_POINT_TYPE, GymkConstants.DEFAULT_POINT_ORDER,
+                GymkConstants.DEFAULT_MAP_MODE);
     }
 
     /**
@@ -40,8 +42,10 @@ public class MapFragmentParams {
      * @param mapMode Modo del mapa (mirar MapMode)
      */
     public MapFragmentParams(PointType typePoints, PointOrder orderPoints, MapMode mapMode) {
-        this(typePoints, orderPoints, mapMode, true, 2.0f,
-                5.0f, 20, null, -1);
+        this(typePoints, orderPoints, mapMode, false,
+                GymkConstants.DEFAULT_MIN_LOCATION_INTERVAL,
+                GymkConstants.DEFAULT_MAX_LOCATION_INTERVAL,
+                GymkConstants.DEFAULT_TRIGGERED_DISTANCE, null, -1);
     }
 
     @ParcelConstructor
