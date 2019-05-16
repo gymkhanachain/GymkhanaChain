@@ -28,43 +28,40 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.gymkhanachain.app.SettingsActivity;
-import com.gymkhanachain.app.commons.DownloadImageToBitmapAsyncTask;
-import com.gymkhanachain.app.model.beans.GymkhanaBean;
-import com.gymkhanachain.app.model.commons.GymkhanaCache;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Task;
 import com.gymkhanachain.app.R;
+import com.gymkhanachain.app.SettingsActivity;
+import com.gymkhanachain.app.commons.DownloadImageToBitmapAsyncTask;
+import com.gymkhanachain.app.model.beans.GymkhanaBean;
+import com.gymkhanachain.app.model.commons.GymkhanaCache;
 import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
 import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
-import com.gymkhanachain.app.R;
-import com.gymkhanachain.app.ui.gymkpoint.activity.PointActivity;
-import com.gymkhanachain.app.ui.mainscreen.fragments.NearGymkFragment;
-import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
-import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
+import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapPoint;
 import com.gymkhanachain.app.ui.creategymkana.activity.CreateGymkActivity;
 import com.gymkhanachain.app.ui.mainscreen.fragments.GymkInfoFragment;
 import com.gymkhanachain.app.ui.mainscreen.fragments.ListGymkFragment;
+import com.gymkhanachain.app.ui.mainscreen.fragments.NearGymkFragment;
+import com.gymkhanachain.app.ui.playgymkhana.activity.PlayGymkhanaActivity;
 import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
-
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.PreferenceChangeEvent;
 
 public class MainActivity extends AppCompatActivity implements
         NearGymkFragment.OnNearGymkFragmentInteractionListener,
         MapFragment.OnMapFragmentInteractionListener,
         ListGymkFragment.OnListGymkFragmentInteractionListener,
         GymkInfoFragment.OnGymkInfoFragmentInteractionListener,
-        NavigationView.OnNavigationItemSelectedListener, LoginFragment.OnLoginFragmentInteractionListener {
+        NavigationView.OnNavigationItemSelectedListener,
+        LoginFragment.OnLoginFragmentInteractionListener {
 
     private static final GymkhanaCache gymkhanas = GymkhanaCache.getInstance();
 
@@ -75,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String NEAR_GYMK_FRAGMENT_TAG = "NearGymkFragment";
     private static final String LIST_GYMK_FRAGMENT_TAG = "ListGymkFragment";
     private static final String INFO_GYMK_FRAGMENT_TAG = "GymkInfoFragment";
-    
+
     // Tag para identificar los permisos
     public static final int REQUEST_MY_LOCATION = 0x01;
 
@@ -263,6 +260,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onStartGymkFragmentInteraction() {
+        Intent intent = new Intent(this, PlayGymkhanaActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
     public void onCreateGymkInteraction() {
         Intent intent = new Intent(this, CreateGymkActivity.class);
         startActivity(intent);
@@ -357,11 +360,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onMapFragmentInteraction() {
-        Toast.makeText(this, "Ejemplo", Toast.LENGTH_SHORT);
-    }
-
-    @Override
     public void refusedToLogin() {
         Toast.makeText(getApplicationContext(), getString(R.string.toast_no_login), Toast.LENGTH_SHORT).show();
         finish();
@@ -409,6 +407,41 @@ public class MainActivity extends AppCompatActivity implements
             }, 2000);
         } else
             super.onBackPressed();
+    }
+
+    @Override
+    public void onMapSearchButtonClickListener() {
+
+    }
+
+    @Override
+    public void onMapAccesibilityFilterClickListener() {
+
+    }
+
+    @Override
+    public void onMapLongClickListener(LatLng point) {
+
+    }
+
+    @Override
+    public void onMapChangeListener(CameraPosition position) {
+
+    }
+
+    @Override
+    public void onMapPointClickListener(MapPoint point) {
+
+    }
+
+    @Override
+    public void onMapPointMoveListener(MapPoint point) {
+
+    }
+
+    @Override
+    public void onMapPointsNearLocationListener(List<MapPoint> points) {
+
     }
 }
 

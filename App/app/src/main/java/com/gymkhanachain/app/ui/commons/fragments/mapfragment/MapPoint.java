@@ -7,9 +7,9 @@ import org.parceler.ParcelConstructor;
 
 @Parcel
 public class MapPoint {
-    private Integer id;
-    private LatLng position;
-    private String name;
+    Integer id;
+    LatLng position;
+    String name;
 
     @ParcelConstructor
     public MapPoint(Integer id, LatLng position, String name) {
