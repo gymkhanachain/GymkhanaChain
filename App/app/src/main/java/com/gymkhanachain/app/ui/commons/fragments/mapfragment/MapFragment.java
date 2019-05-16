@@ -631,7 +631,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         // Deshabilita el seguimiento
         if (isLocationRequestPermission()) {
-            map.setMyLocationEnabled(false);
+            if (map != null)
+                map.setMyLocationEnabled(false);
 
             if ((fusedLocationClient != null) && (locationCallback != null)) {
                 fusedLocationClient.removeLocationUpdates(locationCallback);

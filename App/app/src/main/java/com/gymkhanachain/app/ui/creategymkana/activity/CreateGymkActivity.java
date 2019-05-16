@@ -9,11 +9,13 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
+import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragmentParams;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapPoint;
 import com.gymkhanachain.app.ui.creategymkana.fragments.GymkDetailsFragment;
 import com.gymkhanachain.app.ui.creategymkana.fragments.GymkPointsFragment;
@@ -28,6 +30,7 @@ public class CreateGymkActivity extends AppCompatActivity
         GymkPrivacyFragment.OnFragmentInteractionListener,
         MapFragment.OnMapFragmentInteractionListener {
 
+    private static final String TAG = "CreateGymkActivity";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -71,6 +74,11 @@ public class CreateGymkActivity extends AppCompatActivity
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
     @Override
     public void onFragmentInteraction(Uri uri) {
 
@@ -136,7 +144,12 @@ public class CreateGymkActivity extends AppCompatActivity
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             //return PlaceholderFragment.newInstance(position + 1);
-            return Fragment.instantiate(getApplicationContext(), fragments.get(position));
+            switch (position) {
+                case 1:
+                    return MapFragment.newInstance("", new MapFragmentParams(), new ArrayList<MapPoint>());
+                default:
+                    return Fragment.instantiate(getApplicationContext(), fragments.get(position));
+            }
         }
 
         @Override
