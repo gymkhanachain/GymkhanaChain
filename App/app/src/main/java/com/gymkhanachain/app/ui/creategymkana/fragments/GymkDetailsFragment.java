@@ -29,7 +29,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.gymkhanachain.app.client.Gymkhana;
-import com.gymkhanachain.app.client.GymkhanasClient;
+import com.gymkhanachain.app.client.OnGymkhanaPetitionResponse;
 import com.gymkhanachain.app.client.GymkhanasRestService;
 import com.gymkhanachain.app.client.Point;
 import com.gymkhanachain.app.client.QuizzPoint;
@@ -79,6 +79,8 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
 
     private static final String TEMP_IMAGE_NAME = "tempImage";
 
+    public static List<Gymkhana> prueba;
+
     public GymkDetailsFragment() {
         // Required empty public constructor
     }
@@ -117,9 +119,17 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
         } catch (NullPointerException e){
 
         }
-        /* LatLng l = new LatLng(40,40);
+        /*LatLng l = new LatLng(40,40);
         LatLng l2 = new LatLng(0,0);
-        List<Gymkhana> prueba = RestServ.getUserGymkanas("CREADORCIO");
+
+        RestServ.getUserGymkanas("CREADORCIO", new OnGymkhanaPetitionResponse(){
+            @Override
+            public void onPetitionSuccess(List<Gymkhana> g){
+                prueba = g;
+                Log.d("onResponse", prueba.get(1).getName());
+            }
+        });
+
         RestServ.deleteGymkhana(43);
         Point p1 = new TextPoint(null,"p1123e","punto1","desc", l, "Holo");
         Point p2 = new QuizzPoint(null,"p1123e","punto1","desc", l, "Holo","","","","",1);

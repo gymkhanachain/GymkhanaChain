@@ -37,10 +37,17 @@ public class RestServ {
                 Log.d("onFailure", t.toString());
             }
         });
+
+        try {
+            Thread.sleep(1500);
+        } catch (Exception e) {
+            Log.d("onResponse", "There is an error");
+        }
+
         return gymk;
     }
 
-    public static List<Gymkhana> getNearbyGymks(LatLng position_sup, LatLng position_inf){
+    public static void getNearbyGymks(LatLng position_sup, LatLng position_inf, final OnGymkhanaPetitionResponse g){
         GymkhanasRestService service = GymkhanasClient.createServiceDes(GymkhanasRestService.class);
         Call<List<Gymkhana>> gymkhanaCall = service.getNearbyGymks(position_sup.latitude, position_sup.longitude, position_inf.latitude, position_inf.longitude);
         gymkhanaCall.enqueue(new Callback<List<Gymkhana>>() {
@@ -49,6 +56,7 @@ public class RestServ {
                 try {
                     Log.d("onResponse", response.body().get(0).getName());
                     listgymk = response.body();
+                    g.onPetitionSuccess(listgymk);
                 } catch (Exception e) {
                     Log.d("onResponse", "There is an error");
                     e.printStackTrace();
@@ -59,7 +67,6 @@ public class RestServ {
                 Log.d("onFailure", t.toString());
             }
         });
-        return listgymk;
     }
 
     public static void addGymkhana(Gymkhana g){
@@ -125,15 +132,15 @@ public class RestServ {
         });
     }
 
-    public static List<Gymkhana> getUserGymkanas(String user){
+    public static void getUserGymkanas(String user, final OnGymkhanaPetitionResponse g){
         GymkhanasRestService service = GymkhanasClient.createServiceDes(GymkhanasRestService.class);
         Call<List<Gymkhana>> gymkhanaCall = service.getUserGymkanas(user);
         gymkhanaCall.enqueue(new Callback<List<Gymkhana>>() {
             @Override
             public void onResponse(Call<List<Gymkhana>> call, Response<List<Gymkhana>> response) {
                 try {
-                    // Log.d("onResponse", response.body().get(3).getPuntos().get(1).getName());
                     listgymk = response.body();
+                    g.onPetitionSuccess(listgymk);
                 } catch (Exception e) {
                     Log.d("onResponse", "There is an error");
                     e.printStackTrace();
@@ -144,6 +151,5 @@ public class RestServ {
                 Log.d("onFailure", t.toString());
             }
         });
-        return listgymk;
     }
 }
