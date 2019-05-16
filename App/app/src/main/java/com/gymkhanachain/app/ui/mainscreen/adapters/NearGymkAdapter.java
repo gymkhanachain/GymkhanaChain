@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gymkhanachain.app.R;
-import com.gymkhanachain.app.commons.WrapperBitmap;
+import com.gymkhanachain.app.commons.ProxyBitmap;
 import com.gymkhanachain.app.model.beans.GymkhanaBean;
 import com.gymkhanachain.app.model.commons.GymkhanaCache;
 
@@ -22,15 +22,15 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 public class NearGymkAdapter extends RecyclerView.Adapter<NearGymkAdapter.NearGymkItem>
-        implements WrapperBitmap.OnWrapperBitmapListener {
+        implements ProxyBitmap.OnProxyBitmapListener {
     private static final GymkhanaCache gymkhanas = GymkhanaCache.getInstance();
 
     private List<Integer> gymkhanaIds;
-    private Map<WrapperBitmap, NearGymkItem> bitmapNearGymkItemMap;
+    private Map<ProxyBitmap, NearGymkItem> bitmapNearGymkItemMap;
     private NearGymkItem.OnNearGymkItemListener listener;
 
     @Override
-    public void onBitmapChange(WrapperBitmap bitmap) {
+    public void onBitmapChange(ProxyBitmap bitmap) {
         NearGymkItem item = bitmapNearGymkItemMap.get(bitmap);
         item.setImage(bitmap.getBitmap());
     }
@@ -46,7 +46,7 @@ public class NearGymkAdapter extends RecyclerView.Adapter<NearGymkAdapter.NearGy
         private Unbinder unbinder;
 
         public interface OnNearGymkItemListener {
-            void onNearGymkItemClick();
+            void onNearGymkItemClick(Integer gymkhanaId);
         }
 
         NearGymkItem(View view) {
@@ -85,14 +85,14 @@ public class NearGymkAdapter extends RecyclerView.Adapter<NearGymkAdapter.NearGy
 
     @Override
     public void onBindViewHolder(final NearGymkItem viewHolder, final int position) {
-        GymkhanaBean bean = gymkhanas.getGymkhana(gymkhanaIds.get(position), this);
+        GymkhanaBean bean = gymkhanas.getGymkhana(gymkhanaIds.get(position));
         bitmapNearGymkItemMap.put(bean.getImage(), viewHolder);
-        bean.getImage().setListener(this);
+        bean.getImage().attach(this);
         viewHolder.setText(bean.getName());
         viewHolder.viewItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onNearGymkItemClick();
+                listener.onNearGymkItemClick(gymkhanaIds.get(position));
             }
         });
         viewHolder.setImage(bean.getImage().getBitmap());

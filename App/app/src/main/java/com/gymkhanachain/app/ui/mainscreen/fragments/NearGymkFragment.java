@@ -28,9 +28,10 @@ import butterknife.Unbinder;
 
 public class NearGymkFragment extends Fragment
         implements NearGymkAdapter.NearGymkItem.OnNearGymkItemListener {
+
     private static final String ARG_NEAR_GYMKHANAS = "nearGymks";
 
-    private static final GymkhanaCache gymkhanas = GymkhanaCache.getInstance();
+    private static final GymkhanaCache gymkCache = GymkhanaCache.getInstance();
 
     @BindView(R.id.near_gymkhanas)
     RecyclerView nearGymkhanasView;
@@ -89,7 +90,7 @@ public class NearGymkFragment extends Fragment
         // Load all points
         List<MapPoint> points = new ArrayList<>();
         for (Integer id : nearGymkhanas) {
-            GymkhanaBean bean = gymkhanas.getGymkhana(id, null);
+            GymkhanaBean bean = gymkCache.getGymkhana(id);
             MapPoint point = new MapPoint(id, bean.getPosition(), bean.getName());
             points.add(point);
         }
@@ -126,8 +127,8 @@ public class NearGymkFragment extends Fragment
     }
 
     @Override
-    public void onNearGymkItemClick() {
-        listener.onNearGymkFragmentInteraction();
+    public void onNearGymkItemClick(Integer gymkhanaId) {
+        listener.onNearGymkhanaClick(gymkhanaId);
     }
 
     /**
@@ -141,8 +142,6 @@ public class NearGymkFragment extends Fragment
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnNearGymkFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onNearGymkFragmentInteraction();
-        void onStartGymkFragmentInteraction();
+        void onNearGymkhanaClick(Integer gymkhanaId);
     }
 }

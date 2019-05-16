@@ -5,7 +5,6 @@ import android.util.Log;
 import com.gymkhanachain.app.client.Gymkhana;
 import com.gymkhanachain.app.client.RestServ;
 import com.gymkhanachain.app.commons.GymkConstants;
-import com.gymkhanachain.app.commons.WrapperBitmap;
 import com.gymkhanachain.app.model.adapters.GymkAdapter;
 import com.gymkhanachain.app.model.beans.GymkhanaBean;
 import com.gymkhanachain.app.model.beans.PointBean;
@@ -36,14 +35,14 @@ public class GymkhanaCache {
         return instance;
     }
 
-    public synchronized GymkhanaBean getGymkhana(Integer id, WrapperBitmap.OnWrapperBitmapListener listener) {
+    public synchronized GymkhanaBean getGymkhana(Integer id) {
         GymkhanaBean gymkhanaBean = gymkhanas.get(id);
 
         if (gymkhanaBean == null) {
             Gymkhana gymkhana = RestServ.getGymkhanaById(id);
 
             if (gymkhana != null) {
-                setGymkhana(GymkAdapter.adapt(gymkhana, listener));
+                setGymkhana(GymkAdapter.adapt(gymkhana));
             }
         }
 

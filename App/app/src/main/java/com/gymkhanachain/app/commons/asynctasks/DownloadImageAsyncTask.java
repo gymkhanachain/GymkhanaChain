@@ -6,27 +6,31 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.gymkhanachain.app.commons.WrapperBitmap;
+import com.gymkhanachain.app.commons.ProxyBitmap;
 import com.gymkhanachain.app.model.commons.ImageCache;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-public class DownloadImageToWrapperBitmapAsyncTask extends AsyncTask<Uri, Void, Bitmap> {
+public class DownloadImageAsyncTask extends AsyncTask<Uri, Void, Bitmap> {
 
     private static final String TAG = "DownloadImageToWrapper";
     private static final ImageCache imgCache = ImageCache.getInstance();
 
-    private WrapperBitmap wrapper;
+    private ProxyBitmap image;
 
-    public DownloadImageToWrapperBitmapAsyncTask(WrapperBitmap wrapper) {
-        this.wrapper = wrapper;
+    public DownloadImageAsyncTask(ProxyBitmap image) {
+        this.image = image;
     }
 
     @Override
     protected Bitmap doInBackground(Uri... uris) {
-        String url = uris[0].toString();
+        if (image.getUri() == null) {
+            image.setUri(uris[0]);
+        }
+
+        String url = image.getUri().toString();
         Bitmap bitmap = imgCache.getBitmap(url);
 
         if (bitmap == null) {
@@ -42,7 +46,7 @@ public class DownloadImageToWrapperBitmapAsyncTask extends AsyncTask<Uri, Void, 
 
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-        imgCache.setBitmap(wrapper.getUri().toString(), bitmap);
-        wrapper.setBitmap(bitmap);
+        imgCache.setBitmap(image.getUri().toString(), bitmap);
+        image.setBitmap(bitmap);
     }
 }

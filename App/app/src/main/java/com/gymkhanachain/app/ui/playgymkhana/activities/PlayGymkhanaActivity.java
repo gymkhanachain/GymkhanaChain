@@ -1,5 +1,6 @@
-package com.gymkhanachain.app.ui.playgymkhana.activity;
+package com.gymkhanachain.app.ui.playgymkhana.activities;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -7,6 +8,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragmentParams;
@@ -73,41 +75,46 @@ public class PlayGymkhanaActivity extends AppCompatActivity
 
 
     @Override
-    public void onMapSearchButtonClickListener() {
+    public void onMapSearchButtonClick() {
         Log.i(TAG, "Búsqueda");
         Toast toast = Toast.makeText(this, "Búsqueda", Toast.LENGTH_SHORT);
         toast.show();
     }
 
     @Override
-    public void onMapAccesibilityFilterClickListener() {
+    public void onMapAccesibilityFilterClick() {
         Log.i(TAG, "Accesibilidad");
         Toast toast = Toast.makeText(this, "Accesibilidad", Toast.LENGTH_SHORT);
         toast.show();
     }
 
     @Override
-    public void onMapLongClickListener(LatLng point) {
+    public void onMapLongClick(LatLng point) {
         Log.i(TAG, "Pulsación larga en: " + point);
     }
 
     @Override
-    public void onMapChangeListener(CameraPosition position) {
+    public void onMapChangePosition(LatLngBounds bounds, Location position) {
+        //Log.i(TAG, "La posición ha cambiado");
+    }
+
+    @Override
+    public void onMapChangeCamera(LatLngBounds bounds, CameraPosition position) {
         Log.i(TAG, "La cámara ha cambiado");
     }
 
     @Override
-    public void onMapPointClickListener(MapPoint point) {
+    public void onMapPointClick(MapPoint point) {
         Log.i(TAG, "Marcador pulsado: " + point.getName());
     }
 
     @Override
-    public void onMapPointMoveListener(MapPoint point) {
+    public void onMapPointMove(MapPoint point) {
         Log.i(TAG, "Marcador movido: " + point.getName());
     }
 
     @Override
-    public void onMapPointsNearLocationListener(List<MapPoint> points) {
+    public void onMapPointsNearLocation(List<MapPoint> points) {
         for (MapPoint point : points) {
             Log.i(TAG, "Has pasado cerca de " + point.getName());
             Toast toast = Toast.makeText(this, "Has completado " + point.getName(), Toast.LENGTH_SHORT);

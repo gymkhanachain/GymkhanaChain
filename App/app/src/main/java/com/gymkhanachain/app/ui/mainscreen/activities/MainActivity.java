@@ -1,10 +1,11 @@
-package com.gymkhanachain.app.ui.mainscreen.activity;
+package com.gymkhanachain.app.ui.mainscreen.activities;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,12 +34,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.Task;
 import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.SettingsActivity;
-import com.gymkhanachain.app.commons.WrapperBitmap;
+import com.gymkhanachain.app.commons.ProxyBitmap;
 import com.gymkhanachain.app.commons.asynctasks.DownloadImageToImageViewAsyncTask;
-import com.gymkhanachain.app.commons.asynctasks.DownloadImageToWrapperBitmapAsyncTask;
+import com.gymkhanachain.app.commons.asynctasks.DownloadImageAsyncTask;
 import com.gymkhanachain.app.model.beans.GymkhanaBean;
 import com.gymkhanachain.app.model.beans.GymkhanaType;
 import com.gymkhanachain.app.model.beans.PointBean;
@@ -48,12 +50,12 @@ import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
 import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapPoint;
-import com.gymkhanachain.app.ui.creategymkana.activity.CreateGymkActivity;
+import com.gymkhanachain.app.ui.creategymkana.activities.CreateGymkActivity;
 import com.gymkhanachain.app.ui.mainscreen.fragments.GymkInfoFragment;
 import com.gymkhanachain.app.ui.mainscreen.fragments.ListGymkFragment;
 import com.gymkhanachain.app.ui.mainscreen.fragments.NearGymkFragment;
-import com.gymkhanachain.app.ui.playgymkhana.activity.PlayGymkhanaActivity;
-import com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity;
+import com.gymkhanachain.app.ui.playgymkhana.activities.PlayGymkhanaActivity;
+import com.gymkhanachain.app.ui.userprofile.activities.UserProfileActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -67,11 +69,10 @@ public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         LoginFragment.OnLoginFragmentInteractionListener {
 
-    private static final GymkhanaCache gymkhanas = GymkhanaCache.getInstance();
+    private static final GymkhanaCache gymkCache = GymkhanaCache.getInstance();
 
     private static final String TAG = "MainActivity";
     // Tags para identificar los distintos fragmentos de la Actividad
-    private static final String MAP_FRAGMENT_TAG = "MapFragment";
     private static final String LOGIN_FRAGMENT_TAG = "LoginFragment";
     private static final String NEAR_GYMK_FRAGMENT_TAG = "NearGymkFragment";
     private static final String LIST_GYMK_FRAGMENT_TAG = "ListGymkFragment";
@@ -189,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements
         fragments.add(nearGymkFragment);
 
         fragmentManager.beginTransaction()
-                .add(R.id.placeholder_main, nearGymkFragment, NEAR_GYMK_FRAGMENT_TAG)
+               .add(R.id.placeholder_main, nearGymkFragment, NEAR_GYMK_FRAGMENT_TAG)
                 .commit();
     }
 
@@ -225,8 +226,8 @@ public class MainActivity extends AppCompatActivity implements
     // TODO Borrar
     private PointBean loadPoint(int id, String name, String description, String url, LatLng position, String longText) {
         Uri uri = Uri.parse(url);
-        WrapperBitmap wrapper = new WrapperBitmap(uri, null);
-        DownloadImageToWrapperBitmapAsyncTask asyncTask = new DownloadImageToWrapperBitmapAsyncTask(wrapper);
+        ProxyBitmap wrapper = new ProxyBitmap();
+        DownloadImageAsyncTask asyncTask = new DownloadImageAsyncTask(wrapper);
         asyncTask.execute(uri);
         return new TextPointBean(id, name, description, wrapper, position, longText);
     }
@@ -234,8 +235,8 @@ public class MainActivity extends AppCompatActivity implements
     // TODO Borrar
     private GymkhanaBean loadGymkhana(int id, String name, String description, GymkhanaType type, LatLng position, String url, List<PointBean> points) {
         Uri uri = Uri.parse(url);
-        WrapperBitmap wrapper = new WrapperBitmap(uri, null);
-        DownloadImageToWrapperBitmapAsyncTask asyncTask = new DownloadImageToWrapperBitmapAsyncTask(wrapper);
+        ProxyBitmap wrapper = new ProxyBitmap();
+        DownloadImageAsyncTask asyncTask = new DownloadImageAsyncTask(wrapper);
         Calendar today = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, 8);
         today.set(Calendar.MINUTE, 0);
@@ -245,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements
         tomorrow.setTimeInMillis(today.getTimeInMillis());
         tomorrow.add(Calendar.DAY_OF_MONTH, 1);
         asyncTask.execute(uri);
-        return new GymkhanaBean(id, name, description, type, false, false, "", "-", today.getTime(), today.getTime(), tomorrow.getTime(), wrapper, position, points);
+        return new GymkhanaBean(id, name, description, type, false, false, "", "GymkhanaChain", today.getTime(), today.getTime(), tomorrow.getTime(), wrapper, position, points);
     }
 
     // TODO Borrar
@@ -266,12 +267,11 @@ public class MainActivity extends AppCompatActivity implements
                 "https://fotos02.laopinioncoruna.es/2016/01/23/318x200/universidade-abre.jpg",
                 new LatLng(43.332606, -8.412421), "Por fin algo libre"));
 
-        GymkhanaBean bean = loadGymkhana(gymkId++, "GymkhanaChain Pruebas", "-", GymkhanaType.desordenada,
+        GymkhanaBean bean = loadGymkhana(gymkId++, "GymkhanaChain Pruebas", "Gymkhana de la UDC", GymkhanaType.desordenada,
                 new LatLng(43.333516, -8.410707),"http://consellosocial.udc.es/uploadedFiles/CSUDC.b7psr/fileManager/universidad_300112_68_LQ.jpg",
                 pointsGymk);
 
         // GYMKHANA DE PRUEBA
-        GymkhanaCache gymkCache = GymkhanaCache.getInstance();
         gymkCache.setGymkhana(bean);
         gymkhanasId.add(bean.getId());
 
@@ -296,12 +296,11 @@ public class MainActivity extends AppCompatActivity implements
                 "http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
                 new LatLng(43.373076, -8.396615), "Plaza Pontevedra"));
 
-        bean = loadGymkhana(gymkId++, "GymkhanaChain Pruebas", "-", GymkhanaType.libre,
-                new LatLng(43.333516, -8.410707),"http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
+        bean = loadGymkhana(gymkId++, "Conociendo la Coruña", "-", GymkhanaType.libre,
+                new LatLng(43.368673, -8.402353),"http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
                 pointsGymk);
 
         // GYMKHANA DE PRUEBA
-        gymkCache = GymkhanaCache.getInstance();
         gymkCache.setGymkhana(bean);
         gymkhanasId.add(bean.getId());
     }
@@ -309,24 +308,16 @@ public class MainActivity extends AppCompatActivity implements
     // Implementación de las interfaces de los fragmentos
     // TODO Hay que definir las interfaces de cada fragmento, en función de las interacciones con MainActivity
     @Override
-    public void onNearGymkFragmentInteraction() {
+    public void onNearGymkhanaClick(Integer gymkhanaId) {
         Fragment fragment = fragmentManager.findFragmentByTag(INFO_GYMK_FRAGMENT_TAG);
 
         if (fragment != null && fragment.getTag().equals(INFO_GYMK_FRAGMENT_TAG)) {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.frameLayout, fragment)
-                    .commit();
+            fragmentManager.beginTransaction().replace(R.id.frameLayout, fragment).commit();
         } else {
             fragmentManager.beginTransaction()
-                    .replace(R.id.placeholder_main, GymkInfoFragment.newInstance(), INFO_GYMK_FRAGMENT_TAG)
+                    .replace(R.id.placeholder_main, GymkInfoFragment.newInstance(gymkhanaId), INFO_GYMK_FRAGMENT_TAG)
                     .commit();
         }
-    }
-
-    @Override
-    public void onStartGymkFragmentInteraction() {
-        Intent intent = new Intent(this, PlayGymkhanaActivity.class);
-        startActivity(intent);
     }
 
     @Override
@@ -337,8 +328,9 @@ public class MainActivity extends AppCompatActivity implements
 
 
     @Override
-    public void onGymkInfoFragmentInteraction(Uri uri) {
-
+    public void onGymkhanaActivate(Integer gymkhanaId) {
+        Intent intent = new Intent(this, PlayGymkhanaActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -466,37 +458,44 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onMapSearchButtonClickListener() {
+    public void onMapSearchButtonClick() {
 
     }
 
     @Override
-    public void onMapAccesibilityFilterClickListener() {
+    public void onMapAccesibilityFilterClick() {
 
     }
 
     @Override
-    public void onMapLongClickListener(LatLng point) {
+    public void onMapLongClick(LatLng point) {
 
     }
 
     @Override
-    public void onMapChangeListener(CameraPosition position) {
+    public void onMapChangePosition(LatLngBounds bounds, Location position) {
 
     }
 
     @Override
-    public void onMapPointClickListener(MapPoint point) {
+    public void onMapChangeCamera(LatLngBounds bounds, CameraPosition position) {
 
     }
 
     @Override
-    public void onMapPointMoveListener(MapPoint point) {
+    public void onMapPointClick(MapPoint point) {
+        fragmentManager.beginTransaction()
+                .replace(R.id.placeholder_main, GymkInfoFragment.newInstance(point.getId()), INFO_GYMK_FRAGMENT_TAG)
+                .commit();
+    }
+
+    @Override
+    public void onMapPointMove(MapPoint point) {
 
     }
 
     @Override
-    public void onMapPointsNearLocationListener(List<MapPoint> points) {
+    public void onMapPointsNearLocation(List<MapPoint> points) {
 
     }
 }

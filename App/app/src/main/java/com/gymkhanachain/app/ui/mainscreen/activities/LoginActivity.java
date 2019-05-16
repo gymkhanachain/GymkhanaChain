@@ -1,4 +1,4 @@
-package com.gymkhanachain.app.ui.mainscreen.activity;
+package com.gymkhanachain.app.ui.mainscreen.activities;
 
 import android.content.Intent;
 import android.os.Bundle;

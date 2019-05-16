@@ -34,11 +34,11 @@
         <!-- TODO: NO DEJARSE EL CLEARTEXT, ARREGLARLO-->
 
         <activity
-            android:name=".ui.playgymkhana.activity.PlayGymkhanaActivity"
+            android:name=".ui.playgymkhana.activities.PlayGymkhanaActivity"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".ui.gymkpoint.activity.PointActivity"
+            android:name=".ui.gymkpoint.activities.PointActivity"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_point"
             android:theme="@style/AppTheme.NoActionBar"></activity>
@@ -47,16 +47,16 @@
             android:label="@string/title_activity_settings"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.mainscreen.activity.LoginActivity"
+            android:name=".ui.mainscreen.activities.LoginActivity"
             android:label="@string/title_activity_login"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.creategymkana.activity.CreateGymkActivity"
+            android:name=".ui.creategymkana.activities.CreateGymkActivity"
             android:label="@string/title_activity_create_gymk"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.mainscreen.activity.MainActivity"
+            android:name=".ui.mainscreen.activities.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -64,7 +64,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.userprofile.activity.UserProfileActivity"
+            android:name=".ui.userprofile.activities.UserProfileActivity"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_user_profile"
             android:theme="@style/AppTheme.NoActionBar" />

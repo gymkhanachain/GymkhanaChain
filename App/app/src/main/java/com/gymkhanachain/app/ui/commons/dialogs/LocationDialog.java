@@ -9,7 +9,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 
 import com.gymkhanachain.app.R;
-import com.gymkhanachain.app.ui.mainscreen.activity.MainActivity;
+import com.gymkhanachain.app.ui.mainscreen.activities.MainActivity;
 
 public class LocationDialog extends DialogFragment {
     @Override

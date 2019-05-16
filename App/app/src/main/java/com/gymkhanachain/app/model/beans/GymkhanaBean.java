@@ -1,7 +1,7 @@
 package com.gymkhanachain.app.model.beans;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.gymkhanachain.app.commons.WrapperBitmap;
+import com.gymkhanachain.app.commons.ProxyBitmap;
 
 import java.util.Date;
 import java.util.List;
@@ -18,7 +18,7 @@ public class GymkhanaBean {
     Date createDate;
     Date openDate;
     Date closeDate;
-    WrapperBitmap image;
+    ProxyBitmap image;
     LatLng position;
     List<PointBean> points;
 
@@ -26,7 +26,7 @@ public class GymkhanaBean {
                         final GymkhanaType type, final Boolean accessibility,
                         final Boolean privGymk, final String accessCode, final String creator,
                         final Date createDate, final Date openDate, final Date closeDate,
-                        final WrapperBitmap image, final LatLng position, final List<PointBean> points) {
+                        final ProxyBitmap image, final LatLng position, final List<PointBean> points) {
         setId(id).setName(name).setDescription(description).setType(type)
                 .setAccessibility(accessibility).setPrivGymk(privGymk).setAccessCode(accessCode)
                 .setCreator(creator).setCreateDate(createDate).setOpenDate(openDate)
@@ -69,11 +69,11 @@ public class GymkhanaBean {
         return this;
     }
 
-    public WrapperBitmap getImage() {
+    public ProxyBitmap getImage() {
         return image;
     }
 
-    public GymkhanaBean setImage(WrapperBitmap image) {
+    public GymkhanaBean setImage(ProxyBitmap image) {
         this.image = image;
         return this;
     }

@@ -1,7 +1,7 @@
 package com.gymkhanachain.app.model.beans;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.gymkhanachain.app.commons.WrapperBitmap;
+import com.gymkhanachain.app.commons.ProxyBitmap;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ public class QuizzPointBean extends PointBean {
     int solution;
 
     public QuizzPointBean(final Integer id, final String name, final String description,
-                          final WrapperBitmap image, final LatLng position, final String question,
+                          final ProxyBitmap image, final LatLng position, final String question,
                           final List<String> solutions, final int solution) {
         super(id, name, description, image, position);
         setQuestion(question).setSolutions(solutions).setSolution(solution);

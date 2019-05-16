@@ -155,7 +155,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             fabSearch.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.onMapSearchButtonClickListener();
+                    listener.onMapSearchButtonClick();
                 }
             });
         }
@@ -166,7 +166,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             fabAccesibility.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.onMapAccesibilityFilterClickListener();
+                    listener.onMapAccesibilityFilterClick();
                 }
             });
         }
@@ -198,7 +198,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     public void addPoint(MapPoint point) {
         points.add(point);
-        drawMark(point);
+        drawMap();
     }
 
     /**
@@ -267,7 +267,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @SuppressWarnings({"MissingPermission"})
     private void startLocationUpdates() {
         // Comprobamos los permisos de localización
-        if (isLocationRequestPermission() && (params.getMapMode() != MapMode.NORMAL_MODE)) {
+        if (isLocationRequestPermission()) {
             // Creamos el callback de localización
             if (locationCallback == null) {
                 locationCallback = new LocationCallback() {
@@ -281,6 +281,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                             currentLocation = locationResult.getLastLocation();
                             Log.i(TAG, "Current location: " + currentLocation);
+
+                            listener.onMapChangePosition(map == null ? null : map.getProjection().getVisibleRegion().latLngBounds, currentLocation);
 
                             if (map != null) {
                                 List<MapPoint> nearPoints = new ArrayList<>();
@@ -300,7 +302,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                                 // Si estamos cerca de un punto, llamamos al callback
                                 if (!nearPoints.isEmpty()) {
-                                    listener.onMapPointsNearLocationListener(nearPoints);
+                                    listener.onMapPointsNearLocation(nearPoints);
                                 }
 
                                 // Actualizamos el mapa
@@ -678,7 +680,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
-                listener.onMapLongClickListener(latLng);
+                listener.onMapLongClick(latLng);
             }
         });
 
@@ -694,9 +696,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     }
                 }
 
+                map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()), 1000,
+                        null);
+
                 // Se llama al callback
-                listener.onMapPointClickListener((MapPoint) marker.getTag());
-                return false;
+                listener.onMapPointClick((MapPoint) marker.getTag());
+                return true;
             }
         });
 
@@ -704,7 +709,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition position) {
-                listener.onMapChangeListener(position);
+                listener.onMapChangeCamera(map.getProjection().getVisibleRegion().latLngBounds, position);
             }
         });
 
@@ -736,7 +741,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     }
 
                     // Se llama al callback
-                    listener.onMapPointMoveListener(newPoint);
+                    listener.onMapPointMove(newPoint);
 
                     // Dibuja el mapa
                     isPointDragging.set(false);
@@ -798,41 +803,47 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         /**
          * Callback que se llama cuando se ha pulsado el botón de búsqueda
          */
-        void onMapSearchButtonClickListener();
+        void onMapSearchButtonClick();
 
         /**
          * Callbacl que se llama cuando se ha pusado el botón de accesibilidad
          */
-        void onMapAccesibilityFilterClickListener();
+        void onMapAccesibilityFilterClick();
 
         /**
          * Callback que se llama cuando se ha hecho una pulsación larga en el mapa
          * @param point Posición donde se ha pulsado
          */
-        void onMapLongClickListener(LatLng point);
+        void onMapLongClick(LatLng point);
 
         /**
-         * Callbacl que se llama cuando la camara del mapa ha cambiado por el usuario
+         * Callback que se llama cuando el jugador cambia de posición
+         * @param position
+         */
+        void onMapChangePosition(LatLngBounds bounds, Location position);
+
+        /**
+         * Callback que se llama cuando la camara del mapa ha cambiado por el usuario
          * @param position Nueva posición del mapa
          */
-        void onMapChangeListener(CameraPosition position);
+        void onMapChangeCamera(LatLngBounds bounds, CameraPosition position);
 
         /**
          * Callback que se llama cuando se ha pulsado uno de los marcadores del mapa
          * @param point Marcador que se ha pulsado
          */
-        void onMapPointClickListener(MapPoint point);
+        void onMapPointClick(MapPoint point);
 
         /**
          * Callback que se llama cuando se ha hecho drag-and-drop en un marcador
          * @param point Marcador que se ha movido
          */
-        void onMapPointMoveListener(MapPoint point);
+        void onMapPointMove(MapPoint point);
 
         /**
          * Callback que se llama cuando se está cerca de uno o varios marcadores
          * @param points Marcadores cercanos
          */
-        void onMapPointsNearLocationListener(List<MapPoint> points);
+        void onMapPointsNearLocation(List<MapPoint> points);
     }
 }

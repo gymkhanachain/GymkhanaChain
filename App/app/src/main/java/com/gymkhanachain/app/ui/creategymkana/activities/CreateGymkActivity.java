@@ -1,5 +1,6 @@
-package com.gymkhanachain.app.ui.creategymkana.activity;
+package com.gymkhanachain.app.ui.creategymkana.activities;
 
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -12,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapPoint;
@@ -77,37 +79,42 @@ public class CreateGymkActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMapSearchButtonClickListener() {
+    public void onMapSearchButtonClick() {
 
     }
 
     @Override
-    public void onMapAccesibilityFilterClickListener () {
+    public void onMapAccesibilityFilterClick() {
 
     }
 
     @Override
-    public void onMapLongClickListener(LatLng point) {
+    public void onMapLongClick(LatLng point) {
 
     }
 
     @Override
-    public void onMapChangeListener(CameraPosition position) {
+    public void onMapChangePosition(LatLngBounds bounds, Location position) {
 
     }
 
     @Override
-    public void onMapPointClickListener(MapPoint point) {
+    public void onMapChangeCamera(LatLngBounds bounds, CameraPosition position) {
 
     }
 
     @Override
-    public void onMapPointMoveListener(MapPoint point) {
+    public void onMapPointClick(MapPoint point) {
 
     }
 
     @Override
-    public void onMapPointsNearLocationListener(List<MapPoint> points) {
+    public void onMapPointMove(MapPoint point) {
+
+    }
+
+    @Override
+    public void onMapPointsNearLocation(List<MapPoint> points) {
 
     }
 

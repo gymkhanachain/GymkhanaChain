@@ -7,8 +7,8 @@ import com.gymkhanachain.app.client.Gymkhana;
 import com.gymkhanachain.app.client.Point;
 import com.gymkhanachain.app.client.QuizzPoint;
 import com.gymkhanachain.app.client.TextPoint;
-import com.gymkhanachain.app.commons.WrapperBitmap;
-import com.gymkhanachain.app.commons.asynctasks.DownloadImageToWrapperBitmapAsyncTask;
+import com.gymkhanachain.app.commons.ProxyBitmap;
+import com.gymkhanachain.app.commons.asynctasks.DownloadImageAsyncTask;
 import com.gymkhanachain.app.model.beans.GymkhanaBean;
 import com.gymkhanachain.app.model.beans.PointBean;
 import com.gymkhanachain.app.model.beans.QuizzPointBean;
@@ -25,18 +25,19 @@ public class GymkAdapter {
      * @param dto Objeto de la base de datos
      * @return GymkhanaBean
      */
-    public static GymkhanaBean adapt(Gymkhana dto, WrapperBitmap.OnWrapperBitmapListener listener) {
+    public static GymkhanaBean adapt(Gymkhana dto) {
         List<PointBean> points = new ArrayList<>();
 
         for (Point point : dto.getPuntos()) {
-            points.add(adapt(point, listener));
+            points.add(adapt(point));
         }
 
         final LatLng position = new LatLng(dto.getLatitude(), dto.getLongitude());
 
-        WrapperBitmap wrapper = new WrapperBitmap(Uri.parse(dto.getImage()), listener);
-        DownloadImageToWrapperBitmapAsyncTask asyncTask = new DownloadImageToWrapperBitmapAsyncTask(wrapper);
-        asyncTask.execute(wrapper.getUri());
+        Uri uri = Uri.parse(dto.getImage());
+        ProxyBitmap proxyBitmap = new ProxyBitmap();
+        DownloadImageAsyncTask asyncTask = new DownloadImageAsyncTask(proxyBitmap);
+        asyncTask.execute(uri);
 
         final Date createDate = new Date();
         createDate.setTime(dto.getCrea_time());
@@ -49,7 +50,7 @@ public class GymkAdapter {
 
         return new GymkhanaBean(dto.getGymk_id(), dto.getName(), dto.getDescription(),
                 dto.getType(), dto.isA11y(), dto.isPriv(), dto.getAcc_cod(), dto.getCreator(),
-                createDate, openDate, closeDate, wrapper, position, points);
+                createDate, openDate, closeDate, proxyBitmap, position, points);
     }
 
     /**
@@ -79,25 +80,27 @@ public class GymkAdapter {
      * @param dto Objeto de la base de datos
      * @return PointBean
      */
-    public static PointBean adapt(Point dto, WrapperBitmap.OnWrapperBitmapListener listener) {
-        WrapperBitmap wrapper = new WrapperBitmap(Uri.parse(dto.getImage()), listener);
-        DownloadImageToWrapperBitmapAsyncTask asyncTask = new DownloadImageToWrapperBitmapAsyncTask(wrapper);
-        asyncTask.execute(wrapper.getUri());
+    public static PointBean adapt(Point dto) {
+        Uri uri = Uri.parse(dto.getImage());
+
+        ProxyBitmap proxyBitmap = new ProxyBitmap();
+        DownloadImageAsyncTask asyncTask = new DownloadImageAsyncTask(proxyBitmap);
+        asyncTask.execute(uri);
 
         final LatLng position = new LatLng(dto.getLatitude(), dto.getLongitude());
 
         if (dto instanceof QuizzPoint) {
-            return adaptQuizzPointToBean(dto, wrapper);
+            return adaptQuizzPointToBean(dto, proxyBitmap);
         }
 
         if (dto instanceof TextPoint) {
-            return adaptTextPointToBean(dto, wrapper);
+            return adaptTextPointToBean(dto, proxyBitmap);
         }
 
         throw new RuntimeException("Point adapter not defined: " + dto.getClass().getName());
     }
 
-    private static QuizzPointBean adaptQuizzPointToBean(Point dto, WrapperBitmap imageView) {
+    private static QuizzPointBean adaptQuizzPointToBean(Point dto, ProxyBitmap proxyBitmap) {
         QuizzPoint quizzPoint = (QuizzPoint) dto;
 
         List<String> solutions = new ArrayList<>();
@@ -107,15 +110,15 @@ public class GymkAdapter {
         solutions.add(quizzPoint.getSol4());
 
         return new QuizzPointBean(quizzPoint.getPoint_id(), quizzPoint.getName(),
-                quizzPoint.getDescription(), imageView, quizzPoint.getPosition(),
+                quizzPoint.getDescription(), proxyBitmap, quizzPoint.getPosition(),
                 quizzPoint.getQuizz_text(), solutions, quizzPoint.getSolution());
     }
 
-    private static TextPointBean adaptTextPointToBean(Point dto, WrapperBitmap imageView) {
+    private static TextPointBean adaptTextPointToBean(Point dto, ProxyBitmap proxyBitmap) {
         TextPoint textPoint = (TextPoint) dto;
 
         return new TextPointBean(textPoint.getPoint_id(), textPoint.getName(),
-                textPoint.getDescription(), imageView, textPoint.getPosition(),
+                textPoint.getDescription(), proxyBitmap, textPoint.getPosition(),
                 textPoint.getLong_desc());
     }
 
