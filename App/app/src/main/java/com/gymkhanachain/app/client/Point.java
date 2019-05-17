@@ -24,9 +24,9 @@ public abstract class Point {
     @SerializedName("LNG")
     private double longitude;
 
-    public Point(Integer point_id, String image, String name, String short_desc, double latitude, double longitude) {
+    public Point(Integer point_id, Bitmap image, String name, String short_desc, double latitude, double longitude) {
         this.point_id = point_id;
-        this.image = image;
+        this.image = GymkhanaUtils.BitMapToString(image);
         this.name = name;
         this.short_desc = short_desc;
         this.latitude = latitude;
@@ -46,6 +46,10 @@ public abstract class Point {
 
     public String getImage() {
         return image;
+    }
+
+    public Bitmap getBitmapImage() {
+        return GymkhanaUtils.StringToBitMap(image);
     }
 
     public void setImage(String image) {
