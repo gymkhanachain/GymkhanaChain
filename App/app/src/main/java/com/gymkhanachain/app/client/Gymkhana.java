@@ -57,10 +57,10 @@ public class Gymkhana {
     @SerializedName("POINTS")
     private List<Point> points; //close_time
 
-    public Gymkhana(Integer gymk_id, String image, String name, String description,
+    public Gymkhana(Integer gymk_id, Bitmap image, String name, String description,
                     LatLng latlng , GymkhanaType type, boolean a11y, boolean priv, String acc_cod, String creator, int crea_time, int aper_time, int close_time, List<Point> points) {
         this.gymk_id = gymk_id;
-        this.image = image;
+        this.image = GymkhanaUtils.BitMapToString(image);
         this.name = name;
         this.description = description;
         this.latitude= latlng.latitude;
@@ -86,6 +86,10 @@ public class Gymkhana {
 
     public String getImage() {
         return image;
+    }
+
+    public Bitmap getBitmapImage(){
+        return GymkhanaUtils.StringToBitMap(image);
     }
 
     public void setImage(String image) {
