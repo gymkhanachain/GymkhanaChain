@@ -11,6 +11,7 @@ import com.gymkhanachain.app.commons.ProxyBitmap;
 import com.gymkhanachain.app.commons.asynctasks.DownloadImageAsyncTask;
 import com.gymkhanachain.app.model.beans.GymkhanaBean;
 import com.gymkhanachain.app.model.beans.PointBean;
+import com.gymkhanachain.app.model.beans.PointType;
 import com.gymkhanachain.app.model.beans.QuizzPointBean;
 import com.gymkhanachain.app.model.beans.TextPointBean;
 
@@ -89,15 +90,14 @@ public class GymkAdapter {
 
         final LatLng position = new LatLng(dto.getLatitude(), dto.getLongitude());
 
-        if (dto instanceof QuizzPoint) {
-            return adaptQuizzPointToBean(dto, proxyBitmap);
+        switch (PointType.getPointType(dto)) {
+            case PointType.QUIZZ_POINT:
+                return adaptQuizzPointToBean(dto, proxyBitmap);
+            case PointType.TEXT_POINT:
+                return adaptTextPointToBean(dto, proxyBitmap);
+            default:
+                throw new RuntimeException("Point adapter not defined: " + dto.getClass().getName());
         }
-
-        if (dto instanceof TextPoint) {
-            return adaptTextPointToBean(dto, proxyBitmap);
-        }
-
-        throw new RuntimeException("Point adapter not defined: " + dto.getClass().getName());
     }
 
     private static QuizzPointBean adaptQuizzPointToBean(Point dto, ProxyBitmap proxyBitmap) {
@@ -128,15 +128,14 @@ public class GymkAdapter {
      * @return Point
      */
     public static Point adapt(PointBean bean) {
-        if (bean instanceof QuizzPointBean) {
-            return adaptQuizzPointBeanToDto(bean);
+        switch (PointType.getPointType(bean)) {
+            case PointType.QUIZZ_POINT:
+                return adaptQuizzPointBeanToDto(bean);
+            case PointType.TEXT_POINT:
+                return adaptTextPointBeanToDto(bean);
+            default:
+                throw new RuntimeException("Point adapter not defined: " + bean.getClass().getName());
         }
-
-        if (bean instanceof TextPointBean) {
-            return adaptTextPointBeanToDto(bean);
-        }
-
-        throw new RuntimeException("Point adapter not defined: " + bean.getClass().getName());
     }
 
     private static QuizzPoint adaptQuizzPointBeanToDto(PointBean bean) {

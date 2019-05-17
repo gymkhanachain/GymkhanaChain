@@ -38,6 +38,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.Task;
 import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.SettingsActivity;
+import com.gymkhanachain.app.commons.GymkConstants;
 import com.gymkhanachain.app.commons.ProxyBitmap;
 import com.gymkhanachain.app.commons.asynctasks.DownloadImageToImageViewAsyncTask;
 import com.gymkhanachain.app.commons.asynctasks.DownloadImageAsyncTask;
@@ -330,6 +331,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onGymkhanaActivate(Integer gymkhanaId) {
         Intent intent = new Intent(this, PlayGymkhanaActivity.class);
+        intent.putExtra(GymkConstants.TAG_GYMKHANA_ID, gymkhanaId);
         startActivity(intent);
     }
 

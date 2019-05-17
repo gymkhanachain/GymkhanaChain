@@ -10,6 +10,8 @@ public class GymkConstants {
      */
     public static final int MAX_ELEMENTS_CACHED = 24;
 
+    public static final String TAG_GYMKHANA_ID = "GymkhanaId";
+
     // Elementos por defecto
 
     /**

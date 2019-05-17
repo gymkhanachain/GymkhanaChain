@@ -134,4 +134,5 @@
     <string name="pref_title_vibrate">Vibración</string>
     <string name="user_profile">Perfil de usuario</string>
     <string name="nav_config">Configuración</string>
+    <string name="start_gymkhana">Múevete al punto inicial para empezar la gymkhana</string>
 </resources>
