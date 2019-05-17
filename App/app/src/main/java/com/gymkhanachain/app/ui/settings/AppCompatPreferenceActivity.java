@@ -1,4 +1,4 @@
-package com.gymkhanachain.app;
+package com.gymkhanachain.app.ui.settings;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

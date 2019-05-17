@@ -1,4 +1,4 @@
-package com.gymkhanachain.app;
+package com.gymkhanachain.app.ui.settings;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.gymkhanachain.app.R;
 
 import java.util.List;
 

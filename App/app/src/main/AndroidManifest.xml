@@ -43,7 +43,7 @@
             android:label="@string/title_activity_point"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.settings.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:screenOrientation="portrait" />
         <activity

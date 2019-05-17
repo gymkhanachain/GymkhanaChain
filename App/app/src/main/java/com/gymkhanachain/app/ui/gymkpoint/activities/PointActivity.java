@@ -1,4 +1,4 @@
-package com.gymkhanachain.app.ui.gymkpoint.activity;
+package com.gymkhanachain.app.ui.gymkpoint.activities;
 
 import android.content.SharedPreferences;
 import android.net.Uri;

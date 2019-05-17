@@ -70,7 +70,7 @@ public class GymkAdapter {
         int openDate = Long.valueOf(bean.getOpenDate().getTime()).intValue();
         int closeDate = Long.valueOf(bean.getCloseDate().getTime()).intValue();
 
-        return new Gymkhana(bean.getId(), bean.getImage().getUri().toString(), bean.getName(),
+        return new Gymkhana(bean.getId(), bean.getImage().getBitmap(), bean.getName(),
                 bean.getDescription(), bean.getPosition(), bean.getType(), bean.getAccessibility(),
                 bean.getPrivGymk(), bean.getAccessCode(), bean.getCreator(), createDate, openDate,
                 closeDate, points);
@@ -141,7 +141,7 @@ public class GymkAdapter {
     private static QuizzPoint adaptQuizzPointBeanToDto(PointBean bean) {
         QuizzPointBean quizzPoint = (QuizzPointBean) bean;
 
-        return new QuizzPoint(quizzPoint.getId(), quizzPoint.getImage().toString(),
+        return new QuizzPoint(quizzPoint.getId(), quizzPoint.getImage().getBitmap(),
                 quizzPoint.getName(), quizzPoint.getDescription(), quizzPoint.getPosition(),
                 quizzPoint.getQuestion(), quizzPoint.getSolutions().get(0),
                 quizzPoint.getSolutions().get(1), quizzPoint.getSolutions().get(2),
@@ -151,7 +151,7 @@ public class GymkAdapter {
     private static TextPoint adaptTextPointBeanToDto(PointBean bean) {
         TextPointBean textPoint = (TextPointBean) bean;
 
-        return new TextPoint(textPoint.getId(), textPoint.getImage().toString(),
+        return new TextPoint(textPoint.getId(), textPoint.getImage().getBitmap(),
                 textPoint.getName(), textPoint.getDescription(), textPoint.getPosition(),
                 textPoint.getLongDescription());
     }

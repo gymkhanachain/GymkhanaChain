@@ -29,6 +29,7 @@ import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapMode;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapPoint;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.PointOrder;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.PointType;
+import com.gymkhanachain.app.ui.gymkpoint.activities.PointActivity;
 import com.gymkhanachain.app.ui.playgymkhana.states.PlayGymkhanaState;
 import com.gymkhanachain.app.ui.playgymkhana.states.StartPlayGymkhanaState;
 
@@ -165,7 +166,7 @@ public class PlayGymkhanaActivity extends AppCompatActivity
             }
         }
 
-        Intent intent = intent = new Intent(this, com.gymkhanachain.app.ui.gymkpoint.activity.PointActivity.class);
+        Intent intent = intent = new Intent(this, PointActivity.class);
         switch (com.gymkhanachain.app.model.beans.PointType.getPointType(bean)) {
             case com.gymkhanachain.app.model.beans.PointType.QUIZZ_POINT:
                 // TODO Funcionalidad al llegar a un punto

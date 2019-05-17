@@ -1,4 +1,4 @@
-package com.gymkhanachain.app.ui.userprofile.activity;
+package com.gymkhanachain.app.ui.userprofile.activities;
 
 import android.content.Context;
 import android.content.SharedPreferences;

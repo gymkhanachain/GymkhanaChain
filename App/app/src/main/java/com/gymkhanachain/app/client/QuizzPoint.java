@@ -1,5 +1,7 @@
 package com.gymkhanachain.app.client;
 
+import android.graphics.Bitmap;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -24,7 +26,7 @@ public class QuizzPoint extends Point {
     @SerializedName("CORRECT")
     private int solution;
 
-    public QuizzPoint(Integer point_id, String image, String name, String short_desc, LatLng latlng, String quizz_text, String sol1, String sol2, String sol3, String sol4, int solution) {
+    public QuizzPoint(Integer point_id, Bitmap image, String name, String short_desc, LatLng latlng, String quizz_text, String sol1, String sol2, String sol3, String sol4, int solution) {
         super(point_id, image, name, short_desc, latlng.latitude, latlng.longitude);
         this.quizz_text = quizz_text;
         this.sol1 = sol1;

@@ -337,9 +337,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             // Creamos el criterio de localización
             if (locationRequest == null) {
+                int priority = -1;
+                switch (preferences.getString("location_mode_list", "0")) {
+                    case "0":
+                        priority = LocationRequest.PRIORITY_HIGH_ACCURACY;
+                        break;
+                    case "1":
+                        priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
+                        break;
+                    case "2":
+                        priority = LocationRequest.PRIORITY_LOW_POWER;
+                        break;
+                    default:
+                        priority = LocationRequest.PRIORITY_NO_POWER;
+                        break;
+                }
+
                 locationRequest = LocationRequest
                         .create()
-                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                        .setPriority(priority)
                         .setFastestInterval((long) Math.round(params
                                 .getMinimumLocationInterval()*1000.0f))
                         .setInterval((long) Math.round(params

@@ -37,7 +37,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.Task;
 import com.gymkhanachain.app.R;
-import com.gymkhanachain.app.SettingsActivity;
+import com.gymkhanachain.app.ui.settings.SettingsActivity;
 import com.gymkhanachain.app.commons.GymkConstants;
 import com.gymkhanachain.app.commons.ProxyBitmap;
 import com.gymkhanachain.app.commons.asynctasks.DownloadImageAsyncTask;
@@ -52,10 +52,12 @@ import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
 import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapPoint;
+import com.gymkhanachain.app.ui.creategymkana.activities.CreateGymkActivity;
 import com.gymkhanachain.app.ui.mainscreen.fragments.GymkInfoFragment;
 import com.gymkhanachain.app.ui.mainscreen.fragments.ListGymkFragment;
 import com.gymkhanachain.app.ui.mainscreen.fragments.NearGymkFragment;
 import com.gymkhanachain.app.ui.playgymkhana.activities.PlayGymkhanaActivity;
+import com.gymkhanachain.app.ui.userprofile.activities.UserProfileActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -365,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onCreateGymkInteraction() {
-        Intent intent = new Intent(this, com.gymkhanachain.app.ui.creategymkana.activity.CreateGymkActivity.class);
+        Intent intent = new Intent(this, CreateGymkActivity.class);
         startActivity(intent);
     }
 
@@ -425,10 +427,10 @@ public class MainActivity extends AppCompatActivity implements
                             .commit();
                 break;
             case R.id.nav_create_gymk: // Listar gymkhanas creadas por el usuario
-                startActivity(new Intent(this, com.gymkhanachain.app.ui.creategymkana.activity.CreateGymkActivity.class));
+                startActivity(new Intent(this, CreateGymkActivity.class));
                 break;
             case R.id.nav_profile:
-                startActivity(new Intent(this, com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity.class));
+                startActivity(new Intent(this, UserProfileActivity.class));
                 break;
             case R.id.nav_settings:
                 Toast.makeText(getApplicationContext(), "Lanzar ajustes", Toast.LENGTH_SHORT).show();

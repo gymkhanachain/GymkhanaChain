@@ -1,4 +1,4 @@
-package com.gymkhanachain.app.ui.creategymkana.activity;
+package com.gymkhanachain.app.ui.creategymkana.activities;
 
 import android.location.Location;
 import android.content.SharedPreferences;
