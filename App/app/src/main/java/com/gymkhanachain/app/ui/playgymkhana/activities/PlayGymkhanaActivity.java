@@ -2,9 +2,11 @@ package com.gymkhanachain.app.ui.playgymkhana.activities;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -27,7 +29,6 @@ import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapMode;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapPoint;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.PointOrder;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.PointType;
-import com.gymkhanachain.app.ui.gymkpoint.activities.PointActivity;
 import com.gymkhanachain.app.ui.playgymkhana.states.PlayGymkhanaState;
 import com.gymkhanachain.app.ui.playgymkhana.states.StartPlayGymkhanaState;
 
@@ -46,9 +47,17 @@ public class PlayGymkhanaActivity extends AppCompatActivity
     private MapFragment mapFragment;
     private Integer gymkhanaId;
     private PlayGymkhanaState state;
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean useDarkTheme = preferences.getBoolean("activate_dark_theme", false);
+
+        if(useDarkTheme) {
+            setTheme(R.style.AppTheme_Dark);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_gymkhana);
         ButterKnife.bind(this);
@@ -156,7 +165,7 @@ public class PlayGymkhanaActivity extends AppCompatActivity
             }
         }
 
-        Intent intent = intent = new Intent(this, PointActivity.class);
+        Intent intent = intent = new Intent(this, com.gymkhanachain.app.ui.gymkpoint.activity.PointActivity.class);
         switch (com.gymkhanachain.app.model.beans.PointType.getPointType(bean)) {
             case com.gymkhanachain.app.model.beans.PointType.QUIZZ_POINT:
                 // TODO Funcionalidad al llegar a un punto

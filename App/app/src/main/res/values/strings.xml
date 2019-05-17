@@ -15,6 +15,8 @@
     <string name="bt_activate">Activar</string>
     <string name="bt_delete">Borrar</string>
     <string name="bt_accept">Aceptar</string>
+    <string name="bt_save">Guardar</string>
+    <string name="bt_report">Reportar</string>
     <string name="imview_gymk_description">Imagen de gymkhanaBean</string>
     <string name="et_gymk_name">Nombre gymkhanaBean</string>
     <string name="et_gymk_desc">Descripción gymkhanaBean</string>
@@ -135,4 +137,32 @@
     <string name="user_profile">Perfil de usuario</string>
     <string name="nav_config">Configuración</string>
     <string name="start_gymkhana">Múevete al punto inicial para empezar la gymkhana</string>
+
+    <string name="pref_header_appearance">Apariencia</string>
+    <string name="pref_title_activate_dark_theme">Cambiar a tema oscuro</string>
+    <string name="pref_title_map_theme">Cambiar colores del mapa</string>
+    <string-array name="pref_map_theme_entries">
+        <item>Por defecto</item>
+        <item>Modo retro</item>
+        <item>Escala de grises</item>
+        <item>Modo nocturno</item>
+        <item>Oscuro</item>
+    </string-array>
+    <string-array name="pref_map_theme_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string name="pref_show_profile_img">Mostrar imagen de perfil</string>
+    <string name="pref_logout">Cerrar sesión</string>
+    <string name="pref_toggle_theme_restart_app">Reinicia la apliación para que se apliquen todos los cambios</string>
+    <string name="profile_captured_points">Puntos capturados</string>
+    <string name="profile_gymkanas">Gymkanas</string>
+    <string name="profile_achievements">Logros</string>
+    <string name="profile_user_location">User location</string>
+    <string name="profile_user_level">User Level</string>
+
 </resources>

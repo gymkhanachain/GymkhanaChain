@@ -15,6 +15,11 @@
     <SwitchPreference
         android:defaultValue="true"
         android:key="profilepic_pref_switch"
-        android:title="Mostrar imagen de perfil"/>
+        android:title="@string/pref_show_profile_img"/>
+
+    <Preference
+        android:key="pref_logout"
+        android:title="@string/pref_logout"
+        />
 
 </PreferenceScreen>

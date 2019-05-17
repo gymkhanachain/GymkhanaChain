@@ -52,12 +52,10 @@ import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
 import com.gymkhanachain.app.ui.commons.fragments.LoginFragment;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapPoint;
-import com.gymkhanachain.app.ui.creategymkana.activities.CreateGymkActivity;
 import com.gymkhanachain.app.ui.mainscreen.fragments.GymkInfoFragment;
 import com.gymkhanachain.app.ui.mainscreen.fragments.ListGymkFragment;
 import com.gymkhanachain.app.ui.mainscreen.fragments.NearGymkFragment;
 import com.gymkhanachain.app.ui.playgymkhana.activities.PlayGymkhanaActivity;
-import com.gymkhanachain.app.ui.userprofile.activities.UserProfileActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,10 +99,16 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean useDarkTheme = preferences.getBoolean("activate_dark_theme", false);
+
+        if(useDarkTheme) {
+            setTheme(R.style.AppTheme_Dark);
+        }
+
         super.onCreate(savedInstanceState);
         fragmentManager = getSupportFragmentManager();
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -361,7 +365,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onCreateGymkInteraction() {
-        Intent intent = new Intent(this, CreateGymkActivity.class);
+        Intent intent = new Intent(this, com.gymkhanachain.app.ui.creategymkana.activity.CreateGymkActivity.class);
         startActivity(intent);
     }
 
@@ -421,10 +425,10 @@ public class MainActivity extends AppCompatActivity implements
                             .commit();
                 break;
             case R.id.nav_create_gymk: // Listar gymkhanas creadas por el usuario
-                startActivity(new Intent(this, CreateGymkActivity.class));
+                startActivity(new Intent(this, com.gymkhanachain.app.ui.creategymkana.activity.CreateGymkActivity.class));
                 break;
             case R.id.nav_profile:
-                startActivity(new Intent(this, UserProfileActivity.class));
+                startActivity(new Intent(this, com.gymkhanachain.app.ui.userprofile.activity.UserProfileActivity.class));
                 break;
             case R.id.nav_settings:
                 Toast.makeText(getApplicationContext(), "Lanzar ajustes", Toast.LENGTH_SHORT).show();

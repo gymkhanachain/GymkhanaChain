@@ -21,4 +21,10 @@
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/pref_header_notifications" />
 
+    <header
+        style="@style/PrefIcon"
+        android:fragment="com.gymkhanachain.app.SettingsActivity$AppearancePreferenceFragment"
+        android:icon="@drawable/ic_outline_color_lens_24px"
+        android:title="@string/pref_header_appearance" />
+
 </preference-headers>
