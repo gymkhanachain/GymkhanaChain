@@ -22,4 +22,17 @@
     <color name="colorGisLight">#A2B862</color>
     <color name="colorGisDark">#495C1D</color>
     <color name="colorRoute">#6ccece</color>
+
+    <!-- Dark theme -->
+    <color name="colorPrimary_d">#212121</color>
+    <color name="colorPrimaryLight_d">#484848</color>
+    <color name="colorPrimaryDark_d">#000000</color>
+    <color name="colorSecondary_d">#424242</color>
+    <color name="colorSecondaryLight_d">#6d6d6d</color>
+    <color name="colorSecondaryDark_d">#1b1b1b</color>
+    <color name="colorAccent_d">#7A7A7A</color>
+    <color name="colorAccentLight_d">#B8B8B8</color>
+    <color name="colorPrimaryText_d">#ffffff</color>
+    <color name="colorSecondaryText_d">#ffffff</color>
+
 </resources>

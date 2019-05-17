@@ -93,10 +93,16 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean useDarkTheme = preferences.getBoolean("activate_dark_theme", false);
+
+        if(useDarkTheme) {
+            setTheme(R.style.AppTheme_Dark);
+        }
+
         super.onCreate(savedInstanceState);
         fragmentManager = getSupportFragmentManager();
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()

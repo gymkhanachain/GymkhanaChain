@@ -50,6 +50,12 @@ public class UserProfileActivity extends AppCompatActivity implements LoginFragm
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean useDarkTheme = preferences.getBoolean("activate_dark_theme", false);
+
+        if(useDarkTheme) {
+            setTheme(R.style.AppTheme_Dark_NoActionBar);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
         //Toolbar toolbar = findViewById(R.id.toolbar);

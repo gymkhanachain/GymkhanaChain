@@ -7,7 +7,7 @@
         <item
             style="@style/PrefIcon"
             android:id="@+id/nav_start"
-            android:icon="@drawable/ic_baseline_menu_24px"
+            android:icon="@drawable/ic_outline_home_24px"
             android:title="@string/nav_start" />
         <item
             style="@style/PrefIcon"

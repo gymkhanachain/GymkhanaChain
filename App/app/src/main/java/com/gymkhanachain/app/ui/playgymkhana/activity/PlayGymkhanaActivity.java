@@ -1,6 +1,8 @@
 package com.gymkhanachain.app.ui.playgymkhana.activity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
@@ -28,9 +30,17 @@ public class PlayGymkhanaActivity extends AppCompatActivity
     private static int RADIUS_POINT = 10;
 
     private MapFragment mapFragment;
+    SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean useDarkTheme = preferences.getBoolean("activate_dark_theme", false);
+
+        if(useDarkTheme) {
+            setTheme(R.style.AppTheme_Dark);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_gymkhana);
         ButterKnife.bind(this);
