@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -124,6 +125,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Log.d("MapFragment" + this.getId(), " onCreate");
         if (getArguments() != null) {
             gymkhanaName = getArguments().getString(ARG_GYMKHANA_NAME);
             params = Parcels.unwrap(getArguments().getParcelable(ARG_PARAMS));
@@ -140,6 +142,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
+        Log.d("MapFragment"+this.getId(), " onCreateView");
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         unbinder = ButterKnife.bind(this, view);
@@ -234,6 +237,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
 
         startLocationUpdates();
+    }
+
+    @Override
+    public void onStop() {
+        Log.d("MapFragment"+this.getId(), " onStop");
+        super.onStop();
     }
 
     /**
@@ -600,7 +609,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
-
+        Log.d("MapFragment"+this.getId(), " onAttach");
         // Comprueba que el contexto ha implementado el listener
         if (context instanceof OnMapFragmentInteractionListener) {
             listener = (OnMapFragmentInteractionListener) context;
@@ -613,20 +622,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onDetach() {
         super.onDetach();
+        Log.d("MapFragment"+this.getId(), " onDetach");
         listener = null;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.d("MapFragment"+this.getId(), " onResume");
         mapView.onResume();
         startLocationUpdates();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d("MapFragment"+this.getId(), " onSaveInstanceState");
     }
 
     @Override
     @SuppressWarnings({"MissingPermission"})
     public void onPause() {
         super.onPause();
+        Log.d("MapFragment"+this.getId(), " onPause");
         mapView.onPause();
 
         // Deshabilita el seguimiento
@@ -654,6 +672,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        Log.d("MapFragment", " onDestroyView");
         unbinder.unbind();
     }
 
@@ -788,6 +807,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private boolean isLocationRequestPermission() {
+        Log.d("MapFragment" + this.getId(), " Context: " + getContext().toString());
         LocationManager locationManager = (LocationManager) getContext().getSystemService(Context
                 .LOCATION_SERVICE);
         return (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission

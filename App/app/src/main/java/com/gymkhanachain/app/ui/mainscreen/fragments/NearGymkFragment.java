@@ -3,8 +3,11 @@ package com.gymkhanachain.app.ui.mainscreen.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,7 @@ import com.gymkhanachain.app.model.commons.GymkhanaCache;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragmentParams;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapPoint;
+import com.gymkhanachain.app.ui.mainscreen.activity.MainActivity;
 import com.gymkhanachain.app.ui.mainscreen.adapters.NearGymkAdapter;
 
 import org.parceler.Parcels;
@@ -29,6 +33,8 @@ import butterknife.Unbinder;
 public class NearGymkFragment extends Fragment
         implements NearGymkAdapter.NearGymkItem.OnNearGymkItemListener {
     private static final String ARG_NEAR_GYMKHANAS = "nearGymks";
+    private static final String MAP_FRAGMENT_TAG = "MapFragment";
+    private Fragment.SavedState mapFragmentSavedState;
 
     private static final GymkhanaCache gymkhanas = GymkhanaCache.getInstance();
 
@@ -99,7 +105,7 @@ public class NearGymkFragment extends Fragment
         // Create map fragment
         final MapFragmentParams params = new MapFragmentParams();
         final MapFragment map = MapFragment.newInstance("", params, points);
-        getFragmentManager().beginTransaction().add(R.id.map_placeholder, map).commit();
+        getFragmentManager().beginTransaction().add(R.id.map_placeholder, map, MAP_FRAGMENT_TAG).commit();
 
         return view;
     }
