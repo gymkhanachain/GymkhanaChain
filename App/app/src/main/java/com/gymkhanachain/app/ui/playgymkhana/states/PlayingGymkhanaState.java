@@ -34,6 +34,9 @@ public class PlayingGymkhanaState extends PlayGymkhanaState {
         // Cogemos el primer punto de colisión
         MapPoint mapPoint = points.get(0);
 
+        // Lo eliminamos del mapa
+        getActivity().removePoint(mapPoint);
+
         // Le indicamos a la clase que hay que lanzar la actividad del punto
         getActivity().startPointActivity(mapPoint.getId());
         pointsCompleted++;

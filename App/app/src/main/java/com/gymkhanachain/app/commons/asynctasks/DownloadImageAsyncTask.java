@@ -33,8 +33,8 @@ public class DownloadImageAsyncTask extends AsyncTask<Uri, Void, Bitmap> {
         String url = image.getUri().toString();
         Bitmap bitmap = imgCache.getBitmap(url);
 
-        if (bitmap == null) {
-            try (InputStream inputStream = new URL(uris[0].toString()).openStream()) {
+        if (bitmap == null && url != "") {
+            try (InputStream inputStream = new URL(url).openStream()) {
                 bitmap = BitmapFactory.decodeStream(inputStream);
             } catch (IOException e) {
                 Log.e(TAG, "Error al descargar imagen", e);

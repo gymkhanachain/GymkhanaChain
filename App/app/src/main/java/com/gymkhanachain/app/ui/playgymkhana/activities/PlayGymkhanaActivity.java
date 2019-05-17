@@ -164,6 +164,9 @@ public class PlayGymkhanaActivity extends AppCompatActivity
             case com.gymkhanachain.app.model.beans.PointType.TEXT_POINT:
                 // TODO Funcionalidad al llegar a un punto
                 break;
+            default:
+                Log.w(TAG, "Punto no soportado");
+                return;
         }
         startActivity(intent);
     }

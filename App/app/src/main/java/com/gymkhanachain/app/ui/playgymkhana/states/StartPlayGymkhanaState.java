@@ -51,13 +51,10 @@ public class StartPlayGymkhanaState extends PlayGymkhanaState {
     @Override
     public PlayGymkhanaState onMapPointsNearLocation(List<MapPoint> points) {
         // No debería de haber más de un punto en colisión
-        if (getBean().getId().equals(points.get(0).getId())) {
-            getActivity().removePoint(point);
-            PlayGymkhanaState state = new PlayingGymkhanaState(getActivity());
-            state.onCreateState(getBean());
-            return state;
-        }
+        getActivity().removePoint(points.get(0));
 
-        return this;
+        PlayGymkhanaState state = new PlayingGymkhanaState(getActivity());
+        state.onCreateState(getBean());
+        return state;
     }
 }

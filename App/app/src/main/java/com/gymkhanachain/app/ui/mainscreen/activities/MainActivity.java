@@ -40,11 +40,12 @@ import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.SettingsActivity;
 import com.gymkhanachain.app.commons.GymkConstants;
 import com.gymkhanachain.app.commons.ProxyBitmap;
-import com.gymkhanachain.app.commons.asynctasks.DownloadImageToImageViewAsyncTask;
 import com.gymkhanachain.app.commons.asynctasks.DownloadImageAsyncTask;
+import com.gymkhanachain.app.commons.asynctasks.DownloadImageToImageViewAsyncTask;
 import com.gymkhanachain.app.model.beans.GymkhanaBean;
 import com.gymkhanachain.app.model.beans.GymkhanaType;
 import com.gymkhanachain.app.model.beans.PointBean;
+import com.gymkhanachain.app.model.beans.QuizzPointBean;
 import com.gymkhanachain.app.model.beans.TextPointBean;
 import com.gymkhanachain.app.model.commons.GymkhanaCache;
 import com.gymkhanachain.app.ui.commons.dialogs.LocationDialog;
@@ -59,6 +60,7 @@ import com.gymkhanachain.app.ui.playgymkhana.activities.PlayGymkhanaActivity;
 import com.gymkhanachain.app.ui.userprofile.activities.UserProfileActivity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -233,6 +235,14 @@ public class MainActivity extends AppCompatActivity implements
         return new TextPointBean(id, name, description, wrapper, position, longText);
     }
 
+    private PointBean loadPoint(int id, String name, String description, String url, LatLng position, String question, List<String> solutions, int solution) {
+        Uri uri = Uri.parse(url);
+        ProxyBitmap wrapper = new ProxyBitmap();
+        DownloadImageAsyncTask asyncTask = new DownloadImageAsyncTask(wrapper);
+        asyncTask.execute(uri);
+        return new QuizzPointBean(id, name, description, wrapper, position, question, solutions, solution);
+    }
+
     // TODO Borrar
     private GymkhanaBean loadGymkhana(int id, String name, String description, GymkhanaType type, LatLng position, String url, List<PointBean> points) {
         Uri uri = Uri.parse(url);
@@ -258,17 +268,17 @@ public class MainActivity extends AppCompatActivity implements
 
         // PUNTOS DE GYMKHANA
         List<PointBean> pointsGymk = new ArrayList<>();
-        pointsGymk.add(loadPoint(pointId++, "Area Científica", "-",
+        pointsGymk.add(loadPoint(pointId++, "Area Científica", "Area Científica",
                 "https://i.avoz.es/default/2014/12/07/00121417989423745121334/Foto/H05M2043.jpg",
-                new LatLng(43.333035, -8.409033), "En este edificio se hacen cosas ewe"));
-        pointsGymk.add(loadPoint(pointId++, "Facultade de Informática", "-",
-                "https://www.fic.udc.es/sites/default/files/styles/banner_inicio/public/banner/facultad-informatica-coruna.jpg?itok=1TIC5sZI",
-                new LatLng(43.332685, -8.410568), "En esta facultad sufrimos mucho"));
-        pointsGymk.add(loadPoint(pointId++, "Plaza del campus", "-",
+                new LatLng(43.333035, -8.409033), "Edificio donde se desarrolló GymkhanaChain"));
+        pointsGymk.add(loadPoint(pointId++, "Facultade de Informática", "Facultade de Informática",
+                "https://www.fic.udc.es/sites/default/files/styles/banner_inicio/public/banner/facultad-informatica-coruna.jpg",
+                new LatLng(43.332685, -8.410568), "Facultade de Informática', 'En esta facultad estudiarion el grupo de GymkhanaChain"));
+        pointsGymk.add(loadPoint(pointId++, "Plaza del campus", "Plaza del campus",
                 "https://fotos02.laopinioncoruna.es/2016/01/23/318x200/universidade-abre.jpg",
-                new LatLng(43.332606, -8.412421), "Por fin algo libre"));
+                new LatLng(43.332606, -8.412421), "Disfruta del aire libre"));
 
-        GymkhanaBean bean = loadGymkhana(gymkId++, "GymkhanaChain Pruebas", "Gymkhana de la UDC", GymkhanaType.desordenada,
+        GymkhanaBean bean = loadGymkhana(gymkId++, "Gymkhana de Pruebas", "Gymkhana de la UDC", GymkhanaType.desordenada,
                 new LatLng(43.333516, -8.410707),"http://consellosocial.udc.es/uploadedFiles/CSUDC.b7psr/fileManager/universidad_300112_68_LQ.jpg",
                 pointsGymk);
 
@@ -278,27 +288,55 @@ public class MainActivity extends AppCompatActivity implements
 
         // PUNTOS DE GYMKHANA
         pointsGymk = new ArrayList<>();
-        pointsGymk.add(loadPoint(pointId++, "Plaza del humor", "-",
-                "http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
-                new LatLng(43.371417, -8.397840), "Plaza del Humor"));
-        pointsGymk.add(loadPoint(pointId++, "Plaza de María Píta", "-",
-                "http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
-                new LatLng(43.370897, -8.395806), "Plaza de Maria Pita"));
-        pointsGymk.add(loadPoint(pointId++, "Playas de Coruña", "-",
-                "http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
-                new LatLng(43.369305, -8.407861), "Playas de Coruña"));
+        pointsGymk.add(loadPoint(pointId++, "Plaza del Humor", "Plaza del Humor",
+                "http://3.bp.blogspot.com/-OkWv5N7q7SI/VK7UwysnHbI/AAAAAAAABr0/4NC15Jubw8U/s1600/PlazaDelHumor.jpg",
+                new LatLng(43.371417, -8.397840),
+                "Esta es una plaza dedicada a las figuras del humor. Allí el visitante se encontrará con personajes inmortales del género, tanto creadores como figuras de series de cómics, libros y televisión."));
+        pointsGymk.add(loadPoint(pointId++, "Plaza de María Píta", "Plaza de María Píta",
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Plaza_A_Coru%C3%B1a.JPG/1200px-Plaza_A_Coru%C3%B1a.JPG",
+                new LatLng(43.370897, -8.395806), "Por esta plaza céntrica, dedicada a la heroína María Pita, pasa un meridiano. ¿Cúal es?",
+                Arrays.asList("8º24'56\"", "9º23'39\"", "8º24'38\"", "8º23'39\""), 4));
+        pointsGymk.add(loadPoint(pointId++, "Playas de Coruña", "Playas de Coruña",
+                "http://www.turismo.gal/imaxes/mdaw/mduw/~edisp/~extract/TURGA050853~1~staticrendition/tg_carrusel_cabecera_grande.jpg",
+                new LatLng(43.369305, -8.407861), "Coruña tiene dos quilómetros de playas urbanas repartidas en 6 localizaciones. Todas tiene bandera azul."));
         pointsGymk.add(loadPoint(pointId++, "Jardines de Mendez Núñez", "-",
-                "http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
-                new LatLng(43.367022, -8.403461), "Jardines de Mendez Núñez"));
-        pointsGymk.add(loadPoint(pointId++, "Plaza de España", "-",
-                "http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
-                new LatLng(43.368082, -8.407074), "Plaza de España"));
-        pointsGymk.add(loadPoint(pointId++, "Plaza Pontevedra", "-",
-                "http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
-                new LatLng(43.373076, -8.396615), "Plaza Pontevedra"));
+                "https://saposyprincesas.elmundo.es/wp-content/uploads/2016/03/mendez_3.jpg",
+                new LatLng(43.367022, -8.403461),
+                "Los Jardines de Méndez Núñez son unos jardines de la ciudad de la Coruña situados entre Los Cantones y el puerto. Están dedicados al marino Casto Méndez Núñez, héroe de la Primera Guerra del Pacífico."));
 
-        bean = loadGymkhana(gymkId++, "Conociendo la Coruña", "-", GymkhanaType.libre,
+        bean = loadGymkhana(gymkId++, "Conociendo la Coruña", "Conoce las zonas emblemáticas de la coruña", GymkhanaType.libre,
                 new LatLng(43.368673, -8.402353),"http://www.turismocoruna.com/web/galeria/Paseo_Maritimo_(Stephane_Lutier_2011)2.jpg",
+                pointsGymk);
+
+        // GYMKHANA DE PRUEBA
+        gymkCache.setGymkhana(bean);
+        gymkhanasId.add(bean.getId());
+
+        // PUNTOS DE GYMKHANA
+        pointsGymk = new ArrayList<>();
+        pointsGymk.add(loadPoint(pointId++, "Praza de Azcárraga", "Praza de Azcárraga",
+                "https://grupocoruna.es/sites/default/files/styles/flexslider_full/public/photos/plaza-de-azcarraga.jpg?itok=WmAtnehf",
+                new LatLng(43.370289, -8.393641),
+                ""));
+        pointsGymk.add(loadPoint(pointId++, "Igrexa de Santiago", "Igrexa de Santiago",
+                "https://upload.wikimedia.org/wikipedia/commons/e/e5/2165-Igrexa_de_Santiago_na_Cidade_Vella_da_Coru%C3%B1a.jpg",
+                new LatLng(43.369808, -8.394701),
+                ""));
+        pointsGymk.add(loadPoint(pointId++, "Ruteiros da Cidade Vella", "Ruteiros da Cidade Vella",
+                "https://www.paxinasgalegas.es/fiestas/imagenes/ruta-por-la-ciudad-vieja-de-a-coru%C3%B1a-a-coru%C3%B1a_img5454n6t0.jpg",
+                new LatLng(43.369904, -8.392332),
+                ""));
+        pointsGymk.add(loadPoint(pointId++, "Arquivo do Reino de Galiza", "Arquivo do Reino de Galiza",
+                "https://petrybasket.files.wordpress.com/2017/04/archivos-del-reino-de-galicia.jpg?w=333&h=222",
+                new LatLng(43.369296, -8.391211),
+                ""));
+        pointsGymk.add(loadPoint(pointId++, "Colexio Santo Domingo", "Colexio Santo Domingo",
+                "",
+                new LatLng(43.370221, -8.391513),
+                ""));
+
+        bean = loadGymkhana(gymkId++, "Caminata pola Cidade Vella", "Dende a colegiata de Santa María, imos pasar polos sitios máis recónditos desta fermosa cidade", GymkhanaType.ordenada,
+                new LatLng(43.370821, -8.392935),"https://viajology.com/wp-content/uploads/2013/11/Colegiata-de-Santa-Maria-del-Campo.jpg",
                 pointsGymk);
 
         // GYMKHANA DE PRUEBA

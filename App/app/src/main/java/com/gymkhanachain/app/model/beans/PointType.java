@@ -7,6 +7,7 @@ import com.gymkhanachain.app.client.TextPoint;
 public class PointType {
     public static final String QUIZZ_POINT = "QuizzPoint";
     public static final String TEXT_POINT = "TextPoint";
+    public static final String NONE = "";
 
     /**
      * Devuelve una representación en forma de String del tipo de punto
@@ -22,7 +23,7 @@ public class PointType {
             return TEXT_POINT;
         }
 
-        return null;
+        return NONE;
     }
 
     /**
@@ -39,6 +40,6 @@ public class PointType {
             return TEXT_POINT;
         }
 
-        return null;
+        return NONE;
     }
 }

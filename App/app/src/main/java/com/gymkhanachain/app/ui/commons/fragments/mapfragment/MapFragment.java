@@ -198,6 +198,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     public void addPoint(MapPoint point) {
         points.add(point);
+
         if (map != null) {
             drawMap();
         }
@@ -208,17 +209,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      * @param point Punto a eliminar
      */
     public void removePoint(MapPoint point) {
-        // TODO Hay que cambiarlo por algo mejor
         points.remove(point);
+
+        if (routeMap.containsKey(point.getName())) {
+            routeMap.remove(point.getName());
+        }
+
         if (map != null) {
             drawMap();
         }
     }
 
+    /**
+     * Añade un montón de puntos
+     * @param points
+     */
     public void setPoints(List<MapPoint> points) {
-        // TODO Hay que cambiarlo por algo mejor
         points.clear();
         points.addAll(points);
+
+        routeMap.clear();
+
         if (map != null) {
             drawMap();
         }
