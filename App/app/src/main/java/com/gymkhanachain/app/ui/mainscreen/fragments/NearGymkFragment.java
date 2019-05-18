@@ -30,6 +30,8 @@ public class NearGymkFragment extends Fragment
         implements NearGymkAdapter.NearGymkItem.OnNearGymkItemListener {
 
     private static final String ARG_NEAR_GYMKHANAS = "nearGymks";
+    private static final String MAP_FRAGMENT_TAG = "MapFragment";
+    private Fragment.SavedState mapFragmentSavedState;
 
     private static final GymkhanaCache gymkCache = GymkhanaCache.getInstance();
 
@@ -91,14 +93,16 @@ public class NearGymkFragment extends Fragment
         List<MapPoint> points = new ArrayList<>();
         for (Integer id : nearGymkhanas) {
             GymkhanaBean bean = gymkCache.getGymkhana(id);
-            MapPoint point = new MapPoint(id, bean.getPosition(), bean.getName());
-            points.add(point);
+            if (bean != null) {
+                MapPoint point = new MapPoint(id, bean.getPosition(), bean.getName());
+                points.add(point);
+            }
         }
 
         // Create map fragment
         final MapFragmentParams params = new MapFragmentParams();
         final MapFragment map = MapFragment.newInstance("", params, points);
-        getFragmentManager().beginTransaction().add(R.id.map_placeholder, map).commit();
+        getFragmentManager().beginTransaction().add(R.id.map_placeholder, map, MAP_FRAGMENT_TAG).commit();
 
         return view;
     }
