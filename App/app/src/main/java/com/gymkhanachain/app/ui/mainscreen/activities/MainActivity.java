@@ -94,7 +94,9 @@ public class MainActivity extends AppCompatActivity implements
     FragmentManager fragmentManager;
     String activeFragment;
     Fragment.SavedState nearGymkFragmentSavedState;
-    Fragment.SavedState listGymkFragmentState;
+    Fragment.SavedState listGymkFragmentSavedState;
+    Fragment.SavedState infoGymkFragmentSavedState;
+    Integer currentGymkId = null;
 
     private List<Integer> gymkhanasId;
 
@@ -229,8 +231,8 @@ public class MainActivity extends AppCompatActivity implements
                         .replace(R.id.placeholder_main, fragment, NEAR_GYMK_FRAGMENT_TAG)
                         .show(fragment)
                         .commit();
-            } else { // No hago puta mierda porque ya es el que se está viendo
-                Toast.makeText(getApplicationContext(), "No hago puta mierda", Toast.LENGTH_SHORT).show();
+            } else { // No hacemos nada porque ya es el que se está viendo
+                Toast.makeText(getApplicationContext(), "No hacemos nada", Toast.LENGTH_SHORT).show();
             }
            // activeFragment = NearGymkFragment.class.getName();
             Log.d(TAG, "Active fragment: " + activeFragment);
@@ -243,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements
         Log.d(TAG, fragmentManager.getFragments().toString());
         Log.d(TAG, "onResume active fragment: " + activeFragment);
 
-        if (activeFragment == ListGymkFragment.class.getName() && listGymkFragmentState != null) {
+        if (activeFragment == ListGymkFragment.class.getName() && listGymkFragmentSavedState != null) {
             fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(LIST_GYMK_FRAGMENT_TAG)).commit();
             Fragment listGymkFragment = ListGymkFragment.newInstance();
             fragmentManager.beginTransaction().replace(R.id.placeholder_main, listGymkFragment, LIST_GYMK_FRAGMENT_TAG).commit();
@@ -256,6 +258,13 @@ public class MainActivity extends AppCompatActivity implements
             fragmentManager.beginTransaction().replace(R.id.placeholder_main, nearGymkFragment, NEAR_GYMK_FRAGMENT_TAG).commit();
             return;
         }
+        if (activeFragment == GymkInfoFragment.class.getName() && infoGymkFragmentSavedState != null) {
+            fragmentManager.beginTransaction().remove(fragmentManager.findFragmentByTag(INFO_GYMK_FRAGMENT_TAG)).commit();
+            Fragment infoGymkFragment = GymkInfoFragment.newInstance(currentGymkId);
+            infoGymkFragment.setInitialSavedState(infoGymkFragmentSavedState);
+            fragmentManager.beginTransaction().replace(R.id.placeholder_main, infoGymkFragment, INFO_GYMK_FRAGMENT_TAG).commit();
+            return;
+        }
     }
 
     @Override
@@ -265,6 +274,8 @@ public class MainActivity extends AppCompatActivity implements
             activeFragment = NearGymkFragment.class.getName();
         if (fragment.getClass().getName().equals(ListGymkFragment.class.getName()))
             activeFragment = ListGymkFragment.class.getName();
+        if (fragment.getClass().getName().equals(GymkInfoFragment.class.getName()))
+            activeFragment = GymkInfoFragment.class.getName();
 
         super.onAttachFragment(fragment);
     }
@@ -275,7 +286,14 @@ public class MainActivity extends AppCompatActivity implements
         // Necesito guardar el estado actual de todos los fragmentos existentes, para recuperarlos en onResume
         try {
             nearGymkFragmentSavedState = fragmentManager.saveFragmentInstanceState(fragmentManager.findFragmentByTag(NEAR_GYMK_FRAGMENT_TAG));
-            listGymkFragmentState = fragmentManager.saveFragmentInstanceState(fragmentManager.findFragmentByTag(LIST_GYMK_FRAGMENT_TAG));
+            infoGymkFragmentSavedState = fragmentManager.saveFragmentInstanceState(fragmentManager.findFragmentByTag(INFO_GYMK_FRAGMENT_TAG));
+
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            listGymkFragmentSavedState = fragmentManager.saveFragmentInstanceState(fragmentManager.findFragmentByTag(LIST_GYMK_FRAGMENT_TAG));
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
@@ -457,19 +475,25 @@ public class MainActivity extends AppCompatActivity implements
     // TODO Hay que definir las interfaces de cada fragmento, en función de las interacciones con MainActivity
     @Override
     public void onNearGymkhanaClick(Integer gymkhanaId) {
+
+        currentGymkId = gymkhanaId;
+
         Fragment fragment = fragmentManager.findFragmentByTag(INFO_GYMK_FRAGMENT_TAG);
 
-        if (fragment != null && fragment.getTag().equals(INFO_GYMK_FRAGMENT_TAG)) {
-            fragmentManager.beginTransaction().replace(R.id.frameLayout, fragment).commit();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.frameLayout, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        } else {
+        if (fragment == null) {// No existe, instancio uno nuevo
+            Log.d(TAG, "Nueva instancia de InfoGymkFragment");
             fragmentManager.beginTransaction()
                     .replace(R.id.placeholder_main, GymkInfoFragment.newInstance(gymkhanaId), INFO_GYMK_FRAGMENT_TAG)
-                    .addToBackStack(null)
+                    .addToBackStack(INFO_GYMK_FRAGMENT_TAG)
                     .commit();
+        } else if (fragment != null && !fragment.isVisible()) { // Existe, pero no es visible. Lo muestro
+            Log.d(TAG, "Muestro InfoGymkFragment ya existente");
+            fragmentManager.beginTransaction()
+                    .replace(R.id.placeholder_main, fragment, INFO_GYMK_FRAGMENT_TAG)
+                    .show(fragment)
+                    .commit();
+        } else { // No hacemos nada
+            Toast.makeText(getApplicationContext(), "No hacemos nada", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -511,8 +535,8 @@ public class MainActivity extends AppCompatActivity implements
                             .replace(R.id.placeholder_main, fragment, NEAR_GYMK_FRAGMENT_TAG)
                             .show(fragment)
                             .commit();
-                } else { // No hago puta mierda
-                    Toast.makeText(getApplicationContext(), "No hago puta mierda", Toast.LENGTH_SHORT).show();
+                } else { // No hacemos nada
+                    Toast.makeText(getApplicationContext(), "No hacemos nada", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.nav_advanced_search: // Cambiar a busqueda avanzada
@@ -545,8 +569,8 @@ public class MainActivity extends AppCompatActivity implements
                             .addToBackStack(LIST_GYMK_FRAGMENT_TAG)
                             //.show(fragment)
                             .commit();
-                } else { // No hago puta mierda porque ya es el que se está viendo
-                    Toast.makeText(getApplicationContext(), "No hago puta mierda", Toast.LENGTH_SHORT).show();
+                } else { // No hacemos nada porque ya es el que se está viendo
+                    Toast.makeText(getApplicationContext(), "No hacemos nada", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.nav_create_gymk: // Listar gymkhanas creadas por el usuario
@@ -659,8 +683,12 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onMapPointClick(MapPoint point) {
+
+        currentGymkId = point.getId();
+
         fragmentManager.beginTransaction()
-                .replace(R.id.placeholder_main, GymkInfoFragment.newInstance(point.getId()), INFO_GYMK_FRAGMENT_TAG)
+                .replace(R.id.placeholder_main, GymkInfoFragment.newInstance(currentGymkId), INFO_GYMK_FRAGMENT_TAG)
+                .addToBackStack(INFO_GYMK_FRAGMENT_TAG)
                 .commit();
     }
 
