@@ -428,6 +428,29 @@ public class MainActivity extends AppCompatActivity implements
         // GYMKHANA DE PRUEBA
         gymkCache.setGymkhana(bean);
         gymkhanasId.add(bean.getId());
+
+        ////// Vioño park
+        // PUNTOS DE GYMKHANA
+        pointsGymk = new ArrayList<>();
+        pointsGymk.add(loadPoint(pointId++, "Fuente central", "Fuente grande del parque del Vioño",
+                "https://i.ytimg.com/vi/fX3SUTGYW2k/hqdefault.jpg",
+                new LatLng(43.355499, -8.416777),
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum convallis cursus hendrerit. Morbi volutpat ex ac ligula condimentum pulvinar."));
+        pointsGymk.add(loadPoint(pointId++, "Hórreo del Vioño", "Hórreo, piorno, cabazo...",
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/H%C3%B3rreo_no_parque_de_Vio%C3%B1o.jpg/1200px-H%C3%B3rreo_no_parque_de_Vio%C3%B1o.jpg",
+                new LatLng(43.354553, -8.415481), "Por aquí pasa un meridiano. ¿Cúal es?",
+                Arrays.asList("8º24'56\"", "9º23'39\"", "8º24'38\"", "8º23'39\""), 4));
+        pointsGymk.add(loadPoint(pointId++, "Parque infantil", "Parque infantil con mazo colores",
+                "https://grupocoruna.es/sites/default/files/parque-infantil-de-viono.jpg",
+                new LatLng(43.354455, -8.416785), "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum convallis cursus hendrerit. Morbi volutpat ex ac ligula condimentum pulvinar."));
+
+        bean = loadGymkhana(gymkId++, "Vioño Park", "Conoce la zona recreativa más molona de A Coruña", GymkhanaType.libre,
+                new LatLng(43.353442, -8.416401),"https://i.pinimg.com/originals/01/9b/90/019b9028e2bbb4c479ffd4cfb41dc987.jpg",
+                pointsGymk);
+
+        // GYMKHANA DE PRUEBA
+        gymkCache.setGymkhana(bean);
+        gymkhanasId.add(bean.getId());
     }
 
     // Implementación de las interfaces de los fragmentos

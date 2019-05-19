@@ -33,6 +33,7 @@ import com.akexorcist.googledirection.model.Leg;
 import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.request.DirectionDestinationRequest;
 import com.akexorcist.googledirection.util.DirectionConverter;
+import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -45,6 +46,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -52,6 +54,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.RoundCap;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.gymkhanachain.app.R;
 
@@ -74,6 +77,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private static final String ARG_GYMKHANA_NAME = "GymkhanaName";
     private static final String ARG_PARAMS = "Params";
     private static final String ARG_POINTS = "Points";
+
+    private static final String MAP_STATE = "mapState";
 
     @BindView(R.id.map_view)
     MapView mapView;
@@ -100,6 +105,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private List<MapPoint> points = new ArrayList<>();
     private Map<String, Route> routeMap = new ConcurrentHashMap<>();
     private String routeSelected = "";
+    private boolean mapLoaded = false;
 
     SharedPreferences preferences;
 
@@ -153,7 +159,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         unbinder = ButterKnife.bind(this, view);
 
         // Sets the map
-        mapView.onCreate(savedInstanceState);
+        Bundle mapState = null;
+
+        if (savedInstanceState != null) {
+            savedInstanceState.getBundle(MAP_STATE);
+        }
+
+        mapView.onCreate(mapState);
+
         mapView.getMapAsync(this);
 
         // Sets all fabs listener
@@ -218,12 +231,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     public void removePoint(MapPoint point) {
         if (!points.contains(point)) {
-            Log.i(TAG, "El punto " + point.toString() + " no existe");
+            Log.w(TAG, "El punto " + point.toString() + " no existe");
         } else {
             points.remove(point);
+            routeMap.remove(point.getName());
 
-            if (routeMap.containsKey(point.getName())) {
-                routeMap.remove(point.getName());
+            if (routeSelected.equals(point.getName())) {
+                routeSelected = "";
             }
 
             if (map != null) {
@@ -341,7 +355,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                 }
 
                                 // Actualizamos el mapa
-                                getRoutes();
+                                if (params.getMapMode() != MapMode.NORMAL_MODE) {
+                                    getRoutes();
+                                }
                             }
                         }
                     }
@@ -398,26 +414,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
             }
 
-            // Obtiene la última posición marcada
-            fusedLocationClient.getLastLocation().addOnSuccessListener(
-                    new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            currentLocation = location;
-                            Log.i(TAG, "Last location: " + currentLocation);
+            if (!mapLoaded) {
+                mapLoaded = true;
 
-                            // Mueve la cámara a la posición inicial del jugador
-                            CameraPosition cameraFrom = new CameraPosition.Builder()
-                                    .target(new LatLng(getLatitude(), getLongitude()))
-                                    .build();
-                            map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraFrom));
-                            CameraPosition cameraTo = new CameraPosition.Builder()
-                                    .target(new LatLng(getLatitude(), getLongitude()))
-                                    .zoom(15.0f)
-                                    .build();
-                            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraTo));
-                        }
-                    });
+                // Obtiene la última posición marcada
+                fusedLocationClient.getLastLocation().addOnSuccessListener(
+                        new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                currentLocation = location;
+                                Log.i(TAG, "Last location: " + currentLocation);
+
+                                // Mueve la cámara a la posición inicial del jugador
+                                CameraPosition cameraFrom = new CameraPosition.Builder()
+                                        .target(new LatLng(getLatitude(), getLongitude()))
+                                        .zoom(15.0f)
+                                        .build();
+                                map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraFrom));
+                            }
+                        });
+            }
 
             // Enable on my location listener
             map.setMyLocationEnabled(true);
@@ -441,11 +457,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void drawPath(boolean selected, String name, Route route) {
+    private void drawPath(String name, Route route) {
         @ColorInt int color = getResources().getColor(R.color.colorRoute);
 
         // Si hay una ruta seleccionada y esta no está seleccionada, la ponemos de color claro
-        if (!routeSelected.equals("") && !selected) {
+        if (!routeSelected.equals("") && !routeSelected.equals(name)) {
             color &= 0x00ffffff;
             color |= 0x44000000;
         }
@@ -455,6 +471,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
             PolylineOptions polylineOptions = DirectionConverter.createPolyline(getContext(),
                     directionPositionList, 8, color);
+            polylineOptions.startCap(new RoundCap());
+            polylineOptions.endCap(new RoundCap());
+            polylineOptions.jointType(JointType.ROUND);
+
             Polyline polyline = map.addPolyline(polylineOptions);
 
             if (params.getMapMode() == MapMode.PLAY_MODE) {
@@ -465,28 +485,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void drawRoutes() {
-        // Recorremos la lista de rutas y dibujamos las que no están seleccionadas
+        // Recorremos la lista de rutas y dibujamos las rutas
         for (Map.Entry<String, Route> entry : routeMap.entrySet()) {
-            if (!entry.getKey().equals(routeSelected)) {
-                drawPath(false, entry.getKey(), entry.getValue());
-            }
-        }
-
-        // Si hay una ruta seleccionada, la dibujamos
-        Route route = routeMap.get(routeSelected);
-        if (route != null) {
-            drawPath(true, routeSelected, route);
+            Log.i(TAG, "Dibujando ruta " + entry.getKey());
+            drawPath(entry.getKey(), entry.getValue());
         }
     }
 
     private void getRoute(final String name, LatLng firstPoint, LatLng lastPoint,
-                          List<LatLng> wayPoints, final AtomicBoolean clearMap,
-                          final AtomicInteger completeRoutes, final int maxRoutes) {
+                          List<LatLng> wayPoints, final AtomicInteger completeRoutes,
+                          final int maxRoutes) {
         // Obtenemos la ruta
         DirectionDestinationRequest request = GoogleDirection.withServerKey(getString(R.string.maps_key))
                 .from(firstPoint);
 
-        if (wayPoints != null) {
+        if (!CollectionUtils.isEmpty(wayPoints)) {
             request = request.and(wayPoints);
         }
 
@@ -495,39 +508,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 .execute(new DirectionCallback() {
                     @Override
                     public void onDirectionSuccess(Direction direction, String rawBody) {
-                        // Si es el primer thread, tendrá que limpiar el mapa
-                        if (clearMap.compareAndSet(true, false)) {
-                            routeMap.clear();
-                        }
-
                         // Si se ha calculado una dirección correcta, se guarda en el mapa
                         if (direction.isOK()) {
+                            Log.i(TAG, "Dirección " + name + " obtenida");
                             routeMap.put(name, direction.getRouteList().get(0));
                         } else {
-                            Log.e("MapFragment", "No se ha podido obtener la dirección: "
+                            Log.e(TAG, "No se ha podido obtener la dirección a " + name + ": "
                                     + direction.getStatus());
                         }
 
+                        Log.i(TAG, "Complete routes: " + completeRoutes.get() + ", Max Routes: " + maxRoutes);
+
                         // Si es el último thread, dibuja el mapa
-                        if (completeRoutes.get() == maxRoutes - 1) {
+                        if (completeRoutes.getAndAdd(1) == maxRoutes - 1) {
                             drawMap();
                         }
-
-                        completeRoutes.getAndAdd(1);
                     }
 
                     @Override
                     public void onDirectionFailure(Throwable t) {
-                        Log.e(TAG, "Error getting route", t);
-
-                        // Si es el primer thread, tendrá que limpiar el mapa
-                        if (clearMap.compareAndSet(true, false)) {
-                            routeMap.clear();
-                        }
+                        Log.e(TAG, "Error al obtener la dirección " + name, t);
 
                         // Si es el último thread, dibuja el mapa
                         if (completeRoutes.get() == maxRoutes - 1) {
-                            // drawMarkers();
+                            drawMap();
                         }
 
                         completeRoutes.getAndAdd(1);
@@ -567,20 +571,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
 
             getRoute(gymkhanaName, fromPoint.getPosition(), toPoint.getPosition(), wayPoints,
-                    new AtomicBoolean(true), new AtomicInteger(0),
-                    1);
+                    new AtomicInteger(0), 1);
         }
 
         // Dibujamos los puntos aleatorios
         if (params.getOrderPoints() == PointOrder.NONE_ORDER) {
-            AtomicBoolean clearMap = new AtomicBoolean(true);
             AtomicInteger completeRoutes = new AtomicInteger(0);
             MapPoint fromPoint = points.get(0);
+
+            Log.i(TAG, "getRoutes - " + points.size());
 
             for (int i = 1; i < points.size(); i++) {
                 MapPoint toPoint = points.get(i);
                 getRoute(toPoint.getName(), fromPoint.getPosition(), toPoint.getPosition(),
-                        null, clearMap, completeRoutes,points.size()-1);
+                        null, completeRoutes, points.size()-1);
             }
         }
     }
@@ -665,9 +669,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private void drawMap() {
         map.clear();
-        if (params.getTypePoints() == PointType.GIS_POINTS && (points.size() > 1)) {
-            drawRoutes();
-            drawMarkers();
+        if (params.getTypePoints() == PointType.GIS_POINTS) {
+            if (routeMap.isEmpty() && (params.getMapMode() != MapMode.NORMAL_MODE)) {
+                getRoutes();
+            } else {
+                drawRoutes();
+                drawMarkers();
+            }
         } else {
             drawMarkers();
         }
@@ -705,8 +713,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
+        Bundle mapState = new Bundle();
+        mapView.onSaveInstanceState(mapState);
+        outState.putBundle(MAP_STATE, mapState);
+
         super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
         Log.d("MapFragment"+this.getId(), " onSaveInstanceState");
     }
 
@@ -802,10 +813,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         // Dibuja el mapa
         drawMap();
 
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if (!MapFragment.this.routeSelected.isEmpty()) {
+                    MapFragment.this.routeSelected = "";
+                }
+            }
+        });
+
         // Callback para cuando se mantiene presionado el mapa
         map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
+                if (!MapFragment.this.routeSelected.isEmpty()) {
+                    MapFragment.this.routeSelected = "";
+                }
+
                 listener.onMapLongClick(latLng);
             }
         });

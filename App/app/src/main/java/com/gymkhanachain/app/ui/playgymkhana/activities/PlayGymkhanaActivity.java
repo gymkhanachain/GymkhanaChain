@@ -69,9 +69,7 @@ public class PlayGymkhanaActivity extends AppCompatActivity
             GymkhanaBean bean = gymkCache.getGymkhana(gymkhanaId);
 
             if (bean != null) {
-                // Se situa el primer punto como inicial
                 List<MapPoint> points = new ArrayList<>();
-                points.add(new MapPoint(bean.getId(), bean.getPosition(), bean.getName()));
 
                 // Se crea el mapa con gymkhanas
                 PointOrder order = PointOrder.NONE_ORDER;

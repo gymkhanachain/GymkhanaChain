@@ -1,5 +1,7 @@
 package com.gymkhanachain.app.ui.playgymkhana.states;
 
+import android.util.Log;
+
 import com.gymkhanachain.app.model.beans.GymkhanaBean;
 import com.gymkhanachain.app.model.beans.PointBean;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapPoint;
@@ -23,6 +25,7 @@ public class PlayingGymkhanaState extends PlayGymkhanaState {
 
         // Recorremos la lista de puntos y las mostramos en el mapa
         for (PointBean pointBean: bean.getPoints()) {
+            Log.i("PlayGymkhanaState", pointBean.getName());
             getActivity().addPoint(new MapPoint(pointBean.getId(), pointBean.getPosition(), pointBean.getName()));
         }
 
