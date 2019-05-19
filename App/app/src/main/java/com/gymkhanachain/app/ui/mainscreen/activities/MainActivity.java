@@ -652,8 +652,10 @@ public class MainActivity extends AppCompatActivity implements
                     doubleBackToExitPressedOnce = false;
                 }
             }, 2000);
-        } else
+        } else {
+            fragmentManager.beginTransaction().remove(fragmentManager.findFragmentById(R.id.placeholder_main)).commit();
             super.onBackPressed();
+        }
     }
 
     @Override
