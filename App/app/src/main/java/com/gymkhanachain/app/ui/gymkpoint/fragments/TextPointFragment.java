@@ -9,46 +9,33 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gymkhanachain.app.R;
+import com.gymkhanachain.app.model.beans.PointBean;
+import com.gymkhanachain.app.model.commons.PointCache;
 
+public class TextPointFragment extends Fragment {
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link QuizPoint.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link QuizPoint#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class QuizPoint extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_POINT_ID = "PointId";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final PointCache pointCache = PointCache.getInstance();
 
-    private OnFragmentInteractionListener mListener;
+    Integer pointId;
+    OnTextPointFragmentInteraction listener;
+    PointBean bean;
 
-    public QuizPoint() {
+    public TextPointFragment() {
         // Required empty public constructor
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * Crea un fragmento de tipo QuizPointFragment
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment QuizPoint.
+     * @param pointId Id del punto.
+     * @return Nueva instancia de QuizPointFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static QuizPoint newInstance(String param1, String param2) {
-        QuizPoint fragment = new QuizPoint();
+    public static TextPointFragment newInstance(Integer pointId) {
+        TextPointFragment fragment = new TextPointFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(ARG_POINT_ID, pointId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,8 +44,8 @@ public class QuizPoint extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            pointId = getArguments().getInt(ARG_POINT_ID);
+            bean = pointCache.getPoint(pointId);
         }
     }
 
@@ -66,21 +53,21 @@ public class QuizPoint extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_quiz_point, container, false);
+        return inflater.inflate(R.layout.fragment_text_point, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+        if (listener != null) {
+            listener.onFragmentInteraction(uri);
         }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnTextPointFragmentInteraction) {
+            listener = (OnTextPointFragmentInteraction) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -90,7 +77,7 @@ public class QuizPoint extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        listener = null;
     }
 
     /**
@@ -103,7 +90,7 @@ public class QuizPoint extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnTextPointFragmentInteraction {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }

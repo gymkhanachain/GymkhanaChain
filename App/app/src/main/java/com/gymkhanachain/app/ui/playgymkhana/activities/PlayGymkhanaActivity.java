@@ -21,7 +21,6 @@ import com.gymkhanachain.app.R;
 import com.gymkhanachain.app.commons.GymkConstants;
 import com.gymkhanachain.app.model.beans.GymkhanaBean;
 import com.gymkhanachain.app.model.beans.GymkhanaType;
-import com.gymkhanachain.app.model.beans.PointBean;
 import com.gymkhanachain.app.model.commons.GymkhanaCache;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragment;
 import com.gymkhanachain.app.ui.commons.fragments.mapfragment.MapFragmentParams;
@@ -35,8 +34,6 @@ import com.gymkhanachain.app.ui.playgymkhana.states.StartPlayGymkhanaState;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.ButterKnife;
 
 public class PlayGymkhanaActivity extends AppCompatActivity
         implements MapFragment.OnMapFragmentInteractionListener {
@@ -61,7 +58,6 @@ public class PlayGymkhanaActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_gymkhana);
-        ButterKnife.bind(this);
 
         // Obtenemos la gymkhana
         Intent intent = getIntent();
@@ -72,32 +68,37 @@ public class PlayGymkhanaActivity extends AppCompatActivity
             // Se obtiene el bean
             GymkhanaBean bean = gymkCache.getGymkhana(gymkhanaId);
 
-            // Se situa el primer punto como inicial
-            List<MapPoint> points = new ArrayList<>();
-            points.add(new MapPoint(bean.getId(), bean.getPosition(), bean.getName()));
+            if (bean != null) {
+                // Se situa el primer punto como inicial
+                List<MapPoint> points = new ArrayList<>();
+                points.add(new MapPoint(bean.getId(), bean.getPosition(), bean.getName()));
 
-            // Se crea el mapa con gymkhanas
-            PointOrder order = PointOrder.NONE_ORDER;
-            if (bean.getType() == GymkhanaType.ordenada) {
-                order = PointOrder.ROUTE_ORDER;
+                // Se crea el mapa con gymkhanas
+                PointOrder order = PointOrder.NONE_ORDER;
+                if (bean.getType() == GymkhanaType.ordenada) {
+                    order = PointOrder.ROUTE_ORDER;
+                }
+
+                // Creamos los parámetros de la gymkhana
+                MapFragmentParams params = new MapFragmentParams(PointType.GIS_POINTS, order, MapMode.PLAY_MODE);
+                params.setShowInfoWindow(true);
+                // Creamos el fragmento de mapa
+                mapFragment = MapFragment.newInstance(bean.getName(), params, points);
+                // Lo añadimos a la interfaz
+                getSupportFragmentManager().beginTransaction().replace(R.id.map_content, mapFragment).commit();
+
+                // Obtenemos la posición actual
+                getCurrentPosition();
             }
-
-            // Creamos los parámetros de la gymkhana
-            MapFragmentParams params = new MapFragmentParams(PointType.GIS_POINTS, order, MapMode.PLAY_MODE);
-            // Creamos el fragmento de mapa
-            mapFragment = MapFragment.newInstance(bean.getName(), params, points);
-            // Lo añadimos a la interfaz
-            getSupportFragmentManager().beginTransaction().replace(R.id.map_content, mapFragment).commit();
-
-            // Obtenemos la posición actual
-            getCurrentPosition();
         } else {
             Log.w(TAG, "La gymkhana no existe");
         }
 
         // Para activar el botón de volver atrás
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
     }
 
     private void getCurrentPosition() {
@@ -124,60 +125,23 @@ public class PlayGymkhanaActivity extends AppCompatActivity
         });
     }
 
-//    // TODO REMOVER
-//    private List<MapPoint> getGisPoints() {
-//        List<MapPoint> points = new ArrayList<>();
-//
-//        MapPoint estadioUniversitario = new MapPoint(0, new LatLng(43.333683, -8.412958),
-//                "Estadio universitario");
-//        points.add(estadioUniversitario);
-//        MapPoint xoanaCapdevielle = new MapPoint(1, new LatLng(43.334206, -8.405787),
-//                "Xoana Capdevielle");
-//        points.add(xoanaCapdevielle);
-//        MapPoint facultadeDeEconomicas = new MapPoint(2, new LatLng(43.331124,
-//                -8.413017), "Facultade de económicas");
-//        points.add(facultadeDeEconomicas);
-//        MapPoint arquitectura = new MapPoint(3, new LatLng(43.328036, -8.408088),
-//                "Arquitectura");
-//        points.add(arquitectura);
-//
-//        return points;
-//    }
-
     public void addPoint(MapPoint point) {
         if (mapFragment != null) {
+            Log.i(TAG, "Añadir el punto " + point.toString());
             mapFragment.addPoint(point);
         }
     }
 
     public void removePoint(MapPoint point) {
         if (mapFragment != null) {
+            Log.i(TAG, "Eliminar el punto " + point.toString());
             mapFragment.removePoint(point);
         }
     }
 
     public void startPointActivity(Integer pointId) {
-        // Obtenemos el punto
-        PointBean bean = null;
-        for (PointBean pointBean : gymkCache.getGymkhana(gymkhanaId).getPoints()) {
-            if (pointBean.getId().equals(pointId)) {
-                bean = pointBean;
-                break;
-            }
-        }
-
-        Intent intent = intent = new Intent(this, PointActivity.class);
-        switch (com.gymkhanachain.app.model.beans.PointType.getPointType(bean)) {
-            case com.gymkhanachain.app.model.beans.PointType.QUIZZ_POINT:
-                // TODO Funcionalidad al llegar a un punto
-                break;
-            case com.gymkhanachain.app.model.beans.PointType.TEXT_POINT:
-                // TODO Funcionalidad al llegar a un punto
-                break;
-            default:
-                Log.w(TAG, "Punto no soportado");
-                return;
-        }
+        Intent intent = new Intent(this, PointActivity.class);
+        intent.putExtra(GymkConstants.TAG_POINT_ID, pointId);
         startActivity(intent);
     }
 
@@ -224,6 +188,12 @@ public class PlayGymkhanaActivity extends AppCompatActivity
 
     @Override
     public void onMapPointsNearLocation(List<MapPoint> points) {
-        state = state.onMapPointsNearLocation(points);
+        if (state != null) {
+            state = state.onMapPointsNearLocation(points);
+        }
+
+        if (state == null) {
+            onBackPressed();
+        }
     }
 }

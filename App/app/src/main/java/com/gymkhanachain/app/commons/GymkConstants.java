@@ -12,6 +12,13 @@ public class GymkConstants {
 
     public static final String TAG_GYMKHANA_ID = "GymkhanaId";
 
+    public static final String TAG_POINT_ID = "PointId";
+
+    public static final String ENDPOINT = "http://localhost";
+    //public static final String ENDPOINT = "http://35.211.136.52";
+
+    public static final String API = "/gymkhanas";
+
     // Elementos por defecto
 
     /**

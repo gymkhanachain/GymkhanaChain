@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSerializer;
+import com.gymkhanachain.app.commons.GymkConstants;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -20,17 +21,17 @@ public class GymkhanasClient {
 
     private static Retrofit.Builder builderSer
             = new Retrofit.Builder()
-            .baseUrl(ApiRoutes.ROOT_URL)//(ApiRoutes.ROOT_URL)
+            .baseUrl(GymkConstants.ENDPOINT)//(ApiRoutes.ROOT_URL)
             .addConverterFactory(GsonConverterFactory.create(gson_ser));
 
     private static Retrofit.Builder builderDes
             = new Retrofit.Builder()
-            .baseUrl(ApiRoutes.ROOT_URL)//(ApiRoutes.ROOT_URL)
+            .baseUrl(GymkConstants.ENDPOINT)//(ApiRoutes.ROOT_URL)
             .addConverterFactory(GsonConverterFactory.create(gson_des));
 
     private static Retrofit.Builder builderSimple
             = new Retrofit.Builder()
-            .baseUrl(ApiRoutes.ROOT_URL)//(ApiRoutes.ROOT_URL)
+            .baseUrl(GymkConstants.ENDPOINT)//(ApiRoutes.ROOT_URL)
             .addConverterFactory(GsonConverterFactory.create());
 
     private static Retrofit retrofitSer = builderSer.build();

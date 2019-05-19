@@ -5,6 +5,7 @@ import com.gymkhanachain.app.commons.ProxyBitmap;
 
 public abstract class PointBean {
     Integer id;
+    Integer gymkId;
     String name;
     String description;
     ProxyBitmap image;
@@ -13,6 +14,15 @@ public abstract class PointBean {
     public PointBean(final Integer id, final String name, final String description,
                      final ProxyBitmap image, final LatLng position) {
         setId(id).setName(name).setDescription(description).setImage(image).setPosition(position);
+    }
+
+    public Integer getGymkId() {
+        return gymkId;
+    }
+
+    public PointBean setGymkhId(Integer gymkhId) {
+        this.gymkId = gymkhId;
+        return this;
     }
 
     public Integer getId() {

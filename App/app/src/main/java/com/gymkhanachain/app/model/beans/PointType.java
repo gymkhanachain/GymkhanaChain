@@ -6,7 +6,7 @@ import com.gymkhanachain.app.client.TextPoint;
 
 public class PointType {
     public static final String QUIZZ_POINT = "QuizzPoint";
-    public static final String TEXT_POINT = "TextPoint";
+    public static final String TEXT_POINT = "TextPointFragment";
     public static final String NONE = "";
 
     /**

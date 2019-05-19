@@ -1,6 +1,7 @@
 package com.gymkhanachain.app.ui.playgymkhana.states;
 
 import android.location.Location;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.gymkhanachain.app.R;
@@ -36,7 +37,9 @@ public class StartPlayGymkhanaState extends PlayGymkhanaState {
         if (currentPosition.distanceTo(beanLocation) > GymkConstants.DEFAULT_TRIGGERED_DISTANCE) {
             Toast toast = Toast.makeText(getActivity(), getActivity().getString(R.string.start_gymkhana), Toast.LENGTH_SHORT);
             toast.show();
+
             // Añadimos el punto inicial al mapa
+            Log.i("StartPlayGymkhanaState", "Añadimos la posición de la gymkhana");
             point = new MapPoint(bean.getId(), bean.getPosition(), bean.getName());
             getActivity().addPoint(point);
             return this;
@@ -51,7 +54,9 @@ public class StartPlayGymkhanaState extends PlayGymkhanaState {
     @Override
     public PlayGymkhanaState onMapPointsNearLocation(List<MapPoint> points) {
         // No debería de haber más de un punto en colisión
-        getActivity().removePoint(points.get(0));
+        MapPoint mapPoint = points.get(0);
+
+        getActivity().removePoint(mapPoint);
 
         PlayGymkhanaState state = new PlayingGymkhanaState(getActivity());
         state.onCreateState(getBean());

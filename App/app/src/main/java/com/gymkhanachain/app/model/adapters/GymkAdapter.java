@@ -27,10 +27,14 @@ public class GymkAdapter {
      * @return GymkhanaBean
      */
     public static GymkhanaBean adapt(Gymkhana dto) {
+        if (dto == null) {
+            return null;
+        }
+
         List<PointBean> points = new ArrayList<>();
 
         for (Point point : dto.getPuntos()) {
-            points.add(adapt(point));
+            points.add(adapt(point, dto.getGymk_id()));
         }
 
         final LatLng position = new LatLng(dto.getLatitude(), dto.getLongitude());
@@ -60,6 +64,10 @@ public class GymkAdapter {
      * @return Gymkhana
      */
     public static Gymkhana adapt(GymkhanaBean bean) {
+        if (bean == null) {
+            return null;
+        }
+
         List<Point> points = new ArrayList<>();
 
         for (PointBean point : bean.getPoints()) {
@@ -79,9 +87,14 @@ public class GymkAdapter {
     /**
      * Transforma un objeto Point en un objeto PointBean
      * @param dto Objeto de la base de datos
+     * @param gymkhanaId Id de la gymkhana padre
      * @return PointBean
      */
-    public static PointBean adapt(Point dto) {
+    public static PointBean adapt(Point dto, Integer gymkhanaId) {
+        if (dto == null) {
+            return null;
+        }
+
         Uri uri = Uri.parse(dto.getImage());
 
         ProxyBitmap proxyBitmap = new ProxyBitmap();
@@ -92,15 +105,15 @@ public class GymkAdapter {
 
         switch (PointType.getPointType(dto)) {
             case PointType.QUIZZ_POINT:
-                return adaptQuizzPointToBean(dto, proxyBitmap);
+                return adaptQuizzPointToBean(dto, gymkhanaId, proxyBitmap);
             case PointType.TEXT_POINT:
-                return adaptTextPointToBean(dto, proxyBitmap);
+                return adaptTextPointToBean(dto, gymkhanaId, proxyBitmap);
             default:
                 throw new RuntimeException("Point adapter not defined: " + dto.getClass().getName());
         }
     }
 
-    private static QuizzPointBean adaptQuizzPointToBean(Point dto, ProxyBitmap proxyBitmap) {
+    private static QuizzPointBean adaptQuizzPointToBean(Point dto, Integer gymkhanaId, ProxyBitmap proxyBitmap) {
         QuizzPoint quizzPoint = (QuizzPoint) dto;
 
         List<String> solutions = new ArrayList<>();
@@ -109,17 +122,21 @@ public class GymkAdapter {
         solutions.add(quizzPoint.getSol3());
         solutions.add(quizzPoint.getSol4());
 
-        return new QuizzPointBean(quizzPoint.getPoint_id(), quizzPoint.getName(),
+        QuizzPointBean bean = new QuizzPointBean(quizzPoint.getPoint_id(), quizzPoint.getName(),
                 quizzPoint.getDescription(), proxyBitmap, quizzPoint.getPosition(),
                 quizzPoint.getQuizz_text(), solutions, quizzPoint.getSolution());
+        bean.setGymkhId(gymkhanaId);
+        return bean;
     }
 
-    private static TextPointBean adaptTextPointToBean(Point dto, ProxyBitmap proxyBitmap) {
+    private static TextPointBean adaptTextPointToBean(Point dto, Integer gymkhanaId, ProxyBitmap proxyBitmap) {
         TextPoint textPoint = (TextPoint) dto;
 
-        return new TextPointBean(textPoint.getPoint_id(), textPoint.getName(),
+        TextPointBean bean = new TextPointBean(textPoint.getPoint_id(), textPoint.getName(),
                 textPoint.getDescription(), proxyBitmap, textPoint.getPosition(),
                 textPoint.getLong_desc());
+        bean.setGymkhId(gymkhanaId);
+        return bean;
     }
 
     /**
@@ -128,6 +145,10 @@ public class GymkAdapter {
      * @return Point
      */
     public static Point adapt(PointBean bean) {
+        if (bean == null) {
+            return null;
+        }
+
         switch (PointType.getPointType(bean)) {
             case PointType.QUIZZ_POINT:
                 return adaptQuizzPointBeanToDto(bean);

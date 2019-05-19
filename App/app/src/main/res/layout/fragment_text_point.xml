@@ -5,7 +5,7 @@
     android:id="@+id/frameLayoutTextPoint"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.gymkpoint.fragments.TextPoint">
+    tools:context=".ui.gymkpoint.fragments.TextPointFragment">
 
     <ImageView
         android:id="@+id/imageView2"

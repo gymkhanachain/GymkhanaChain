@@ -217,14 +217,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      * @param point Punto a eliminar
      */
     public void removePoint(MapPoint point) {
-        points.remove(point);
+        if (!points.contains(point)) {
+            Log.i(TAG, "El punto " + point.toString() + " no existe");
+        } else {
+            points.remove(point);
 
-        if (routeMap.containsKey(point.getName())) {
-            routeMap.remove(point.getName());
-        }
+            if (routeMap.containsKey(point.getName())) {
+                routeMap.remove(point.getName());
+            }
 
-        if (map != null) {
-            drawMap();
+            if (map != null) {
+                drawMap();
+            }
         }
     }
 
@@ -702,6 +706,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
         Log.d("MapFragment"+this.getId(), " onSaveInstanceState");
     }
 
@@ -737,6 +742,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onDestroyView() {
         super.onDestroyView();
         Log.d("MapFragment", " onDestroyView");
+        mapView.onDestroy();
         unbinder.unbind();
     }
 

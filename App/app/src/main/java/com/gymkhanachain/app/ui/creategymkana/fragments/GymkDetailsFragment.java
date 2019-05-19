@@ -116,9 +116,9 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
         });
 
         RestServ.deleteGymkhana(43);
-        Point p1 = new TextPoint(null,"p1123e","punto1","desc", l, "Holo");
+        Point p1 = new TextPointFragment(null,"p1123e","punto1","desc", l, "Holo");
         Point p2 = new QuizzPoint(null,"p1123e","punto1","desc", l, "Holo","","","","",1);
-        Point p3 = new TextPoint(null,"p1123e","punto1","desc", l, "Holo");
+        Point p3 = new TextPointFragment(null,"p1123e","punto1","desc", l, "Holo");
         List<Point> points = new ArrayList<>();
         points.add(p1);
         points.add(p2);
@@ -130,7 +130,7 @@ public class GymkDetailsFragment extends Fragment implements View.OnClickListene
         prueba.add(g2);
         RestServ.addGymkhana(prueba);
         LatLng l = new LatLng(40,40);
-        Point p1 = new TextPoint(94,"IMAGENONCIA","MINPUTNTO","DESCRIPVIONCAMBIADA", l, "Pruebamod");
+        Point p1 = new TextPointFragment(94,"IMAGENONCIA","MINPUTNTO","DESCRIPVIONCAMBIADA", l, "Pruebamod");
         Point p2 = new QuizzPoint(95,"p1123e","punto1","desc", l, "Holo","","","moooood","",1);
         List<Point> points = new ArrayList<>();
         points.add(p1);
