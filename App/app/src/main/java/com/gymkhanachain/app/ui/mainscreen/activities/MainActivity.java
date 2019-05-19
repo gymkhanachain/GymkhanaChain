@@ -381,7 +381,7 @@ public class MainActivity extends AppCompatActivity implements
         pointsGymk.add(loadPoint(pointId++, "Plaza de María Píta", "Plaza de María Píta",
                 "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Plaza_A_Coru%C3%B1a.JPG/1200px-Plaza_A_Coru%C3%B1a.JPG",
                 new LatLng(43.370897, -8.395806), "Por esta plaza céntrica, dedicada a la heroína María Pita, pasa un meridiano. ¿Cúal es?",
-                Arrays.asList("8º24'56\"", "9º23'39\"", "8º24'38\"", "8º23'39\""), 4));
+                Arrays.asList("8º24'56\"", "9º23'39\"", "8º24'38\"", "8º23'39\""), 3));
         pointsGymk.add(loadPoint(pointId++, "Playas de Coruña", "Playas de Coruña",
                 "http://www.turismo.gal/imaxes/mdaw/mduw/~edisp/~extract/TURGA050853~1~staticrendition/tg_carrusel_cabecera_grande.jpg",
                 new LatLng(43.369305, -8.407861), "Coruña tiene dos quilómetros de playas urbanas repartidas en 6 localizaciones. Todas tiene bandera azul."));

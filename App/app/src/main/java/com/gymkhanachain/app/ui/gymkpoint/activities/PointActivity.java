@@ -1,13 +1,15 @@
 package com.gymkhanachain.app.ui.gymkpoint.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.gymkhanachain.app.R;
@@ -26,7 +28,6 @@ public class PointActivity extends AppCompatActivity implements QuizPointFragmen
 
     SharedPreferences preferences;
     Integer pointId;
-    Fragment contentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,21 +50,28 @@ public class PointActivity extends AppCompatActivity implements QuizPointFragmen
             PointBean bean = pointCache.getPoint(pointId);
 
             if (bean != null) {
+                Fragment contentFragment = null;
+
                 // Se crea el fragmento que contendrá el punto
-                switch (PointType.getPointType(bean)) {
-                    case PointType.QUIZZ_POINT:
-                        contentFragment = QuizPointFragment.newInstance(bean.getId());
-                    case PointType.TEXT_POINT:
-                        contentFragment = TextPointFragment.newInstance(bean.getId());
-                    default:
-                        contentFragment = null;
+                if (PointType.getPointType(bean) == PointType.QUIZZ_POINT) {
+                    contentFragment = QuizPointFragment.newInstance(bean.getId());
+                } else if (PointType.getPointType(bean) == PointType.TEXT_POINT) {
+                    contentFragment = TextPointFragment.newInstance(bean.getId());
+                } else {
+                    Log.i(TAG, "Punto no soportado: " + PointType.getPointType(bean));
                 }
 
                 if (contentFragment != null) {
                     // Lo añadimos a la interfaz
                     getSupportFragmentManager().beginTransaction().replace(R.id.point_content, contentFragment).commit();
+                } else {
+                    Log.i(TAG, "No se crea la interfaz");
                 }
+            } else {
+                Log.i(TAG, "El punto no existe");
             }
+        } else {
+            Log.i(TAG, "No se ha pasado un punto");
         }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -77,15 +85,33 @@ public class PointActivity extends AppCompatActivity implements QuizPointFragmen
 
     @Override
     public boolean onSupportNavigateUp() {
-        // TODO add functionality, doesnt work properly
-        Toast newToast = Toast.makeText(getApplicationContext(), "Back pressed", Toast.LENGTH_SHORT);
-        newToast.show();
         onBackPressed();
         return true;
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-        // TODO ...
+    public void onCorrectQuestion() {
+        Toast toast = Toast.makeText(this, getString(R.string.correct_answer), Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+    @Override
+    public void onIncorrectQuestion(String correctAnswer) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.wrong_answer) + " " + correctAnswer);
+        builder.setPositiveButton(R.string.bt_accept, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                onBackPressed();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    @Override
+    public void onClickAccept() {
+        onBackPressed();
     }
 }

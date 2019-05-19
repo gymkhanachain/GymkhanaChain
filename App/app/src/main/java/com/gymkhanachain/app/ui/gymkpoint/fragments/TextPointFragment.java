@@ -1,18 +1,24 @@
 package com.gymkhanachain.app.ui.gymkpoint.fragments;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.gymkhanachain.app.R;
-import com.gymkhanachain.app.model.beans.PointBean;
+import com.gymkhanachain.app.commons.ProxyBitmap;
+import com.gymkhanachain.app.model.beans.TextPointBean;
 import com.gymkhanachain.app.model.commons.PointCache;
 
-public class TextPointFragment extends Fragment {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class TextPointFragment extends Fragment implements ProxyBitmap.OnProxyBitmapListener {
 
     private static final String ARG_POINT_ID = "PointId";
 
@@ -20,7 +26,19 @@ public class TextPointFragment extends Fragment {
 
     Integer pointId;
     OnTextPointFragmentInteraction listener;
-    PointBean bean;
+    TextPointBean bean;
+
+    @BindView(R.id.pointImage)
+    ImageView ivPointImage;
+
+    @BindView(R.id.pointName)
+    TextView tvPointName;
+
+    @BindView(R.id.pointDescriptionTextView)
+    TextView tvPointDescription;
+
+    @BindView(R.id.pointAccept)
+    Button btnAccept;
 
     public TextPointFragment() {
         // Required empty public constructor
@@ -43,9 +61,10 @@ public class TextPointFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             pointId = getArguments().getInt(ARG_POINT_ID);
-            bean = pointCache.getPoint(pointId);
+            bean = (TextPointBean) pointCache.getPoint(pointId);
         }
     }
 
@@ -53,14 +72,26 @@ public class TextPointFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_text_point, container, false);
-    }
+        View view = inflater.inflate(R.layout.fragment_text_point, container, false);
+        ButterKnife.bind(this, view);
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (listener != null) {
-            listener.onFragmentInteraction(uri);
+        if (bean.getImage().getBitmap() != null) {
+            ivPointImage.setImageBitmap(bean.getImage().getBitmap());
+        } else {
+            bean.getImage().attach(this);
         }
+
+        tvPointName.setText(bean.getName());
+        tvPointDescription.setText(bean.getLongDescription());
+
+        btnAccept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onClickAccept();
+            }
+        });
+
+        return view;
     }
 
     @Override
@@ -77,21 +108,16 @@ public class TextPointFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        bean.getImage().detach(this);
         listener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @Override
+    public void onBitmapChange(ProxyBitmap bitmap) {
+        ivPointImage.setImageBitmap(bitmap.getBitmap());
+    }
+
     public interface OnTextPointFragmentInteraction {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onClickAccept();
     }
 }

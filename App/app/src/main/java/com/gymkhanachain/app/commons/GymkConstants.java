@@ -8,7 +8,7 @@ public class GymkConstants {
     /**
      * Número máximo de elementos que se pueden cachear
      */
-    public static final int MAX_ELEMENTS_CACHED = 24;
+    public static final int MAX_ELEMENTS_CACHED = 32;
 
     public static final String TAG_GYMKHANA_ID = "GymkhanaId";
 

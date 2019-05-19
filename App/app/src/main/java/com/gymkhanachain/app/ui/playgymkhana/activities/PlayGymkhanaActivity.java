@@ -1,6 +1,7 @@
 package com.gymkhanachain.app.ui.playgymkhana.activities;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -8,6 +9,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -191,7 +193,17 @@ public class PlayGymkhanaActivity extends AppCompatActivity
         }
 
         if (state == null) {
-            onBackPressed();
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.gymkhana_complete);
+            builder.setPositiveButton(R.string.bt_accept, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    onBackPressed();
+                }
+            });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
     }
 }

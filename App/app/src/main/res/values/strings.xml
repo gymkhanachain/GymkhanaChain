@@ -33,6 +33,9 @@
     <string name="nav_profile">Perfil</string>
     <string name="nav_settings">Ajustes</string>
     <string name="double_tap_exit_app">Doble click para salir de la aplicación</string>
+    <string name="correct_answer">¡Correcto!</string>
+    <string name="wrong_answer">¡Lo sentimos! La respuesta correcta era </string>
+    <string name="gymkhana_complete">¡Has completado la gymkhana! Esperamos que te lo hayas pasado bien</string>
 
     <array name="drawer_items">
         <item>Inicio</item>
